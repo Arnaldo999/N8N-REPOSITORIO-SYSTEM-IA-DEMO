@@ -1,0 +1,506 @@
+{
+  "updatedAt": "2026-02-13T01:39:34.044Z",
+  "createdAt": "2026-02-13T01:12:15.559Z",
+  "id": "lmPXKUTf9lTHLlXW",
+  "name": "Sub: Identificar Reserva",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "24b775c6-4c0a-4f4c-8463-1f2e986721c5",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        32,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appdA5rJOmtVvpDrx",
+          "mode": "list",
+          "cachedResultName": "Automatizacion-Restaurantes",
+          "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqD3q6cwnF6YFXJ",
+          "mode": "list",
+          "cachedResultName": "Reservas",
+          "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
+        },
+        "filterByFormula": "=AND({Nombre} = '{{ $json.nombre }}', {Fecha} = '{{ $json.fecha }}', {Hora} = '{{ $json.hora }}')",
+        "options": {}
+      },
+      "id": "cbfd431c-5c0e-4f35-9387-fb1a4eb0947f",
+      "name": "Buscar en Airtable",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        272,
+        400
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "cSn4DhEebpFAmHgW",
+          "name": "Airtable Access Token Restaurantes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "has-id",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d6b48ea3-7705-48f0-8a0a-27a42509e39d",
+      "name": "Encontró Reserva?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        512,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "encontrada",
+              "value": "true",
+              "type": "string"
+            },
+            {
+              "id": "r2",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "r3",
+              "name": "nombre",
+              "value": "={{ $json.fields.Nombre }}",
+              "type": "string"
+            },
+            {
+              "id": "r4",
+              "name": "fecha",
+              "value": "={{ $json.fields.Fecha }}",
+              "type": "string"
+            },
+            {
+              "id": "r5",
+              "name": "hora",
+              "value": "={{ $json.fields.Hora }}",
+              "type": "string"
+            },
+            {
+              "id": "r6",
+              "name": "personas",
+              "value": "={{ $json.fields.Personas }}",
+              "type": "string"
+            },
+            {
+              "id": "r7",
+              "name": "resultado",
+              "value": "Reserva encontrada. ID: {{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c95b6c3f-b38e-40e7-aba2-22829df24949",
+      "name": "Devolver Datos Reserva",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        752,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e1",
+              "name": "encontrada",
+              "value": "false",
+              "type": "string"
+            },
+            {
+              "id": "e2",
+              "name": "resultado",
+              "value": "No se encontró ninguna reserva con esos datos",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "93b3136f-433a-45bf-9662-b762538f3a79",
+      "name": "No Encontrada",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        752,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🔎 SUB: IDENTIFICAR RESERVA\n\n**Recibe:** nombre, fecha, hora\n\n**Busca** con AND(nombre, fecha, hora)\n\n**Devuelve** el recID para modificar/cancelar",
+        "height": 180,
+        "width": 280,
+        "color": 5
+      },
+      "id": "b6077512-62c3-4b22-a950-d9a56e204dc2",
+      "name": "📋 Info",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        32,
+        176
+      ]
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Buscar en Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar en Airtable": {
+      "main": [
+        [
+          {
+            "node": "Encontró Reserva?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encontró Reserva?": {
+      "main": [
+        [
+          {
+            "node": "Devolver Datos Reserva",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Encontrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "95a05f5e-53c6-4d3e-8090-972d0dd37013",
+  "activeVersionId": "95a05f5e-53c6-4d3e-8090-972d0dd37013",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-13T01:12:15.559Z",
+      "createdAt": "2026-02-13T01:12:15.559Z",
+      "role": "workflow:owner",
+      "workflowId": "lmPXKUTf9lTHLlXW",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-13T01:39:36.681Z",
+    "createdAt": "2026-02-13T01:39:34.046Z",
+    "versionId": "95a05f5e-53c6-4d3e-8090-972d0dd37013",
+    "workflowId": "lmPXKUTf9lTHLlXW",
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "24b775c6-4c0a-4f4c-8463-1f2e986721c5",
+        "name": "Execute Workflow Trigger",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          32,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "value": "appdA5rJOmtVvpDrx",
+            "mode": "list",
+            "cachedResultName": "Automatizacion-Restaurantes",
+            "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tblqD3q6cwnF6YFXJ",
+            "mode": "list",
+            "cachedResultName": "Reservas",
+            "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
+          },
+          "filterByFormula": "=AND({Nombre} = '{{ $json.nombre }}', {Fecha} = '{{ $json.fecha }}', {Hora} = '{{ $json.hora }}')",
+          "options": {}
+        },
+        "id": "cbfd431c-5c0e-4f35-9387-fb1a4eb0947f",
+        "name": "Buscar en Airtable",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          272,
+          400
+        ],
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "cSn4DhEebpFAmHgW",
+            "name": "Airtable Access Token Restaurantes"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "has-id",
+                "leftValue": "={{ $json.id }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "d6b48ea3-7705-48f0-8a0a-27a42509e39d",
+        "name": "Encontró Reserva?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          512,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "r1",
+                "name": "encontrada",
+                "value": "true",
+                "type": "string"
+              },
+              {
+                "id": "r2",
+                "name": "id",
+                "value": "={{ $json.id }}",
+                "type": "string"
+              },
+              {
+                "id": "r3",
+                "name": "nombre",
+                "value": "={{ $json.fields.Nombre }}",
+                "type": "string"
+              },
+              {
+                "id": "r4",
+                "name": "fecha",
+                "value": "={{ $json.fields.Fecha }}",
+                "type": "string"
+              },
+              {
+                "id": "r5",
+                "name": "hora",
+                "value": "={{ $json.fields.Hora }}",
+                "type": "string"
+              },
+              {
+                "id": "r6",
+                "name": "personas",
+                "value": "={{ $json.fields.Personas }}",
+                "type": "string"
+              },
+              {
+                "id": "r7",
+                "name": "resultado",
+                "value": "Reserva encontrada. ID: {{ $json.id }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "c95b6c3f-b38e-40e7-aba2-22829df24949",
+        "name": "Devolver Datos Reserva",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          752,
+          320
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "e1",
+                "name": "encontrada",
+                "value": "false",
+                "type": "string"
+              },
+              {
+                "id": "e2",
+                "name": "resultado",
+                "value": "No se encontró ninguna reserva con esos datos",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "93b3136f-433a-45bf-9662-b762538f3a79",
+        "name": "No Encontrada",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          752,
+          480
+        ]
+      },
+      {
+        "parameters": {
+          "content": "## 🔎 SUB: IDENTIFICAR RESERVA\n\n**Recibe:** nombre, fecha, hora\n\n**Busca** con AND(nombre, fecha, hora)\n\n**Devuelve** el recID para modificar/cancelar",
+          "height": 180,
+          "width": 280,
+          "color": 5
+        },
+        "id": "b6077512-62c3-4b22-a950-d9a56e204dc2",
+        "name": "📋 Info",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          32,
+          176
+        ]
+      }
+    ],
+    "connections": {
+      "Execute Workflow Trigger": {
+        "main": [
+          [
+            {
+              "node": "Buscar en Airtable",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar en Airtable": {
+        "main": [
+          [
+            {
+              "node": "Encontró Reserva?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Encontró Reserva?": {
+        "main": [
+          [
+            {
+              "node": "Devolver Datos Reserva",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Encontrada",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": "Version 95a05f5e",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-09T19:43:32.620Z",
+      "createdAt": "2026-02-09T19:43:32.620Z",
+      "id": "dCGM1dWLrqkY4L79",
+      "name": "🎯 Demos"
+    },
+    {
+      "updatedAt": "2026-02-12T19:23:15.621Z",
+      "createdAt": "2026-02-12T19:23:15.621Z",
+      "id": "TZUE2YowDCU30mFT",
+      "name": "Restaurantes"
+    }
+  ]
+}
