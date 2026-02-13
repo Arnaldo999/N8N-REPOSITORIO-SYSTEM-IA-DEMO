@@ -1,0 +1,282 @@
+{
+  "updatedAt": "2026-02-13T01:38:30.913Z",
+  "createdAt": "2026-02-13T01:13:20.395Z",
+  "id": "WvJXguIezXCvpyg5",
+  "name": "Sub: Cancelar Reserva",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "fbdf6040-994b-4b63-9893-602f1a5504c0",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "deleteRecord",
+        "base": {
+          "__rl": true,
+          "value": "appdA5rJOmtVvpDrx",
+          "mode": "list",
+          "cachedResultName": "Automatizacion-Restaurantes",
+          "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqD3q6cwnF6YFXJ",
+          "mode": "list",
+          "cachedResultName": "Reservas",
+          "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
+        },
+        "id": "="
+      },
+      "id": "47377917-c0b0-4e45-9a37-2bea2e02f634",
+      "name": "Eliminar de Airtable",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        128,
+        400
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "cSn4DhEebpFAmHgW",
+          "name": "Airtable Access Token Restaurantes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "resultado",
+              "value": "Reserva cancelada y eliminada exitosamente",
+              "type": "string"
+            },
+            {
+              "id": "r2",
+              "name": "id_eliminado",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a830b27c-9490-4ba9-9409-a0c8b483209a",
+      "name": "Respuesta Exitosa",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        368,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ❌ SUB: CANCELAR RESERVA\n\n**Recibe:** id (recID)\n\n**Elimina** de Airtable\n\n⚠️ Acción irreversible",
+        "width": 260,
+        "color": 3
+      },
+      "id": "c5d1468e-50a0-4a4e-ae3b-e0bec92cc73d",
+      "name": "📋 Info",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        192
+      ]
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Eliminar de Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Eliminar de Airtable": {
+      "main": [
+        [
+          {
+            "node": "Respuesta Exitosa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "44fb5851-fd45-4c7b-b40b-18965a7be5fe",
+  "activeVersionId": "44fb5851-fd45-4c7b-b40b-18965a7be5fe",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-13T01:13:20.395Z",
+      "createdAt": "2026-02-13T01:13:20.395Z",
+      "role": "workflow:owner",
+      "workflowId": "WvJXguIezXCvpyg5",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-13T01:38:36.554Z",
+    "createdAt": "2026-02-13T01:38:30.914Z",
+    "versionId": "44fb5851-fd45-4c7b-b40b-18965a7be5fe",
+    "workflowId": "WvJXguIezXCvpyg5",
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "fbdf6040-994b-4b63-9893-602f1a5504c0",
+        "name": "Execute Workflow Trigger",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          -112,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "deleteRecord",
+          "base": {
+            "__rl": true,
+            "value": "appdA5rJOmtVvpDrx",
+            "mode": "list",
+            "cachedResultName": "Automatizacion-Restaurantes",
+            "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tblqD3q6cwnF6YFXJ",
+            "mode": "list",
+            "cachedResultName": "Reservas",
+            "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
+          },
+          "id": "="
+        },
+        "id": "47377917-c0b0-4e45-9a37-2bea2e02f634",
+        "name": "Eliminar de Airtable",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          128,
+          400
+        ],
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "cSn4DhEebpFAmHgW",
+            "name": "Airtable Access Token Restaurantes"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "r1",
+                "name": "resultado",
+                "value": "Reserva cancelada y eliminada exitosamente",
+                "type": "string"
+              },
+              {
+                "id": "r2",
+                "name": "id_eliminado",
+                "value": "={{ $json.id }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "a830b27c-9490-4ba9-9409-a0c8b483209a",
+        "name": "Respuesta Exitosa",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          368,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "content": "## ❌ SUB: CANCELAR RESERVA\n\n**Recibe:** id (recID)\n\n**Elimina** de Airtable\n\n⚠️ Acción irreversible",
+          "width": 260,
+          "color": 3
+        },
+        "id": "c5d1468e-50a0-4a4e-ae3b-e0bec92cc73d",
+        "name": "📋 Info",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -112,
+          192
+        ]
+      }
+    ],
+    "connections": {
+      "Execute Workflow Trigger": {
+        "main": [
+          [
+            {
+              "node": "Eliminar de Airtable",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Eliminar de Airtable": {
+        "main": [
+          [
+            {
+              "node": "Respuesta Exitosa",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": "Version 44fb5851",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-09T19:43:32.620Z",
+      "createdAt": "2026-02-09T19:43:32.620Z",
+      "id": "dCGM1dWLrqkY4L79",
+      "name": "🎯 Demos"
+    },
+    {
+      "updatedAt": "2026-02-12T19:23:15.621Z",
+      "createdAt": "2026-02-12T19:23:15.621Z",
+      "id": "TZUE2YowDCU30mFT",
+      "name": "Restaurantes"
+    }
+  ]
+}
