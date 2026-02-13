@@ -1,0 +1,1962 @@
+{
+  "updatedAt": "2026-02-13T01:26:41.910Z",
+  "createdAt": "2026-02-12T16:48:41.765Z",
+  "id": "dH8DMkkkpEKQ0ESo",
+  "name": "🍷 Restaurante - Flujo Principal",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "webhook/automatizacion-restaurantes",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "8a3798b0-385d-4d60-ab27-9df2af46abd1",
+      "name": "Webhook Evolution API",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2288,
+        4112
+      ],
+      "webhookId": "automatizacion-restaurantes"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.body.event }}",
+              "rightValue": "messages.upsert",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "c2",
+              "leftValue": "={{ $json.body.data.message.conversation }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "c3",
+              "leftValue": "={{ $json.body.data.key.remoteJid }}",
+              "rightValue": "@s.whatsapp.net",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "060ad461-bc47-460f-ab43-594eeea54d56",
+      "name": "Filtro Webhook",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -2064,
+        4112
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "telefono",
+              "value": "={{ ($json.body?.data?.key?.remoteJid || '').replace('@s.whatsapp.net','') }}",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "mensaje",
+              "value": "={{ ($json.body?.data?.message?.conversation || $json.body?.data?.message?.extendedTextMessage?.text || '').trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "nombre_wa",
+              "value": "={{ $json.body?.data?.pushName || 'Cliente' }}",
+              "type": "string"
+            },
+            {
+              "id": "a4",
+              "name": "es_mio",
+              "value": "={{ String($json.body?.data?.key?.fromMe ?? false) }}",
+              "type": "string"
+            },
+            {
+              "id": "a5",
+              "name": "remoteJid",
+              "value": "={{ $json.body?.data?.key?.remoteJid || '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "25a44f91-b866-41f6-9327-69ecbd24bcff",
+      "name": "Extraer Datos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1840,
+        4112
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "f1",
+              "leftValue": "={{ $json.es_mio }}",
+              "rightValue": "false",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b0430025-43b9-4668-98e8-1c6f38b59439",
+      "name": "No es mensaje mio",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        -1616,
+        4112
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1",
+              "name": "fecha_hoy",
+              "value": "={{ $now.format('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "f2",
+              "name": "fecha_formateada",
+              "value": "={{ $now.format('EEEE d MMMM yyyy', { locale: 'es' }) }}",
+              "type": "string"
+            },
+            {
+              "id": "f3",
+              "name": "telefono",
+              "value": "={{ $json.telefono }}",
+              "type": "string"
+            },
+            {
+              "id": "f4",
+              "name": "mensaje",
+              "value": "={{ $json.mensaje }}",
+              "type": "string"
+            },
+            {
+              "id": "f5",
+              "name": "nombre_wa",
+              "value": "={{ $json.nombre_wa }}",
+              "type": "string"
+            },
+            {
+              "id": "f6",
+              "name": "remoteJid",
+              "value": "={{ $json.remoteJid }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5b454931-d70b-4dd6-8663-a57f06304317",
+      "name": "Agregar Fecha",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1392,
+        4112
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Mensaje del usuario: {{ $json.mensaje }}\n\nFecha de hoy: {{ $json.fecha_formateada }}\nFecha ISO: {{ $json.fecha_hoy }}\nTeléfono: {{ $json.telefono }}\nNombre del contacto: {{ $json.nombre_wa }}",
+        "options": {
+          "systemMessage": "=Sos el asistente virtual del Bar Montevideo 🍷\n\n## REGLA #1 - BIENVENIDA (OBLIGATORIO)\nCuando alguien te salude (hola, buenas, hi, qué tal, etc.) respondé EXACTAMENTE así:\n\nHola [NOMBRE]! 🍷✨\n\nQué alegría tenerte por acá! Soy el asistente del Bar Montevideo, el rincón más especial de Montevideo para disfrutar buena comida y excelentes tragos\n\nEn qué te puedo ayudar?\n\n1️⃣ 📋 Ver nuestra carta\n2️⃣ 📅 Hacer una reserva\n3️⃣ ✏️ Modificar una reserva\n4️⃣ ❌ Cancelar una reserva\n\nEscribime el número o contame qué necesitás 😊\n\n## TONO\n- Usá \"vos\" (uruguayo)\n- Sé cálido y amigable\n- Usá emojis con moderación\n- NO uses ¿ ni ¡\n- NO termines con punto\n\n## INFO DEL BAR\n- Horarios: Lun-Jue 11-00hs, Vie-Sab 11-02hs, Dom 11-23hs\n- Ubicación: Centro de Montevideo\n\n## VARIABLES\n- Fecha hoy: {{ $json.fecha_formateada }}\n- Nombre cliente: {{ $json.nombre_wa }}\n\n## CUANDO EL USUARIO ELIGE:\n\n### Opción 1 o \"ver carta/menú\":\nPreguntá qué categoría quiere:\n- principales (comida)\n- entradas (picadas)\n- bebidas\n- postres\n- cafeteria\n\nConfirmá y usá la herramienta **buscar_menu**\n\n### Opción 2 o \"hacer reserva\":\nPreguntá:\n1. Día y hora\n2. Cuántas personas y nombre\n3. Algún pedido especial?\n\nConfirmá los datos y usá **agendar_reserva**\n\n### Opción 3 o \"modificar reserva\":\nPedí nombre, fecha y hora original\nUsá **identificar_reserva** para obtener el ID\nPreguntá qué quiere cambiar\nUsá **modificar_reserva**\n\n### Opción 4 o \"cancelar reserva\":\nPedí nombre, fecha y hora\nUsá **identificar_reserva**\nConfirmá y usá **cancelar_reserva**\n\n## REGLAS\n- SIEMPRE confirmá antes de usar herramientas\n- Si dice \"mañana\", calculá la fecha usando hoy: {{ $json.fecha_hoy }}\n- Nunca inventes datos"
+        }
+      },
+      "id": "650d1dd3-1511-4c32-a988-ece64cfd42cf",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -1200,
+        4112
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {
+          "temperature": 0.4
+        }
+      },
+      "id": "004e7c40-c817-418e-bea5-7f80d542b03a",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -1376,
+        4336
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "NcfqiDHUS55FBxv4",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Agregar Fecha').item.json.telefono }}",
+        "tableName": "bar_montevideo_memory",
+        "contextWindowLength": 15
+      },
+      "id": "46cc70ea-1367-4619-8096-ee80e6318e0c",
+      "name": "Postgres Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -1168,
+        4336
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "H4xplj00DDJLj5Li",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "buscar_menu",
+        "description": "Busca y envía la carta/menú del bar al usuario por WhatsApp. Categorías disponibles: principales, entradas, bebidas, postres, cafeteria. IMPORTANTE: Solo activar después de que el usuario confirme que quiere ver la carta.",
+        "workflowId": {
+          "__rl": true,
+          "value": "XZDEgwXlZkXjbeQJ",
+          "mode": "id",
+          "cachedResultUrl": "/workflow/XZDEgwXlZkXjbeQJ"
+        },
+        "fields": {
+          "values": [
+            {
+              "name": "categoria"
+            },
+            {
+              "name": "remoteJid"
+            }
+          ]
+        }
+      },
+      "id": "9e5c390c-6a86-4a4d-bb41-b05753163991",
+      "name": "Buscar Menú",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -960,
+        4336
+      ]
+    },
+    {
+      "parameters": {
+        "name": "agendar_reserva",
+        "description": "Crea una nueva reserva en el sistema. Solo usar DESPUÉS de confirmar TODOS los datos con el usuario. Requiere: nombre, fecha (YYYY-MM-DD), hora (HH:MM), personas (número), especificaciones.",
+        "workflowId": {
+          "__rl": true,
+          "value": "qCKbJSnSR6Zmqi5i",
+          "mode": "id",
+          "cachedResultUrl": "/workflow/qCKbJSnSR6Zmqi5i"
+        },
+        "fields": {
+          "values": [
+            {
+              "name": "nombre"
+            },
+            {
+              "name": "fecha"
+            },
+            {
+              "name": "hora"
+            },
+            {
+              "name": "personas"
+            },
+            {
+              "name": "especificaciones"
+            }
+          ]
+        }
+      },
+      "id": "af69868e-5c58-4bb0-950f-316bd57a457b",
+      "name": "Agendar Reserva",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -752,
+        4336
+      ]
+    },
+    {
+      "parameters": {
+        "name": "identificar_reserva",
+        "description": "Busca una reserva existente usando nombre, fecha y hora. Devuelve el ID único (recID) necesario para modificar o cancelar. SIEMPRE usar ANTES de modificar o cancelar una reserva.",
+        "workflowId": {
+          "__rl": true,
+          "value": "lmPXKUTf9lTHLlXW",
+          "mode": "id",
+          "cachedResultUrl": "/workflow/lmPXKUTf9lTHLlXW"
+        },
+        "fields": {
+          "values": [
+            {
+              "name": "nombre"
+            },
+            {
+              "name": "fecha"
+            },
+            {
+              "name": "hora"
+            }
+          ]
+        }
+      },
+      "id": "c990c05f-3d10-4126-a0f1-fd041a37ec69",
+      "name": "Identificar Reserva",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -544,
+        4336
+      ]
+    },
+    {
+      "parameters": {
+        "name": "modificar_reserva",
+        "description": "Modifica una reserva existente. Requiere el ID (recID) obtenido previamente con identificar_reserva. Solo incluir los campos que el usuario quiere cambiar.",
+        "workflowId": {
+          "__rl": true,
+          "value": "4oFJ0Ek3v15kzE30",
+          "mode": "id",
+          "cachedResultUrl": "/workflow/4oFJ0Ek3v15kzE30"
+        },
+        "fields": {
+          "values": [
+            {
+              "name": "id"
+            },
+            {
+              "name": "nueva_fecha"
+            },
+            {
+              "name": "nueva_hora"
+            },
+            {
+              "name": "nuevas_personas"
+            }
+          ]
+        }
+      },
+      "id": "72f90f86-eab5-4569-a1e4-05e1355dcdb0",
+      "name": "Modificar Reserva",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -336,
+        4336
+      ]
+    },
+    {
+      "parameters": {
+        "name": "cancelar_reserva",
+        "description": "Cancela y elimina una reserva existente. Requiere el ID (recID) obtenido con identificar_reserva. Solo usar DESPUÉS de que el usuario confirme la cancelación.",
+        "workflowId": {
+          "__rl": true,
+          "value": "WvJXguIezXCvpyg5",
+          "mode": "id",
+          "cachedResultUrl": "/workflow/WvJXguIezXCvpyg5"
+        },
+        "fields": {
+          "values": [
+            {
+              "name": "id"
+            }
+          ]
+        }
+      },
+      "id": "ce06785e-b244-4d26-b39a-89f3576a55d0",
+      "name": "Cancelar Reserva",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -128,
+        4336
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Sos un asistente que recibe un mensaje y lo divide en 2 o 3 partes para simular cómo escribe un humano por WhatsApp.\n\nREGLAS ESTRICTAS:\n1. Dividí el mensaje en 2-3 partes de forma natural\n2. La parte_1 debe ser un saludo o introducción corta (máximo 2 líneas)\n3. La parte_2 debe ser el contenido principal\n4. La parte_3 debe ser un cierre o pregunta final (máximo 2 líneas). Si no hay cierre natural, dejá parte_3 vacío.\n5. Si el mensaje es MUY corto (menos de 50 caracteres), poné TODO en parte_1 y dejá parte_2 y parte_3 vacíos\n6. NO uses signos de apertura (¿ ¡)\n7. NO termines ninguna parte con punto\n8. Mantené el tono amigable y los emojis del mensaje original\n9. NO modifiques el contenido, solo dividilo estratégicamente\n10. Asegurate de que el JSON sea válido\n\nRESPONDÉ ÚNICAMENTE con un JSON válido con esta estructura:\n{\"parte_1\": \"texto\", \"parte_2\": \"texto\", \"parte_3\": \"texto\"}",
+              "role": "system"
+            },
+            {
+              "content": "={{ $json.output }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "e7e83ee6-9959-4e5b-aeaa-c90ff2550c10",
+      "name": "Message Model",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -944,
+        4112
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "NcfqiDHUS55FBxv4",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst telefono = $('Agregar Fecha').first().json.telefono;\nconst remoteJid = $('Agregar Fecha').first().json.remoteJid;\n\nlet parte_1 = '';\nlet parte_2 = '';\nlet parte_3 = '';\n\ntry {\n  if (input.message && input.message.content) {\n    const content = typeof input.message.content === 'string' \n      ? JSON.parse(input.message.content) \n      : input.message.content;\n    parte_1 = content.parte_1 || '';\n    parte_2 = content.parte_2 || '';\n    parte_3 = content.parte_3 || '';\n  } else if (input.parte_1) {\n    parte_1 = input.parte_1 || '';\n    parte_2 = input.parte_2 || '';\n    parte_3 = input.parte_3 || '';\n  } else if (input.text) {\n    parte_1 = input.text;\n  } else if (input.content) {\n    const parsed = typeof input.content === 'string' ? JSON.parse(input.content) : input.content;\n    parte_1 = parsed.parte_1 || '';\n    parte_2 = parsed.parte_2 || '';\n    parte_3 = parsed.parte_3 || '';\n  }\n} catch(e) {\n  const agentOutput = $('AI Agent').first().json.output || $('AI Agent').first().json.text || 'Disculpá, hubo un error';\n  parte_1 = agentOutput;\n  parte_2 = '';\n  parte_3 = '';\n}\n\nif (!parte_1 || parte_1.trim() === '') {\n  const agentOutput = $('AI Agent').first().json.output || $('AI Agent').first().json.text || 'Hola! En qué puedo ayudarte?';\n  parte_1 = agentOutput;\n  parte_2 = '';\n  parte_3 = '';\n}\n\n// IMPORTANTE: Escapar caracteres especiales para JSON válido\nfunction escapeForJson(str) {\n  if (!str) return '';\n  return str\n    .replace(/\\\\/g, '\\\\\\\\')\n    .replace(/\"/g, '\\\\\"')\n    .replace(/\\n/g, '\\\\n')\n    .replace(/\\r/g, '\\\\r')\n    .replace(/\\t/g, '\\\\t');\n}\n\nreturn {\n  json: {\n    telefono,\n    remoteJid,\n    parte_1: parte_1.trim(),\n    parte_2: parte_2.trim(),\n    parte_3: parte_3.trim(),\n    parte_1_escaped: escapeForJson(parte_1.trim()),\n    parte_2_escaped: escapeForJson(parte_2.trim()),\n    parte_3_escaped: escapeForJson(parte_3.trim())\n  }\n};"
+      },
+      "id": "ba4a62ab-48d8-4bfb-b7d8-b25e918818dd",
+      "name": "Parsear Partes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -688,
+        4112
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"{{ $json.parte_1_escaped }}\"\n}",
+        "options": {}
+      },
+      "id": "f0dee89f-9afd-42b9-90ae-a3f0a20c44a6",
+      "name": "Enviar Parte 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -496,
+        4112
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "p2",
+              "leftValue": "={{ $('Parsear Partes').first().json.parte_2 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8d71b41e-6d1d-44be-8ee3-70d2c5bd3c7f",
+      "name": "Tiene Parte 2?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -272,
+        4112
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "id": "4bd62523-f5e7-4187-8aea-f356ffef19cc",
+      "name": "Esperar 3s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -48,
+        4016
+      ],
+      "webhookId": "wait-3s-restaurante"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $('Parsear Partes').first().json.telefono }}\",\n  \"text\": \"{{ $('Parsear Partes').first().json.parte_2_escaped }}\"\n}",
+        "options": {}
+      },
+      "id": "60dc85b0-cf78-4cd1-89d3-94abaab682d9",
+      "name": "Enviar Parte 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        176,
+        4016
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "p3",
+              "leftValue": "={{ $('Parsear Partes').first().json.parte_3 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c8039cb2-268e-481d-a678-55138ccb60a0",
+      "name": "Tiene Parte 3?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        400,
+        4016
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 4
+      },
+      "id": "fa1108fd-72d8-4241-8f07-487618d5727c",
+      "name": "Esperar 4s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        3920
+      ],
+      "webhookId": "wait-4s-restaurante"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $('Parsear Partes').first().json.telefono }}\",\n  \"text\": \"{{ $('Parsear Partes').first().json.parte_3_escaped }}\"\n}",
+        "options": {}
+      },
+      "id": "e6d33b5e-8d50-47c2-a561-e43167221fab",
+      "name": "Enviar Parte 3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        848,
+        3920
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"status\": \"ok\" }",
+        "options": {}
+      },
+      "id": "c7cef975-39f4-4a03-900b-c6d54c514b90",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1072,
+        4112
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Evolution API": {
+      "main": [
+        [
+          {
+            "node": "Filtro Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtro Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extraer Datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Datos": {
+      "main": [
+        [
+          {
+            "node": "No es mensaje mio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No es mensaje mio": {
+      "main": [
+        [
+          {
+            "node": "Agregar Fecha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agregar Fecha": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Message Model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Menú": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agendar Reserva": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Identificar Reserva": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modificar Reserva": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cancelar Reserva": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message Model": {
+      "main": [
+        [
+          {
+            "node": "Parsear Partes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Partes": {
+      "main": [
+        [
+          {
+            "node": "Enviar Parte 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Parte 1": {
+      "main": [
+        [
+          {
+            "node": "Tiene Parte 2?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tiene Parte 2?": {
+      "main": [
+        [
+          {
+            "node": "Esperar 3s",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esperar 3s": {
+      "main": [
+        [
+          {
+            "node": "Enviar Parte 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Parte 2": {
+      "main": [
+        [
+          {
+            "node": "Tiene Parte 3?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tiene Parte 3?": {
+      "main": [
+        [
+          {
+            "node": "Esperar 4s",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esperar 4s": {
+      "main": [
+        [
+          {
+            "node": "Enviar Parte 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Parte 3": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "d462aade-2015-4dda-b183-6b552e91bcfd",
+  "activeVersionId": "d462aade-2015-4dda-b183-6b552e91bcfd",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-12T16:48:41.765Z",
+      "createdAt": "2026-02-12T16:48:41.765Z",
+      "role": "workflow:owner",
+      "workflowId": "dH8DMkkkpEKQ0ESo",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-13T01:26:44.114Z",
+    "createdAt": "2026-02-13T01:26:41.912Z",
+    "versionId": "d462aade-2015-4dda-b183-6b552e91bcfd",
+    "workflowId": "dH8DMkkkpEKQ0ESo",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "webhook/automatizacion-restaurantes",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "8a3798b0-385d-4d60-ab27-9df2af46abd1",
+        "name": "Webhook Evolution API",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -2288,
+          4112
+        ],
+        "webhookId": "automatizacion-restaurantes"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c1",
+                "leftValue": "={{ $json.body.event }}",
+                "rightValue": "messages.upsert",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "c2",
+                "leftValue": "={{ $json.body.data.message.conversation }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              },
+              {
+                "id": "c3",
+                "leftValue": "={{ $json.body.data.key.remoteJid }}",
+                "rightValue": "@s.whatsapp.net",
+                "operator": {
+                  "type": "string",
+                  "operation": "endsWith"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "060ad461-bc47-460f-ab43-594eeea54d56",
+        "name": "Filtro Webhook",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -2064,
+          4112
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a1",
+                "name": "telefono",
+                "value": "={{ ($json.body?.data?.key?.remoteJid || '').replace('@s.whatsapp.net','') }}",
+                "type": "string"
+              },
+              {
+                "id": "a2",
+                "name": "mensaje",
+                "value": "={{ ($json.body?.data?.message?.conversation || $json.body?.data?.message?.extendedTextMessage?.text || '').trim() }}",
+                "type": "string"
+              },
+              {
+                "id": "a3",
+                "name": "nombre_wa",
+                "value": "={{ $json.body?.data?.pushName || 'Cliente' }}",
+                "type": "string"
+              },
+              {
+                "id": "a4",
+                "name": "es_mio",
+                "value": "={{ String($json.body?.data?.key?.fromMe ?? false) }}",
+                "type": "string"
+              },
+              {
+                "id": "a5",
+                "name": "remoteJid",
+                "value": "={{ $json.body?.data?.key?.remoteJid || '' }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "25a44f91-b866-41f6-9327-69ecbd24bcff",
+        "name": "Extraer Datos",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -1840,
+          4112
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "f1",
+                "leftValue": "={{ $json.es_mio }}",
+                "rightValue": "false",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "b0430025-43b9-4668-98e8-1c6f38b59439",
+        "name": "No es mensaje mio",
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2,
+        "position": [
+          -1616,
+          4112
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f1",
+                "name": "fecha_hoy",
+                "value": "={{ $now.format('yyyy-MM-dd') }}",
+                "type": "string"
+              },
+              {
+                "id": "f2",
+                "name": "fecha_formateada",
+                "value": "={{ $now.format('EEEE d MMMM yyyy', { locale: 'es' }) }}",
+                "type": "string"
+              },
+              {
+                "id": "f3",
+                "name": "telefono",
+                "value": "={{ $json.telefono }}",
+                "type": "string"
+              },
+              {
+                "id": "f4",
+                "name": "mensaje",
+                "value": "={{ $json.mensaje }}",
+                "type": "string"
+              },
+              {
+                "id": "f5",
+                "name": "nombre_wa",
+                "value": "={{ $json.nombre_wa }}",
+                "type": "string"
+              },
+              {
+                "id": "f6",
+                "name": "remoteJid",
+                "value": "={{ $json.remoteJid }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "5b454931-d70b-4dd6-8663-a57f06304317",
+        "name": "Agregar Fecha",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -1392,
+          4112
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Mensaje del usuario: {{ $json.mensaje }}\n\nFecha de hoy: {{ $json.fecha_formateada }}\nFecha ISO: {{ $json.fecha_hoy }}\nTeléfono: {{ $json.telefono }}\nNombre del contacto: {{ $json.nombre_wa }}",
+          "options": {
+            "systemMessage": "=Sos el asistente virtual del Bar Montevideo 🍷\n\n## REGLA #1 - BIENVENIDA (OBLIGATORIO)\nCuando alguien te salude (hola, buenas, hi, qué tal, etc.) respondé EXACTAMENTE así:\n\nHola [NOMBRE]! 🍷✨\n\nQué alegría tenerte por acá! Soy el asistente del Bar Montevideo, el rincón más especial de Montevideo para disfrutar buena comida y excelentes tragos\n\nEn qué te puedo ayudar?\n\n1️⃣ 📋 Ver nuestra carta\n2️⃣ 📅 Hacer una reserva\n3️⃣ ✏️ Modificar una reserva\n4️⃣ ❌ Cancelar una reserva\n\nEscribime el número o contame qué necesitás 😊\n\n## TONO\n- Usá \"vos\" (uruguayo)\n- Sé cálido y amigable\n- Usá emojis con moderación\n- NO uses ¿ ni ¡\n- NO termines con punto\n\n## INFO DEL BAR\n- Horarios: Lun-Jue 11-00hs, Vie-Sab 11-02hs, Dom 11-23hs\n- Ubicación: Centro de Montevideo\n\n## VARIABLES\n- Fecha hoy: {{ $json.fecha_formateada }}\n- Nombre cliente: {{ $json.nombre_wa }}\n\n## CUANDO EL USUARIO ELIGE:\n\n### Opción 1 o \"ver carta/menú\":\nPreguntá qué categoría quiere:\n- principales (comida)\n- entradas (picadas)\n- bebidas\n- postres\n- cafeteria\n\nConfirmá y usá la herramienta **buscar_menu**\n\n### Opción 2 o \"hacer reserva\":\nPreguntá:\n1. Día y hora\n2. Cuántas personas y nombre\n3. Algún pedido especial?\n\nConfirmá los datos y usá **agendar_reserva**\n\n### Opción 3 o \"modificar reserva\":\nPedí nombre, fecha y hora original\nUsá **identificar_reserva** para obtener el ID\nPreguntá qué quiere cambiar\nUsá **modificar_reserva**\n\n### Opción 4 o \"cancelar reserva\":\nPedí nombre, fecha y hora\nUsá **identificar_reserva**\nConfirmá y usá **cancelar_reserva**\n\n## REGLAS\n- SIEMPRE confirmá antes de usar herramientas\n- Si dice \"mañana\", calculá la fecha usando hoy: {{ $json.fecha_hoy }}\n- Nunca inventes datos"
+          }
+        },
+        "id": "650d1dd3-1511-4c32-a988-ece64cfd42cf",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7,
+        "position": [
+          -1200,
+          4112
+        ]
+      },
+      {
+        "parameters": {
+          "model": "gpt-4o",
+          "options": {
+            "temperature": 0.4
+          }
+        },
+        "id": "004e7c40-c817-418e-bea5-7f80d542b03a",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1,
+        "position": [
+          -1376,
+          4336
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "NcfqiDHUS55FBxv4",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Agregar Fecha').item.json.telefono }}",
+          "tableName": "bar_montevideo_memory",
+          "contextWindowLength": 15
+        },
+        "id": "46cc70ea-1367-4619-8096-ee80e6318e0c",
+        "name": "Postgres Chat Memory",
+        "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+        "typeVersion": 1.3,
+        "position": [
+          -1168,
+          4336
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "H4xplj00DDJLj5Li",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "name": "buscar_menu",
+          "description": "Busca y envía la carta/menú del bar al usuario por WhatsApp. Categorías disponibles: principales, entradas, bebidas, postres, cafeteria. IMPORTANTE: Solo activar después de que el usuario confirme que quiere ver la carta.",
+          "workflowId": {
+            "__rl": true,
+            "value": "XZDEgwXlZkXjbeQJ",
+            "mode": "id",
+            "cachedResultUrl": "/workflow/XZDEgwXlZkXjbeQJ"
+          },
+          "fields": {
+            "values": [
+              {
+                "name": "categoria"
+              },
+              {
+                "name": "remoteJid"
+              }
+            ]
+          }
+        },
+        "id": "9e5c390c-6a86-4a4d-bb41-b05753163991",
+        "name": "Buscar Menú",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          -960,
+          4336
+        ]
+      },
+      {
+        "parameters": {
+          "name": "agendar_reserva",
+          "description": "Crea una nueva reserva en el sistema. Solo usar DESPUÉS de confirmar TODOS los datos con el usuario. Requiere: nombre, fecha (YYYY-MM-DD), hora (HH:MM), personas (número), especificaciones.",
+          "workflowId": {
+            "__rl": true,
+            "value": "qCKbJSnSR6Zmqi5i",
+            "mode": "id",
+            "cachedResultUrl": "/workflow/qCKbJSnSR6Zmqi5i"
+          },
+          "fields": {
+            "values": [
+              {
+                "name": "nombre"
+              },
+              {
+                "name": "fecha"
+              },
+              {
+                "name": "hora"
+              },
+              {
+                "name": "personas"
+              },
+              {
+                "name": "especificaciones"
+              }
+            ]
+          }
+        },
+        "id": "af69868e-5c58-4bb0-950f-316bd57a457b",
+        "name": "Agendar Reserva",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          -752,
+          4336
+        ]
+      },
+      {
+        "parameters": {
+          "name": "identificar_reserva",
+          "description": "Busca una reserva existente usando nombre, fecha y hora. Devuelve el ID único (recID) necesario para modificar o cancelar. SIEMPRE usar ANTES de modificar o cancelar una reserva.",
+          "workflowId": {
+            "__rl": true,
+            "value": "lmPXKUTf9lTHLlXW",
+            "mode": "id",
+            "cachedResultUrl": "/workflow/lmPXKUTf9lTHLlXW"
+          },
+          "fields": {
+            "values": [
+              {
+                "name": "nombre"
+              },
+              {
+                "name": "fecha"
+              },
+              {
+                "name": "hora"
+              }
+            ]
+          }
+        },
+        "id": "c990c05f-3d10-4126-a0f1-fd041a37ec69",
+        "name": "Identificar Reserva",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          -544,
+          4336
+        ]
+      },
+      {
+        "parameters": {
+          "name": "modificar_reserva",
+          "description": "Modifica una reserva existente. Requiere el ID (recID) obtenido previamente con identificar_reserva. Solo incluir los campos que el usuario quiere cambiar.",
+          "workflowId": {
+            "__rl": true,
+            "value": "4oFJ0Ek3v15kzE30",
+            "mode": "id",
+            "cachedResultUrl": "/workflow/4oFJ0Ek3v15kzE30"
+          },
+          "fields": {
+            "values": [
+              {
+                "name": "id"
+              },
+              {
+                "name": "nueva_fecha"
+              },
+              {
+                "name": "nueva_hora"
+              },
+              {
+                "name": "nuevas_personas"
+              }
+            ]
+          }
+        },
+        "id": "72f90f86-eab5-4569-a1e4-05e1355dcdb0",
+        "name": "Modificar Reserva",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          -336,
+          4336
+        ]
+      },
+      {
+        "parameters": {
+          "name": "cancelar_reserva",
+          "description": "Cancela y elimina una reserva existente. Requiere el ID (recID) obtenido con identificar_reserva. Solo usar DESPUÉS de que el usuario confirme la cancelación.",
+          "workflowId": {
+            "__rl": true,
+            "value": "WvJXguIezXCvpyg5",
+            "mode": "id",
+            "cachedResultUrl": "/workflow/WvJXguIezXCvpyg5"
+          },
+          "fields": {
+            "values": [
+              {
+                "name": "id"
+              }
+            ]
+          }
+        },
+        "id": "ce06785e-b244-4d26-b39a-89f3576a55d0",
+        "name": "Cancelar Reserva",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          -128,
+          4336
+        ]
+      },
+      {
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "value": "gpt-4o-mini",
+            "mode": "list",
+            "cachedResultName": "GPT-4O-MINI"
+          },
+          "messages": {
+            "values": [
+              {
+                "content": "=Sos un asistente que recibe un mensaje y lo divide en 2 o 3 partes para simular cómo escribe un humano por WhatsApp.\n\nREGLAS ESTRICTAS:\n1. Dividí el mensaje en 2-3 partes de forma natural\n2. La parte_1 debe ser un saludo o introducción corta (máximo 2 líneas)\n3. La parte_2 debe ser el contenido principal\n4. La parte_3 debe ser un cierre o pregunta final (máximo 2 líneas). Si no hay cierre natural, dejá parte_3 vacío.\n5. Si el mensaje es MUY corto (menos de 50 caracteres), poné TODO en parte_1 y dejá parte_2 y parte_3 vacíos\n6. NO uses signos de apertura (¿ ¡)\n7. NO termines ninguna parte con punto\n8. Mantené el tono amigable y los emojis del mensaje original\n9. NO modifiques el contenido, solo dividilo estratégicamente\n10. Asegurate de que el JSON sea válido\n\nRESPONDÉ ÚNICAMENTE con un JSON válido con esta estructura:\n{\"parte_1\": \"texto\", \"parte_2\": \"texto\", \"parte_3\": \"texto\"}",
+                "role": "system"
+              },
+              {
+                "content": "={{ $json.output }}"
+              }
+            ]
+          },
+          "jsonOutput": true,
+          "options": {
+            "temperature": 0.3
+          }
+        },
+        "id": "e7e83ee6-9959-4e5b-aeaa-c90ff2550c10",
+        "name": "Message Model",
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "typeVersion": 1.8,
+        "position": [
+          -944,
+          4112
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "NcfqiDHUS55FBxv4",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const input = $input.first().json;\nconst telefono = $('Agregar Fecha').first().json.telefono;\nconst remoteJid = $('Agregar Fecha').first().json.remoteJid;\n\nlet parte_1 = '';\nlet parte_2 = '';\nlet parte_3 = '';\n\ntry {\n  if (input.message && input.message.content) {\n    const content = typeof input.message.content === 'string' \n      ? JSON.parse(input.message.content) \n      : input.message.content;\n    parte_1 = content.parte_1 || '';\n    parte_2 = content.parte_2 || '';\n    parte_3 = content.parte_3 || '';\n  } else if (input.parte_1) {\n    parte_1 = input.parte_1 || '';\n    parte_2 = input.parte_2 || '';\n    parte_3 = input.parte_3 || '';\n  } else if (input.text) {\n    parte_1 = input.text;\n  } else if (input.content) {\n    const parsed = typeof input.content === 'string' ? JSON.parse(input.content) : input.content;\n    parte_1 = parsed.parte_1 || '';\n    parte_2 = parsed.parte_2 || '';\n    parte_3 = parsed.parte_3 || '';\n  }\n} catch(e) {\n  const agentOutput = $('AI Agent').first().json.output || $('AI Agent').first().json.text || 'Disculpá, hubo un error';\n  parte_1 = agentOutput;\n  parte_2 = '';\n  parte_3 = '';\n}\n\nif (!parte_1 || parte_1.trim() === '') {\n  const agentOutput = $('AI Agent').first().json.output || $('AI Agent').first().json.text || 'Hola! En qué puedo ayudarte?';\n  parte_1 = agentOutput;\n  parte_2 = '';\n  parte_3 = '';\n}\n\n// IMPORTANTE: Escapar caracteres especiales para JSON válido\nfunction escapeForJson(str) {\n  if (!str) return '';\n  return str\n    .replace(/\\\\/g, '\\\\\\\\')\n    .replace(/\"/g, '\\\\\"')\n    .replace(/\\n/g, '\\\\n')\n    .replace(/\\r/g, '\\\\r')\n    .replace(/\\t/g, '\\\\t');\n}\n\nreturn {\n  json: {\n    telefono,\n    remoteJid,\n    parte_1: parte_1.trim(),\n    parte_2: parte_2.trim(),\n    parte_3: parte_3.trim(),\n    parte_1_escaped: escapeForJson(parte_1.trim()),\n    parte_2_escaped: escapeForJson(parte_2.trim()),\n    parte_3_escaped: escapeForJson(parte_3.trim())\n  }\n};"
+        },
+        "id": "ba4a62ab-48d8-4bfb-b7d8-b25e918818dd",
+        "name": "Parsear Partes",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -688,
+          4112
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"{{ $json.parte_1_escaped }}\"\n}",
+          "options": {}
+        },
+        "id": "f0dee89f-9afd-42b9-90ae-a3f0a20c44a6",
+        "name": "Enviar Parte 1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -496,
+          4112
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "p2",
+                "leftValue": "={{ $('Parsear Partes').first().json.parte_2 }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "8d71b41e-6d1d-44be-8ee3-70d2c5bd3c7f",
+        "name": "Tiene Parte 2?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -272,
+          4112
+        ]
+      },
+      {
+        "parameters": {
+          "amount": 3
+        },
+        "id": "4bd62523-f5e7-4187-8aea-f356ffef19cc",
+        "name": "Esperar 3s",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          -48,
+          4016
+        ],
+        "webhookId": "wait-3s-restaurante"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $('Parsear Partes').first().json.telefono }}\",\n  \"text\": \"{{ $('Parsear Partes').first().json.parte_2_escaped }}\"\n}",
+          "options": {}
+        },
+        "id": "60dc85b0-cf78-4cd1-89d3-94abaab682d9",
+        "name": "Enviar Parte 2",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          176,
+          4016
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "p3",
+                "leftValue": "={{ $('Parsear Partes').first().json.parte_3 }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "c8039cb2-268e-481d-a678-55138ccb60a0",
+        "name": "Tiene Parte 3?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          400,
+          4016
+        ]
+      },
+      {
+        "parameters": {
+          "amount": 4
+        },
+        "id": "fa1108fd-72d8-4241-8f07-487618d5727c",
+        "name": "Esperar 4s",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          624,
+          3920
+        ],
+        "webhookId": "wait-4s-restaurante"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $('Parsear Partes').first().json.telefono }}\",\n  \"text\": \"{{ $('Parsear Partes').first().json.parte_3_escaped }}\"\n}",
+          "options": {}
+        },
+        "id": "e6d33b5e-8d50-47c2-a561-e43167221fab",
+        "name": "Enviar Parte 3",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          848,
+          3920
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={ \"status\": \"ok\" }",
+          "options": {}
+        },
+        "id": "c7cef975-39f4-4a03-900b-c6d54c514b90",
+        "name": "Respond to Webhook",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1072,
+          4112
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook Evolution API": {
+        "main": [
+          [
+            {
+              "node": "Filtro Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filtro Webhook": {
+        "main": [
+          [
+            {
+              "node": "Extraer Datos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraer Datos": {
+        "main": [
+          [
+            {
+              "node": "No es mensaje mio",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "No es mensaje mio": {
+        "main": [
+          [
+            {
+              "node": "Agregar Fecha",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Agregar Fecha": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Message Model",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Postgres Chat Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Menú": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Agendar Reserva": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Identificar Reserva": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Modificar Reserva": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Cancelar Reserva": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Message Model": {
+        "main": [
+          [
+            {
+              "node": "Parsear Partes",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parsear Partes": {
+        "main": [
+          [
+            {
+              "node": "Enviar Parte 1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Enviar Parte 1": {
+        "main": [
+          [
+            {
+              "node": "Tiene Parte 2?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tiene Parte 2?": {
+        "main": [
+          [
+            {
+              "node": "Esperar 3s",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Esperar 3s": {
+        "main": [
+          [
+            {
+              "node": "Enviar Parte 2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Enviar Parte 2": {
+        "main": [
+          [
+            {
+              "node": "Tiene Parte 3?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tiene Parte 3?": {
+        "main": [
+          [
+            {
+              "node": "Esperar 4s",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Esperar 4s": {
+        "main": [
+          [
+            {
+              "node": "Enviar Parte 3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Enviar Parte 3": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": "Version d462aade",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-09T19:43:32.620Z",
+      "createdAt": "2026-02-09T19:43:32.620Z",
+      "id": "dCGM1dWLrqkY4L79",
+      "name": "🎯 Demos"
+    },
+    {
+      "updatedAt": "2026-02-12T19:23:15.621Z",
+      "createdAt": "2026-02-12T19:23:15.621Z",
+      "id": "TZUE2YowDCU30mFT",
+      "name": "Restaurantes"
+    }
+  ]
+}
