@@ -1,0 +1,803 @@
+{
+  "updatedAt": "2026-02-16T20:59:55.196Z",
+  "createdAt": "2026-02-16T09:52:50.368Z",
+  "id": "6n4T3cbvjKgjbvMP",
+  "name": "Tally → Notion + Brevo (System IA)",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "33db7f5f-34ab-4b18-867c-c80a6bd72146",
+      "name": "Webhook Tally",
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "httpMethod": "POST",
+        "options": {},
+        "path": "tally-leads",
+        "responseMode": "responseNode"
+      },
+      "position": [
+        1792,
+        1440
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "webhookId": "a5bf7f90-9c4b-4df6-8d8c-0e47c1af22b6"
+    },
+    {
+      "id": "03928dd0-0ab7-4b58-8a59-01843496e9d2",
+      "name": "Procesar Datos y Calcular Puntaje",
+      "parameters": {
+        "jsCode": "const data = $input.first().json.body.data;\nconst fields = data.fields;\n\nconst getField = (key) => {\n  const field = fields.find(f => f.key === key);\n  return field ? field.value : null;\n};\n\nconst getOptionText = (key) => {\n  const field = fields.find(f => f.key === key);\n  if (!field || !field.value || !field.value[0]) return '';\n  const selectedId = field.value[0];\n  const option = field.options.find(o => o.id === selectedId);\n  return option ? option.text : '';\n};\n\nconst getCheckboxesText = (key) => {\n  const relatedFields = fields.filter(f => f.key.startsWith(key + '_') && f.value === true);\n  return relatedFields.map(f => {\n    const label = f.label.replace('¿Qué proceso te gustaría automatizar? (', '').replace(')', '');\n    return label;\n  });\n};\n\nconst nombre = getField('question_OAGZKa') || '';\nconst whatsapp = getField('question_VZJaXj') || '';\nconst email = getField('question_PAONL1') || '';\nconst negocio = getField('question_EPWGel') || '';\nconst industria = getOptionText('question_rlPQRo');\nconst ciudad = getField('question_42rYRr') || '';\nconst instagram = getField('question_jBPrXQ') || '';\nconst web = getField('question_24PYze') || '';\nconst clientesMes = getOptionText('question_xdY7Ed');\nconst empleados = getOptionText('question_ZdaAXV');\nconst presenciaDigital = getOptionText('question_NAoxv0');\nconst dolorPrincipal = getOptionText('question_qbVqXO');\nconst serviciosDeseados = getCheckboxesText('question_QAVqpY');\nconst tiempoProblema = getOptionText('question_9dQYPE');\nconst presupuesto = getOptionText('question_eBRG8x');\nconst timing = getOptionText('question_WAz6Xe');\nconst intencion = getOptionText('question_aBd1XZ');\nconst horario = getOptionText('question_6dNYGA') || 'No especificado';\nconst dia = getOptionText('question_7dxYOa') || 'No especificado';\nconst notas = getField('question_bldMX6') || '';\n\nlet puntaje = 0;\n\nif (clientesMes.includes('Más de 200')) puntaje += 8;\nelse if (clientesMes.includes('Entre 50 y 200')) puntaje += 6;\nelse if (clientesMes.includes('Entre 10 y 50')) puntaje += 4;\nelse puntaje += 2;\n\nif (empleados.includes('Más de 50')) puntaje += 6;\nelse if (empleados.includes('16 - 50')) puntaje += 5;\nelse if (empleados.includes('6 - 15')) puntaje += 4;\nelse if (empleados.includes('2 - 5')) puntaje += 3;\nelse puntaje += 1;\n\nif (presupuesto.includes('$300-1000')) puntaje += 10;\nelse if (presupuesto.includes('$100-300')) puntaje += 6;\nelse if (presupuesto.includes('Aún no')) puntaje += 3;\nelse puntaje += 0;\n\nif (timing.includes('Ya mismo')) puntaje += 8;\nelse if (timing.includes('1-2 semanas')) puntaje += 6;\nelse if (timing.includes('1-3 meses')) puntaje += 4;\nelse puntaje += 2;\n\nif (intencion.includes('consultoría')) puntaje += 8;\nelse puntaje += 3;\n\nlet clasificacion = '❄️ COLD';\nif (puntaje >= 28) clasificacion = '🔥 HOT';\nelse if (puntaje >= 18) clasificacion = '🌡️ WARM';\n\nconst enviarPipeline = puntaje >= 28 && intencion.includes('consultoría');\nconst listaBrevo = enviarPipeline ? 3 : 4;\n\nreturn [{\n  json: {\n    nombre,\n    email,\n    whatsapp,\n    negocio,\n    industria,\n    ciudad,\n    instagram,\n    web,\n    clientesMes,\n    empleados,\n    presenciaDigital,\n    dolorPrincipal,\n    serviciosDeseados: serviciosDeseados.join(', '),\n    tiempoProblema,\n    presupuesto,\n    timing,\n    intencion,\n    horario,\n    dia,\n    notas,\n    puntaje,\n    clasificacion,\n    enviarPipeline,\n    listaBrevo,\n    estado: enviarPipeline ? 'Nuevo' : 'En Nurturing',\n    fuente: 'Formulario Web'\n  }\n}];"
+      },
+      "position": [
+        2016,
+        1440
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "0TW8kczx4zP0B6nS",
+          "name": "Notion System-Leads"
+        }
+      },
+      "id": "92a0e970-d560-4823-9314-16659540968f",
+      "name": "Guardar en Notion Base 1",
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "databaseId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "309668bb053e80d8a3ebea165a96ff1a"
+        },
+        "operation": "create",
+        "options": {},
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "emailValue": "={{ $json.email }}",
+              "key": "Email",
+              "type": "email"
+            },
+            {
+              "key": "WhatsApp",
+              "phoneNumberValue": "={{ $json.whatsapp }}",
+              "type": "phoneNumber"
+            },
+            {
+              "key": "Negocio",
+              "textValue": "={{ $json.negocio }}",
+              "type": "text"
+            },
+            {
+              "key": "Industria",
+              "selectValue": "={{ $json.industria }}",
+              "type": "select"
+            },
+            {
+              "key": "País/Ciudad",
+              "textValue": "={{ $json.ciudad }}",
+              "type": "text"
+            },
+            {
+              "key": "Instagram",
+              "type": "url",
+              "urlValue": "={{ $json.instagram }}"
+            },
+            {
+              "key": "Web",
+              "type": "url",
+              "urlValue": "={{ $json.web }}"
+            },
+            {
+              "key": "Clientes/mes",
+              "selectValue": "={{ $json.clientesMes }}",
+              "type": "select"
+            },
+            {
+              "key": "Empleados",
+              "selectValue": "={{ $json.empleados }}",
+              "type": "select"
+            },
+            {
+              "key": "Presencia Digital",
+              "selectValue": "={{ $json.presenciaDigital }}",
+              "type": "select"
+            },
+            {
+              "key": "Dolor Principal",
+              "selectValue": "={{ $json.dolorPrincipal }}",
+              "type": "select"
+            },
+            {
+              "key": "Servicios Deseados",
+              "multiSelectValue": "={{ $json.serviciosDeseados }}",
+              "type": "multiSelect"
+            },
+            {
+              "key": "Presupuesto",
+              "selectValue": "={{ $json.presupuesto }}",
+              "type": "select"
+            },
+            {
+              "key": "Timing",
+              "selectValue": "={{ $json.timing }}",
+              "type": "select"
+            },
+            {
+              "key": "Intención",
+              "selectValue": "={{ $json.intencion }}",
+              "type": "select"
+            },
+            {
+              "key": "Disponibilidad Horario",
+              "selectValue": "={{ $json.horario }}",
+              "type": "select"
+            },
+            {
+              "key": "Disponibilidad Día",
+              "selectValue": "={{ $json.dia }}",
+              "type": "select"
+            },
+            {
+              "key": "Notas Adicionales",
+              "textValue": "={{ $json.notas }}",
+              "type": "text"
+            },
+            {
+              "key": "Puntaje",
+              "numberValue": "={{ $json.puntaje }}",
+              "type": "number"
+            },
+            {
+              "key": "Estado",
+              "selectValue": "={{ $json.estado }}",
+              "type": "select"
+            },
+            {
+              "checkboxValue": "={{ $json.enviarPipeline }}",
+              "key": "Enviado a Pipeline",
+              "type": "checkbox"
+            },
+            {
+              "key": "Fuente",
+              "selectValue": "={{ $json.fuente }}",
+              "type": "select"
+            }
+          ]
+        },
+        "resource": "databasePage",
+        "title": "={{ $json.nombre }}"
+      },
+      "position": [
+        2240,
+        1320
+      ],
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2
+    },
+    {
+      "id": "8a9b0f3e-ce23-4b24-a8c6-21ad57e9e5f4",
+      "name": "¿Es HOT y pidió consultoría?",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "condicion-pipeline",
+              "leftValue": "={{ $json.enviarPipeline }}",
+              "operator": {
+                "operation": "equals",
+                "type": "boolean"
+              },
+              "rightValue": true
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        2240,
+        1640
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "0TW8kczx4zP0B6nS",
+          "name": "Notion System-Leads"
+        }
+      },
+      "id": "757a398b-a1cb-4e7c-a1c3-6903bfc7d4e5",
+      "name": "Guardar en Notion Base 2 (Pipeline)",
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "databaseId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "309668bb053e80d8a3ebea165a96ff1a"
+        },
+        "operation": "create",
+        "options": {},
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Negocio",
+              "textValue": "={{ $json.negocio }}",
+              "type": "text"
+            },
+            {
+              "key": "Estado",
+              "selectValue": "⭐ Llamada Solicitada",
+              "type": "select"
+            },
+            {
+              "key": "WhatsApp",
+              "phoneNumberValue": "={{ $json.whatsapp }}",
+              "type": "phoneNumber"
+            },
+            {
+              "emailValue": "={{ $json.email }}",
+              "key": "Email",
+              "type": "email"
+            },
+            {
+              "key": "Industria",
+              "selectValue": "={{ $json.industria }}",
+              "type": "select"
+            },
+            {
+              "key": "Puntaje",
+              "numberValue": "={{ $json.puntaje }}",
+              "type": "number"
+            },
+            {
+              "key": "Clasificación",
+              "selectValue": "={{ $json.clasificacion }}",
+              "type": "select"
+            },
+            {
+              "dateValue": "={{ $now.toISO() }}",
+              "key": "Fecha Solicitud",
+              "type": "date"
+            }
+          ]
+        },
+        "resource": "databasePage",
+        "title": "={{ $json.nombre }}"
+      },
+      "position": [
+        2460,
+        1540
+      ],
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2
+    },
+    {
+      "credentials": {
+        "sendInBlueApi": {
+          "id": "zxIZwtDKHCwXjQ7K",
+          "name": "Brevo account"
+        }
+      },
+      "id": "87905b11-1055-4073-aa05-9880e295cf12",
+      "name": "Create Contact (HTTP)",
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "jsonBody": "={{ { \"email\": $json.email, \"attributes\": { \"NOMBRE\": $json.nombre, \"NEGOCIO\": $json.negocio, \"WSAPP\": $json.whatsapp, \"INDUSTRIA\": $json.industria, \"PUNTAJE\": $json.puntaje, \"INTENCION\": $json.intencion }, \"listIds\": [$json.listaBrevo], \"updateEnabled\": true } }}",
+        "method": "POST",
+        "nodeCredentialType": "sendInBlueApi",
+        "options": {},
+        "sendBody": true,
+        "url": "https://api.brevo.com/v3/contacts"
+      },
+      "position": [
+        2460,
+        1760
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1
+    },
+    {
+      "id": "4c6e8ee6-f630-4367-9a34-758fd5003e24",
+      "name": "Responder a Tally",
+      "parameters": {
+        "options": {},
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"Lead registrado correctamente\", \"nombre\": $json.nombre, \"puntaje\": $json.puntaje } }}"
+      },
+      "position": [
+        2460,
+        1320
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1
+    }
+  ],
+  "connections": {
+    "Guardar en Notion Base 1": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Responder a Tally",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Procesar Datos y Calcular Puntaje": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Guardar en Notion Base 1",
+            "type": "main"
+          },
+          {
+            "index": 0,
+            "node": "¿Es HOT y pidió consultoría?",
+            "type": "main"
+          },
+          {
+            "index": 0,
+            "node": "Create Contact (HTTP)",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Webhook Tally": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Procesar Datos y Calcular Puntaje",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "¿Es HOT y pidió consultoría?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Guardar en Notion Base 2 (Pipeline)",
+            "type": "main"
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "b51742a9-0fb2-414b-9167-a9781c56b8ca",
+  "activeVersionId": "b51742a9-0fb2-414b-9167-a9781c56b8ca",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-16T09:52:50.368Z",
+      "createdAt": "2026-02-16T09:52:50.368Z",
+      "role": "workflow:owner",
+      "workflowId": "6n4T3cbvjKgjbvMP",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-16T20:59:55.224Z",
+    "createdAt": "2026-02-16T20:59:55.224Z",
+    "versionId": "b51742a9-0fb2-414b-9167-a9781c56b8ca",
+    "workflowId": "6n4T3cbvjKgjbvMP",
+    "nodes": [
+      {
+        "id": "33db7f5f-34ab-4b18-867c-c80a6bd72146",
+        "name": "Webhook Tally",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "httpMethod": "POST",
+          "options": {},
+          "path": "tally-leads",
+          "responseMode": "responseNode"
+        },
+        "position": [
+          1792,
+          1440
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "webhookId": "a5bf7f90-9c4b-4df6-8d8c-0e47c1af22b6"
+      },
+      {
+        "id": "03928dd0-0ab7-4b58-8a59-01843496e9d2",
+        "name": "Procesar Datos y Calcular Puntaje",
+        "parameters": {
+          "jsCode": "const data = $input.first().json.body.data;\nconst fields = data.fields;\n\nconst getField = (key) => {\n  const field = fields.find(f => f.key === key);\n  return field ? field.value : null;\n};\n\nconst getOptionText = (key) => {\n  const field = fields.find(f => f.key === key);\n  if (!field || !field.value || !field.value[0]) return '';\n  const selectedId = field.value[0];\n  const option = field.options.find(o => o.id === selectedId);\n  return option ? option.text : '';\n};\n\nconst getCheckboxesText = (key) => {\n  const relatedFields = fields.filter(f => f.key.startsWith(key + '_') && f.value === true);\n  return relatedFields.map(f => {\n    const label = f.label.replace('¿Qué proceso te gustaría automatizar? (', '').replace(')', '');\n    return label;\n  });\n};\n\nconst nombre = getField('question_OAGZKa') || '';\nconst whatsapp = getField('question_VZJaXj') || '';\nconst email = getField('question_PAONL1') || '';\nconst negocio = getField('question_EPWGel') || '';\nconst industria = getOptionText('question_rlPQRo');\nconst ciudad = getField('question_42rYRr') || '';\nconst instagram = getField('question_jBPrXQ') || '';\nconst web = getField('question_24PYze') || '';\nconst clientesMes = getOptionText('question_xdY7Ed');\nconst empleados = getOptionText('question_ZdaAXV');\nconst presenciaDigital = getOptionText('question_NAoxv0');\nconst dolorPrincipal = getOptionText('question_qbVqXO');\nconst serviciosDeseados = getCheckboxesText('question_QAVqpY');\nconst tiempoProblema = getOptionText('question_9dQYPE');\nconst presupuesto = getOptionText('question_eBRG8x');\nconst timing = getOptionText('question_WAz6Xe');\nconst intencion = getOptionText('question_aBd1XZ');\nconst horario = getOptionText('question_6dNYGA') || 'No especificado';\nconst dia = getOptionText('question_7dxYOa') || 'No especificado';\nconst notas = getField('question_bldMX6') || '';\n\nlet puntaje = 0;\n\nif (clientesMes.includes('Más de 200')) puntaje += 8;\nelse if (clientesMes.includes('Entre 50 y 200')) puntaje += 6;\nelse if (clientesMes.includes('Entre 10 y 50')) puntaje += 4;\nelse puntaje += 2;\n\nif (empleados.includes('Más de 50')) puntaje += 6;\nelse if (empleados.includes('16 - 50')) puntaje += 5;\nelse if (empleados.includes('6 - 15')) puntaje += 4;\nelse if (empleados.includes('2 - 5')) puntaje += 3;\nelse puntaje += 1;\n\nif (presupuesto.includes('$300-1000')) puntaje += 10;\nelse if (presupuesto.includes('$100-300')) puntaje += 6;\nelse if (presupuesto.includes('Aún no')) puntaje += 3;\nelse puntaje += 0;\n\nif (timing.includes('Ya mismo')) puntaje += 8;\nelse if (timing.includes('1-2 semanas')) puntaje += 6;\nelse if (timing.includes('1-3 meses')) puntaje += 4;\nelse puntaje += 2;\n\nif (intencion.includes('consultoría')) puntaje += 8;\nelse puntaje += 3;\n\nlet clasificacion = '❄️ COLD';\nif (puntaje >= 28) clasificacion = '🔥 HOT';\nelse if (puntaje >= 18) clasificacion = '🌡️ WARM';\n\nconst enviarPipeline = puntaje >= 28 && intencion.includes('consultoría');\nconst listaBrevo = enviarPipeline ? 3 : 4;\n\nreturn [{\n  json: {\n    nombre,\n    email,\n    whatsapp,\n    negocio,\n    industria,\n    ciudad,\n    instagram,\n    web,\n    clientesMes,\n    empleados,\n    presenciaDigital,\n    dolorPrincipal,\n    serviciosDeseados: serviciosDeseados.join(', '),\n    tiempoProblema,\n    presupuesto,\n    timing,\n    intencion,\n    horario,\n    dia,\n    notas,\n    puntaje,\n    clasificacion,\n    enviarPipeline,\n    listaBrevo,\n    estado: enviarPipeline ? 'Nuevo' : 'En Nurturing',\n    fuente: 'Formulario Web'\n  }\n}];"
+        },
+        "position": [
+          2016,
+          1440
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "0TW8kczx4zP0B6nS",
+            "name": "Notion System-Leads"
+          }
+        },
+        "id": "92a0e970-d560-4823-9314-16659540968f",
+        "name": "Guardar en Notion Base 1",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "databaseId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "309668bb053e80d8a3ebea165a96ff1a"
+          },
+          "operation": "create",
+          "options": {},
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "emailValue": "={{ $json.email }}",
+                "key": "Email",
+                "type": "email"
+              },
+              {
+                "key": "WhatsApp",
+                "phoneNumberValue": "={{ $json.whatsapp }}",
+                "type": "phoneNumber"
+              },
+              {
+                "key": "Negocio",
+                "textValue": "={{ $json.negocio }}",
+                "type": "text"
+              },
+              {
+                "key": "Industria",
+                "selectValue": "={{ $json.industria }}",
+                "type": "select"
+              },
+              {
+                "key": "País/Ciudad",
+                "textValue": "={{ $json.ciudad }}",
+                "type": "text"
+              },
+              {
+                "key": "Instagram",
+                "type": "url",
+                "urlValue": "={{ $json.instagram }}"
+              },
+              {
+                "key": "Web",
+                "type": "url",
+                "urlValue": "={{ $json.web }}"
+              },
+              {
+                "key": "Clientes/mes",
+                "selectValue": "={{ $json.clientesMes }}",
+                "type": "select"
+              },
+              {
+                "key": "Empleados",
+                "selectValue": "={{ $json.empleados }}",
+                "type": "select"
+              },
+              {
+                "key": "Presencia Digital",
+                "selectValue": "={{ $json.presenciaDigital }}",
+                "type": "select"
+              },
+              {
+                "key": "Dolor Principal",
+                "selectValue": "={{ $json.dolorPrincipal }}",
+                "type": "select"
+              },
+              {
+                "key": "Servicios Deseados",
+                "multiSelectValue": "={{ $json.serviciosDeseados }}",
+                "type": "multiSelect"
+              },
+              {
+                "key": "Presupuesto",
+                "selectValue": "={{ $json.presupuesto }}",
+                "type": "select"
+              },
+              {
+                "key": "Timing",
+                "selectValue": "={{ $json.timing }}",
+                "type": "select"
+              },
+              {
+                "key": "Intención",
+                "selectValue": "={{ $json.intencion }}",
+                "type": "select"
+              },
+              {
+                "key": "Disponibilidad Horario",
+                "selectValue": "={{ $json.horario }}",
+                "type": "select"
+              },
+              {
+                "key": "Disponibilidad Día",
+                "selectValue": "={{ $json.dia }}",
+                "type": "select"
+              },
+              {
+                "key": "Notas Adicionales",
+                "textValue": "={{ $json.notas }}",
+                "type": "text"
+              },
+              {
+                "key": "Puntaje",
+                "numberValue": "={{ $json.puntaje }}",
+                "type": "number"
+              },
+              {
+                "key": "Estado",
+                "selectValue": "={{ $json.estado }}",
+                "type": "select"
+              },
+              {
+                "checkboxValue": "={{ $json.enviarPipeline }}",
+                "key": "Enviado a Pipeline",
+                "type": "checkbox"
+              },
+              {
+                "key": "Fuente",
+                "selectValue": "={{ $json.fuente }}",
+                "type": "select"
+              }
+            ]
+          },
+          "resource": "databasePage",
+          "title": "={{ $json.nombre }}"
+        },
+        "position": [
+          2240,
+          1320
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "8a9b0f3e-ce23-4b24-a8c6-21ad57e9e5f4",
+        "name": "¿Es HOT y pidió consultoría?",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "condicion-pipeline",
+                "leftValue": "={{ $json.enviarPipeline }}",
+                "operator": {
+                  "operation": "equals",
+                  "type": "boolean"
+                },
+                "rightValue": true
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict"
+            }
+          },
+          "options": {}
+        },
+        "position": [
+          2240,
+          1640
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "0TW8kczx4zP0B6nS",
+            "name": "Notion System-Leads"
+          }
+        },
+        "id": "757a398b-a1cb-4e7c-a1c3-6903bfc7d4e5",
+        "name": "Guardar en Notion Base 2 (Pipeline)",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "databaseId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "309668bb053e80d8a3ebea165a96ff1a"
+          },
+          "operation": "create",
+          "options": {},
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "key": "Negocio",
+                "textValue": "={{ $json.negocio }}",
+                "type": "text"
+              },
+              {
+                "key": "Estado",
+                "selectValue": "⭐ Llamada Solicitada",
+                "type": "select"
+              },
+              {
+                "key": "WhatsApp",
+                "phoneNumberValue": "={{ $json.whatsapp }}",
+                "type": "phoneNumber"
+              },
+              {
+                "emailValue": "={{ $json.email }}",
+                "key": "Email",
+                "type": "email"
+              },
+              {
+                "key": "Industria",
+                "selectValue": "={{ $json.industria }}",
+                "type": "select"
+              },
+              {
+                "key": "Puntaje",
+                "numberValue": "={{ $json.puntaje }}",
+                "type": "number"
+              },
+              {
+                "key": "Clasificación",
+                "selectValue": "={{ $json.clasificacion }}",
+                "type": "select"
+              },
+              {
+                "dateValue": "={{ $now.toISO() }}",
+                "key": "Fecha Solicitud",
+                "type": "date"
+              }
+            ]
+          },
+          "resource": "databasePage",
+          "title": "={{ $json.nombre }}"
+        },
+        "position": [
+          2460,
+          1540
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "sendInBlueApi": {
+            "id": "zxIZwtDKHCwXjQ7K",
+            "name": "Brevo account"
+          }
+        },
+        "id": "87905b11-1055-4073-aa05-9880e295cf12",
+        "name": "Create Contact (HTTP)",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "jsonBody": "={{ { \"email\": $json.email, \"attributes\": { \"NOMBRE\": $json.nombre, \"NEGOCIO\": $json.negocio, \"WSAPP\": $json.whatsapp, \"INDUSTRIA\": $json.industria, \"PUNTAJE\": $json.puntaje, \"INTENCION\": $json.intencion }, \"listIds\": [$json.listaBrevo], \"updateEnabled\": true } }}",
+          "method": "POST",
+          "nodeCredentialType": "sendInBlueApi",
+          "options": {},
+          "sendBody": true,
+          "url": "https://api.brevo.com/v3/contacts"
+        },
+        "position": [
+          2460,
+          1760
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1
+      },
+      {
+        "id": "4c6e8ee6-f630-4367-9a34-758fd5003e24",
+        "name": "Responder a Tally",
+        "parameters": {
+          "options": {},
+          "respondWith": "json",
+          "responseBody": "={{ { \"success\": true, \"message\": \"Lead registrado correctamente\", \"nombre\": $json.nombre, \"puntaje\": $json.puntaje } }}"
+        },
+        "position": [
+          2460,
+          1320
+        ],
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1
+      }
+    ],
+    "connections": {
+      "Guardar en Notion Base 1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Responder a Tally",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Procesar Datos y Calcular Puntaje": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Guardar en Notion Base 1",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "¿Es HOT y pidió consultoría?",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Create Contact (HTTP)",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Webhook Tally": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Procesar Datos y Calcular Puntaje",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "¿Es HOT y pidió consultoría?": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Guardar en Notion Base 2 (Pipeline)",
+              "type": "main"
+            }
+          ],
+          []
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-16T09:53:07.520Z",
+      "createdAt": "2026-02-16T09:53:07.520Z",
+      "id": "NV4DPWxeft6Qc2wd",
+      "name": "LEADS"
+    }
+  ]
+}
