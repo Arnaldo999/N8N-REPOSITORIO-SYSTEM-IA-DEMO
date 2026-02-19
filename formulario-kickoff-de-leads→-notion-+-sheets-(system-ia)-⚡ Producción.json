@@ -1,0 +1,1140 @@
+{
+  "updatedAt": "2026-02-19T00:45:21.794Z",
+  "createdAt": "2026-02-18T13:55:53.377Z",
+  "id": "Mkw7iZRvCtSX8QWI",
+  "name": "FORMULARIO-KICKOFF DE LEADS→ Notion + Sheets (System IA)",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "kickoff-interno",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "8027a0ef-4530-47b6-8bf5-ee70193919f4",
+      "name": "Webhook Kickoff",
+      "position": [
+        1120,
+        752
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "webhookId": "726ab328-cd3c-4bd3-b740-ebe7ebbd5696"
+    },
+    {
+      "parameters": {
+        "jsCode": "const query = $input.first().json.query || $input.first().json;\nconst email = (query.email_cliente || '').trim().toLowerCase();\nif (!email) throw new Error('email_cliente es requerido');\nreturn [{ json: {\n  email_cliente: email,\n  id_lead: query.id_lead || '',\n  precio_setup: parseFloat(query.precio_setup) || 0,\n  fee_mensual: parseFloat(query.fee_mensual) || 0,\n  estado_pago: query.estado_pago || 'Pendiente',\n  prioridad: query.prioridad || 'Media',\n  servicios: query.servicios || '',\n  plan: query.plan || '',\n  metodo_pago: query.metodo_pago || '',\n  proximo_pago: query.proximo_pago || '',\n  fecha_inicio: query.fecha_inicio || '',\n  fecha_renovacion: query.fecha_renovacion || '',\n  ultimo_contacto: query.ultimo_contacto || '',\n  proxima_accion: query.proxima_accion || '',\n  responsable: query.responsable || 'Arnaldo',\n  timestamp: new Date().toISOString()\n} }];"
+      },
+      "id": "86dd9abd-97a1-4a11-a06b-cdcf02163036",
+      "name": "Parsear Datos",
+      "position": [
+        1312,
+        752
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "309668bb-053e-80d8-a3eb-ea165a96ff1a"
+        },
+        "limit": 1,
+        "filterType": "string",
+        "options": {}
+      },
+      "id": "7e56505d-b924-47bc-970b-ff127a99c291",
+      "name": "Buscar Lead en Notion",
+      "position": [
+        1536,
+        752
+      ],
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.1,
+      "credentials": {
+        "notionApi": {
+          "id": "0TW8kczx4zP0B6nS",
+          "name": "Notion System-Leads"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $json.id }}",
+              "operator": {
+                "operation": "exists",
+                "type": "string"
+              }
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          }
+        },
+        "options": {}
+      },
+      "id": "e4a0688e-3700-4929-bb55-e48fb6809c52",
+      "name": "IF Lead Encontrado",
+      "position": [
+        1760,
+        752
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "const parsed = $('Parsear Datos').first().json;\nconst notionPage = $('Buscar Lead en Notion').first().json;\nconst pageId = notionPage.id;\n\nconst body = { properties: {} };\n\nif (parsed.precio_setup) body.properties['Precio Setup'] = { number: parsed.precio_setup };\nif (parsed.fee_mensual) body.properties['Precio Mensual'] = { number: parsed.fee_mensual };\nif (parsed.estado_pago) body.properties['Estado de Pago'] = { select: { name: parsed.estado_pago } };\nif (parsed.prioridad) body.properties['Prioridad'] = { select: { name: parsed.prioridad } };\nif (parsed.plan) body.properties['Plan'] = { select: { name: parsed.plan } };\nif (parsed.metodo_pago) body.properties['Método de Pago'] = { select: { name: parsed.metodo_pago } };\nif (parsed.servicios) {\n  const serviciosArray = parsed.servicios.split(',').map(s => s.trim()).filter(s => s.length > 0).map(s => ({ name: s }));\n  body.properties['Servicios Contratados'] = { multi_select: serviciosArray };\n}\nif (parsed.proximo_pago) body.properties['Próximo Pago'] = { date: { start: parsed.proximo_pago } };\nif (parsed.fecha_inicio) body.properties['Fecha Inicio Servicio'] = { date: { start: parsed.fecha_inicio } };\nif (parsed.fecha_renovacion) body.properties['Fecha Renovación'] = { date: { start: parsed.fecha_renovacion } };\nif (parsed.ultimo_contacto) body.properties['Último Contacto'] = { date: { start: parsed.ultimo_contacto } };\nif (parsed.proxima_accion) body.properties['Próxima Acción'] = { rich_text: [{ text: { content: parsed.proxima_accion } }] };\nif (parsed.responsable) body.properties['Responsable'] = { select: { name: parsed.responsable } };\n\nreturn [{ json: {\n  pageId,\n  body,\n  email_cliente: parsed.email_cliente,\n  id_lead: notionPage.property_id_cliente || parsed.id_lead,\n  nombre: notionPage.property_nombre || '',\n  negocio: notionPage.property_negocio || '',\n  industria: notionPage.property_industria || '',\n  whatsapp: notionPage.property_whats_app || '',\n  precio_setup: parsed.precio_setup,\n  fee_mensual: parsed.fee_mensual,\n  estado_pago: parsed.estado_pago,\n  plan: parsed.plan,\n  metodo_pago: parsed.metodo_pago,\n  prioridad: parsed.prioridad,\n  servicios: parsed.servicios,\n  proximo_pago: parsed.proximo_pago,\n  fecha_inicio: parsed.fecha_inicio,\n  fecha_renovacion: parsed.fecha_renovacion,\n  ultimo_contacto: parsed.ultimo_contacto,\n  proxima_accion: parsed.proxima_accion,\n  responsable: parsed.responsable,\n  timestamp: parsed.timestamp\n} }];"
+      },
+      "id": "eadbb640-da40-4187-890d-e80f99153734",
+      "name": "Construir Body Notion",
+      "position": [
+        1984,
+        640
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://api.notion.com/v1/pages/{{ $json.pageId }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "notionApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.body) }}",
+        "options": {}
+      },
+      "id": "20e84716-7645-4f35-98c8-9d609e3b942c",
+      "name": "Actualizar Notion Pipeline",
+      "position": [
+        2208,
+        640
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "credentials": {
+        "notionApi": {
+          "id": "0TW8kczx4zP0B6nS",
+          "name": "Notion System-Leads"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const parsed = $('Construir Body Notion').first().json;\n\nreturn [{ json: {\n  'ID Cliente': parsed.id_lead || '',\n  'Fecha Alta': parsed.timestamp,\n  'Nombre': parsed.nombre,\n  'Negocio': parsed.negocio,\n  'Industria': parsed.industria,\n  'Email': parsed.email_cliente,\n  'WhatsApp': parsed.whatsapp,\n  'Plan': parsed.plan,\n  'Precio Setup': parsed.precio_setup,\n  'Precio Mensual': parsed.fee_mensual,\n  'LTV Estimado': '',\n  'Método de Pago': parsed.metodo_pago,\n  'Estado de Pago': parsed.estado_pago,\n  'Servicios Contratados': parsed.servicios,\n  'Fecha Inicio Servicio': parsed.fecha_inicio,\n  'Fecha Renovación': parsed.fecha_renovacion,\n  'Próximo Pago': parsed.proximo_pago,\n  'Próxima Acción': parsed.proxima_accion,\n  'Responsable': parsed.responsable,\n  'Prioridad': parsed.prioridad,\n  'Último Contacto': parsed.ultimo_contacto\n} }];"
+      },
+      "id": "d1ea5f63-7ad9-47c9-b736-4f31d1b3e085",
+      "name": "Preparar para Sheets",
+      "position": [
+        2432,
+        640
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/14HJkGerBAY5KCR6YBarae59aiCPhKzvt374strsGk3M/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14HJkGerBAY5KCR6YBarae59aiCPhKzvt374strsGk3M/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "ID Cliente",
+              "displayName": "ID Cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fecha Alta",
+              "displayName": "Fecha Alta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Negocio",
+              "displayName": "Negocio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Industria",
+              "displayName": "Industria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "WhatsApp",
+              "displayName": "WhatsApp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Plan",
+              "displayName": "Plan",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Precio Setup",
+              "displayName": "Precio Setup",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Precio Mensual",
+              "displayName": "Precio Mensual",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LTV Estimado",
+              "displayName": "LTV Estimado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Método de Pago",
+              "displayName": "Método de Pago",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Estado de Pago",
+              "displayName": "Estado de Pago",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Servicios Contratados",
+              "displayName": "Servicios Contratados",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fecha Inicio Servicio",
+              "displayName": "Fecha Inicio Servicio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fecha Renovación",
+              "displayName": "Fecha Renovación",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Próximo Pago",
+              "displayName": "Próximo Pago",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Próxima Acción",
+              "displayName": "Próxima Acción",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Responsable",
+              "displayName": "Responsable",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Prioridad",
+              "displayName": "Prioridad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Último Contacto",
+              "displayName": "Último Contacto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "b72ca0f3-2e73-4e1e-b708-05e2340b85ce",
+      "name": "Registrar en Google Sheets",
+      "position": [
+        2656,
+        640
+      ],
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'Proyecto actualizado en Notion y Sheets', email: $('Parsear Datos').first().json.email_cliente }) }}",
+        "options": {}
+      },
+      "id": "93d5d362-f0aa-4c9d-bf59-4e1244d5209d",
+      "name": "Responder OK",
+      "position": [
+        2880,
+        640
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: false, message: 'Lead no encontrado en Notion con ese email' }) }}",
+        "options": {
+          "responseCode": 404
+        }
+      },
+      "id": "7a78338a-3862-424a-9729-994e75f5997a",
+      "name": "Responder No Encontrado",
+      "position": [
+        1968,
+        896
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "content": "## 🚀 Flujo Kickoff Interno — System IA\n\n**Trigger:** Formulario HTML interno (`/webhook/kickoff-interno`)\n\n---\n\n### 📥 1. Recepción\n- Webhook GET recibe los datos del formulario\n- Nodo **Parsear Datos** normaliza y valida el email\n\n### 🔍 2. Búsqueda en Notion\n- Busca el lead en **Pipeline Comercial** por email\n- Si no existe → responde 404 y termina\n\n### ✏️ 3. Actualizar Notion Pipeline\n- **Construir Body Notion** arma el JSON con solo los campos completados\n- **PATCH** `/v1/pages/{pageId}` actualiza la página existente\n- Campos: Plan, Precio Setup, Fee Mensual, Método de Pago, Estado de Pago, Prioridad, Servicios Contratados, Fechas, Próximo Pago, Próxima Acción, Responsable\n\n### 📊 4. Actualizar Google Sheets\n- **Preparar para Sheets** mapea campos con nombres exactos de columnas\n- Operación **Upsert** por columna **Email**\n- Si la fila existe → actualiza\n- Si no existe → crea fila nueva\n- LTV Estimado calculado por fórmula ARRAYFORMULA en Sheets\n\n### ✅ 5. Respuesta\n- Devuelve `{ success: true }` al formulario\n- El formulario muestra mensaje verde de confirmación\n\n---\n\n**⚠️ Importante:**\n- El email debe coincidir exactamente con Notion\n- Servicios Contratados → multi_select (separados por coma)\n- Este flujo NO crea registros nuevos en Notion, solo actualiza\n- Próximo Pago = fecha del próximo cobro del fee mensual",
+        "height": 1220,
+        "width": 3192,
+        "color": 5
+      },
+      "id": "6f6d5076-9297-49bc-b99c-2e8df0f0031a",
+      "name": "📘 Documentación Kickoff",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        416,
+        32
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Kickoff": {
+      "main": [
+        [
+          {
+            "node": "Parsear Datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Datos": {
+      "main": [
+        [
+          {
+            "node": "Buscar Lead en Notion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Lead en Notion": {
+      "main": [
+        [
+          {
+            "node": "IF Lead Encontrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Lead Encontrado": {
+      "main": [
+        [
+          {
+            "node": "Construir Body Notion",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder No Encontrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construir Body Notion": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Notion Pipeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar Notion Pipeline": {
+      "main": [
+        [
+          {
+            "node": "Preparar para Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar para Sheets": {
+      "main": [
+        [
+          {
+            "node": "Registrar en Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar en Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Responder OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "1eb6b8b6-2320-42a0-9c59-0491abe5ef17",
+  "activeVersionId": "1eb6b8b6-2320-42a0-9c59-0491abe5ef17",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-18T13:55:53.377Z",
+      "createdAt": "2026-02-18T13:55:53.377Z",
+      "role": "workflow:owner",
+      "workflowId": "Mkw7iZRvCtSX8QWI",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-19T00:45:43.199Z",
+    "createdAt": "2026-02-19T00:45:21.796Z",
+    "versionId": "1eb6b8b6-2320-42a0-9c59-0491abe5ef17",
+    "workflowId": "Mkw7iZRvCtSX8QWI",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "kickoff-interno",
+          "responseMode": "responseNode",
+          "options": {
+            "allowedOrigins": "*"
+          }
+        },
+        "id": "8027a0ef-4530-47b6-8bf5-ee70193919f4",
+        "name": "Webhook Kickoff",
+        "position": [
+          1120,
+          752
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "webhookId": "726ab328-cd3c-4bd3-b740-ebe7ebbd5696"
+      },
+      {
+        "parameters": {
+          "jsCode": "const query = $input.first().json.query || $input.first().json;\nconst email = (query.email_cliente || '').trim().toLowerCase();\nif (!email) throw new Error('email_cliente es requerido');\nreturn [{ json: {\n  email_cliente: email,\n  id_lead: query.id_lead || '',\n  precio_setup: parseFloat(query.precio_setup) || 0,\n  fee_mensual: parseFloat(query.fee_mensual) || 0,\n  estado_pago: query.estado_pago || 'Pendiente',\n  prioridad: query.prioridad || 'Media',\n  servicios: query.servicios || '',\n  plan: query.plan || '',\n  metodo_pago: query.metodo_pago || '',\n  proximo_pago: query.proximo_pago || '',\n  fecha_inicio: query.fecha_inicio || '',\n  fecha_renovacion: query.fecha_renovacion || '',\n  ultimo_contacto: query.ultimo_contacto || '',\n  proxima_accion: query.proxima_accion || '',\n  responsable: query.responsable || 'Arnaldo',\n  timestamp: new Date().toISOString()\n} }];"
+        },
+        "id": "86dd9abd-97a1-4a11-a06b-cdcf02163036",
+        "name": "Parsear Datos",
+        "position": [
+          1312,
+          752
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "resource": "databasePage",
+          "operation": "getAll",
+          "databaseId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "309668bb-053e-80d8-a3eb-ea165a96ff1a"
+          },
+          "limit": 1,
+          "filterType": "string",
+          "options": {}
+        },
+        "id": "7e56505d-b924-47bc-970b-ff127a99c291",
+        "name": "Buscar Lead en Notion",
+        "position": [
+          1536,
+          752
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.1,
+        "credentials": {
+          "notionApi": {
+            "id": "0TW8kczx4zP0B6nS",
+            "name": "Notion System-Leads"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "leftValue": "={{ $json.id }}",
+                "operator": {
+                  "operation": "exists",
+                  "type": "string"
+                }
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict"
+            }
+          },
+          "options": {}
+        },
+        "id": "e4a0688e-3700-4929-bb55-e48fb6809c52",
+        "name": "IF Lead Encontrado",
+        "position": [
+          1760,
+          752
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "jsCode": "const parsed = $('Parsear Datos').first().json;\nconst notionPage = $('Buscar Lead en Notion').first().json;\nconst pageId = notionPage.id;\n\nconst body = { properties: {} };\n\nif (parsed.precio_setup) body.properties['Precio Setup'] = { number: parsed.precio_setup };\nif (parsed.fee_mensual) body.properties['Precio Mensual'] = { number: parsed.fee_mensual };\nif (parsed.estado_pago) body.properties['Estado de Pago'] = { select: { name: parsed.estado_pago } };\nif (parsed.prioridad) body.properties['Prioridad'] = { select: { name: parsed.prioridad } };\nif (parsed.plan) body.properties['Plan'] = { select: { name: parsed.plan } };\nif (parsed.metodo_pago) body.properties['Método de Pago'] = { select: { name: parsed.metodo_pago } };\nif (parsed.servicios) {\n  const serviciosArray = parsed.servicios.split(',').map(s => s.trim()).filter(s => s.length > 0).map(s => ({ name: s }));\n  body.properties['Servicios Contratados'] = { multi_select: serviciosArray };\n}\nif (parsed.proximo_pago) body.properties['Próximo Pago'] = { date: { start: parsed.proximo_pago } };\nif (parsed.fecha_inicio) body.properties['Fecha Inicio Servicio'] = { date: { start: parsed.fecha_inicio } };\nif (parsed.fecha_renovacion) body.properties['Fecha Renovación'] = { date: { start: parsed.fecha_renovacion } };\nif (parsed.ultimo_contacto) body.properties['Último Contacto'] = { date: { start: parsed.ultimo_contacto } };\nif (parsed.proxima_accion) body.properties['Próxima Acción'] = { rich_text: [{ text: { content: parsed.proxima_accion } }] };\nif (parsed.responsable) body.properties['Responsable'] = { select: { name: parsed.responsable } };\n\nreturn [{ json: {\n  pageId,\n  body,\n  email_cliente: parsed.email_cliente,\n  id_lead: notionPage.property_id_cliente || parsed.id_lead,\n  nombre: notionPage.property_nombre || '',\n  negocio: notionPage.property_negocio || '',\n  industria: notionPage.property_industria || '',\n  whatsapp: notionPage.property_whats_app || '',\n  precio_setup: parsed.precio_setup,\n  fee_mensual: parsed.fee_mensual,\n  estado_pago: parsed.estado_pago,\n  plan: parsed.plan,\n  metodo_pago: parsed.metodo_pago,\n  prioridad: parsed.prioridad,\n  servicios: parsed.servicios,\n  proximo_pago: parsed.proximo_pago,\n  fecha_inicio: parsed.fecha_inicio,\n  fecha_renovacion: parsed.fecha_renovacion,\n  ultimo_contacto: parsed.ultimo_contacto,\n  proxima_accion: parsed.proxima_accion,\n  responsable: parsed.responsable,\n  timestamp: parsed.timestamp\n} }];"
+        },
+        "id": "eadbb640-da40-4187-890d-e80f99153734",
+        "name": "Construir Body Notion",
+        "position": [
+          1984,
+          640
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://api.notion.com/v1/pages/{{ $json.pageId }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "notionApi",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Notion-Version",
+                "value": "2022-06-28"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify($json.body) }}",
+          "options": {}
+        },
+        "id": "20e84716-7645-4f35-98c8-9d609e3b942c",
+        "name": "Actualizar Notion Pipeline",
+        "position": [
+          2208,
+          640
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "credentials": {
+          "notionApi": {
+            "id": "0TW8kczx4zP0B6nS",
+            "name": "Notion System-Leads"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const parsed = $('Construir Body Notion').first().json;\n\nreturn [{ json: {\n  'ID Cliente': parsed.id_lead || '',\n  'Fecha Alta': parsed.timestamp,\n  'Nombre': parsed.nombre,\n  'Negocio': parsed.negocio,\n  'Industria': parsed.industria,\n  'Email': parsed.email_cliente,\n  'WhatsApp': parsed.whatsapp,\n  'Plan': parsed.plan,\n  'Precio Setup': parsed.precio_setup,\n  'Precio Mensual': parsed.fee_mensual,\n  'LTV Estimado': '',\n  'Método de Pago': parsed.metodo_pago,\n  'Estado de Pago': parsed.estado_pago,\n  'Servicios Contratados': parsed.servicios,\n  'Fecha Inicio Servicio': parsed.fecha_inicio,\n  'Fecha Renovación': parsed.fecha_renovacion,\n  'Próximo Pago': parsed.proximo_pago,\n  'Próxima Acción': parsed.proxima_accion,\n  'Responsable': parsed.responsable,\n  'Prioridad': parsed.prioridad,\n  'Último Contacto': parsed.ultimo_contacto\n} }];"
+        },
+        "id": "d1ea5f63-7ad9-47c9-b736-4f31d1b3e085",
+        "name": "Preparar para Sheets",
+        "position": [
+          2432,
+          640
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": "https://docs.google.com/spreadsheets/d/14HJkGerBAY5KCR6YBarae59aiCPhKzvt374strsGk3M/edit"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14HJkGerBAY5KCR6YBarae59aiCPhKzvt374strsGk3M/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "autoMapInputData",
+            "value": {},
+            "matchingColumns": [
+              "Email"
+            ],
+            "schema": [
+              {
+                "id": "ID Cliente",
+                "displayName": "ID Cliente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Fecha Alta",
+                "displayName": "Fecha Alta",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Nombre",
+                "displayName": "Nombre",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Negocio",
+                "displayName": "Negocio",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Industria",
+                "displayName": "Industria",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Email",
+                "displayName": "Email",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "WhatsApp",
+                "displayName": "WhatsApp",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Plan",
+                "displayName": "Plan",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Precio Setup",
+                "displayName": "Precio Setup",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Precio Mensual",
+                "displayName": "Precio Mensual",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "LTV Estimado",
+                "displayName": "LTV Estimado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Método de Pago",
+                "displayName": "Método de Pago",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Estado de Pago",
+                "displayName": "Estado de Pago",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Servicios Contratados",
+                "displayName": "Servicios Contratados",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Fecha Inicio Servicio",
+                "displayName": "Fecha Inicio Servicio",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Fecha Renovación",
+                "displayName": "Fecha Renovación",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Próximo Pago",
+                "displayName": "Próximo Pago",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Próxima Acción",
+                "displayName": "Próxima Acción",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Responsable",
+                "displayName": "Responsable",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Prioridad",
+                "displayName": "Prioridad",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Último Contacto",
+                "displayName": "Último Contacto",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "b72ca0f3-2e73-4e1e-b708-05e2340b85ce",
+        "name": "Registrar en Google Sheets",
+        "position": [
+          2656,
+          640
+        ],
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ JSON.stringify({ success: true, message: 'Proyecto actualizado en Notion y Sheets', email: $('Parsear Datos').first().json.email_cliente }) }}",
+          "options": {}
+        },
+        "id": "93d5d362-f0aa-4c9d-bf59-4e1244d5209d",
+        "name": "Responder OK",
+        "position": [
+          2880,
+          640
+        ],
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ JSON.stringify({ success: false, message: 'Lead no encontrado en Notion con ese email' }) }}",
+          "options": {
+            "responseCode": 404
+          }
+        },
+        "id": "7a78338a-3862-424a-9729-994e75f5997a",
+        "name": "Responder No Encontrado",
+        "position": [
+          1968,
+          896
+        ],
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1
+      },
+      {
+        "parameters": {
+          "content": "## 🚀 Flujo Kickoff Interno — System IA\n\n**Trigger:** Formulario HTML interno (`/webhook/kickoff-interno`)\n\n---\n\n### 📥 1. Recepción\n- Webhook GET recibe los datos del formulario\n- Nodo **Parsear Datos** normaliza y valida el email\n\n### 🔍 2. Búsqueda en Notion\n- Busca el lead en **Pipeline Comercial** por email\n- Si no existe → responde 404 y termina\n\n### ✏️ 3. Actualizar Notion Pipeline\n- **Construir Body Notion** arma el JSON con solo los campos completados\n- **PATCH** `/v1/pages/{pageId}` actualiza la página existente\n- Campos: Plan, Precio Setup, Fee Mensual, Método de Pago, Estado de Pago, Prioridad, Servicios Contratados, Fechas, Próximo Pago, Próxima Acción, Responsable\n\n### 📊 4. Actualizar Google Sheets\n- **Preparar para Sheets** mapea campos con nombres exactos de columnas\n- Operación **Upsert** por columna **Email**\n- Si la fila existe → actualiza\n- Si no existe → crea fila nueva\n- LTV Estimado calculado por fórmula ARRAYFORMULA en Sheets\n\n### ✅ 5. Respuesta\n- Devuelve `{ success: true }` al formulario\n- El formulario muestra mensaje verde de confirmación\n\n---\n\n**⚠️ Importante:**\n- El email debe coincidir exactamente con Notion\n- Servicios Contratados → multi_select (separados por coma)\n- Este flujo NO crea registros nuevos en Notion, solo actualiza\n- Próximo Pago = fecha del próximo cobro del fee mensual",
+          "height": 1220,
+          "width": 3192,
+          "color": 5
+        },
+        "id": "6f6d5076-9297-49bc-b99c-2e8df0f0031a",
+        "name": "📘 Documentación Kickoff",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          416,
+          32
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook Kickoff": {
+        "main": [
+          [
+            {
+              "node": "Parsear Datos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parsear Datos": {
+        "main": [
+          [
+            {
+              "node": "Buscar Lead en Notion",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Lead en Notion": {
+        "main": [
+          [
+            {
+              "node": "IF Lead Encontrado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IF Lead Encontrado": {
+        "main": [
+          [
+            {
+              "node": "Construir Body Notion",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Responder No Encontrado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Construir Body Notion": {
+        "main": [
+          [
+            {
+              "node": "Actualizar Notion Pipeline",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Actualizar Notion Pipeline": {
+        "main": [
+          [
+            {
+              "node": "Preparar para Sheets",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Preparar para Sheets": {
+        "main": [
+          [
+            {
+              "node": "Registrar en Google Sheets",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Registrar en Google Sheets": {
+        "main": [
+          [
+            {
+              "node": "Responder OK",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": "Version 1eb6b8b6",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-09T19:43:32.621Z",
+      "createdAt": "2026-02-09T19:43:32.621Z",
+      "id": "igcPlxzoy2OTsvdL",
+      "name": "⚡ Producción"
+    },
+    {
+      "updatedAt": "2026-02-16T09:53:07.520Z",
+      "createdAt": "2026-02-16T09:53:07.520Z",
+      "id": "NV4DPWxeft6Qc2wd",
+      "name": "LEADS"
+    }
+  ]
+}
