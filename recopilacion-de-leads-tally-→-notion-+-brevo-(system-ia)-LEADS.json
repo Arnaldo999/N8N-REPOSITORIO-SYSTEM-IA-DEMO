@@ -1,0 +1,633 @@
+{
+  "updatedAt": "2026-02-18T23:22:22.972Z",
+  "createdAt": "2026-02-16T09:52:50.368Z",
+  "id": "6n4T3cbvjKgjbvMP",
+  "name": "RECOPILACION DE LEADS-Tally → Notion + Brevo (System IA)",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "tally-leads",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "5e3009ac-58fb-4233-ba06-0c47c428b513",
+      "name": "Webhook Tally",
+      "position": [
+        2640,
+        3088
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "webhookId": "a5bf7f90-9c4b-4df6-8d8c-0e47c1af22b6",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json.body.data;\nconst fields = data.fields;\n\nconst getField = (key) => {\n  const field = fields.find(f => f.key === key);\n  return field ? field.value : null;\n};\n\nconst getOptionText = (key) => {\n  const field = fields.find(f => f.key === key);\n  if (!field || !field.value || !field.value[0]) return '';\n  const selectedId = field.value[0];\n  const option = field.options.find(o => o.id === selectedId);\n  return option ? option.text : '';\n};\n\nconst getCheckboxesText = (key) => {\n  const relatedFields = fields.filter(f => f.key.startsWith(key + '_') && f.value === true);\n  return relatedFields.map(f => {\n    const label = f.label.replace('\\u00bfQu\\u00e9 proceso te gustar\\u00eda automatizar? (', '').replace(')', '');\n    return label;\n  });\n};\n\nconst nombre = getField('question_OAGZKa') || '';\nconst whatsapp = getField('question_VZJaXj') || '';\nconst email = getField('question_PAONL1') || '';\nconst negocio = getField('question_EPWGel') || '';\nconst industria = getOptionText('question_rlPQRo');\nconst ciudad = getField('question_42rYRr') || '';\nconst instagram = getField('question_jBPrXQ') || '';\nconst web = getField('question_24PYze') || '';\nconst clientesMes = getOptionText('question_xdY7Ed');\nconst empleados = getOptionText('question_ZdaAXV');\nconst presenciaDigital = getOptionText('question_NAoxv0');\nconst dolorPrincipal = getOptionText('question_qbVqXO');\nconst serviciosDeseados = getCheckboxesText('question_QAVqpY');\nconst presupuesto = getOptionText('question_eBRG8x');\nconst timing = getOptionText('question_WAz6Xe');\nconst intencion = getOptionText('question_aBd1XZ');\nconst horario = getOptionText('question_6dNYGA') || '';\nconst dia = getOptionText('question_7dxYOa') || '';\nconst notas = getField('question_bldMX6') || '';\n\nlet puntaje = 0;\nif (clientesMes.includes('M\\u00e1s de 200')) puntaje += 8;\nelse if (clientesMes.includes('Entre 50 y 200')) puntaje += 6;\nelse if (clientesMes.includes('Entre 10 y 50')) puntaje += 4;\nelse puntaje += 2;\nif (empleados.includes('M\\u00e1s de 50')) puntaje += 6;\nelse if (empleados.includes('16 - 50')) puntaje += 5;\nelse if (empleados.includes('6 - 15')) puntaje += 4;\nelse if (empleados.includes('2 - 5')) puntaje += 3;\nelse puntaje += 1;\nif (presupuesto.includes('$300-1000')) puntaje += 10;\nelse if (presupuesto.includes('$100-300')) puntaje += 6;\nelse if (presupuesto.includes('A\\u00fan no')) puntaje += 3;\nelse puntaje += 0;\nif (timing.includes('Ya mismo')) puntaje += 8;\nelse if (timing.includes('1-2 semanas')) puntaje += 6;\nelse if (timing.includes('1-3 meses')) puntaje += 4;\nelse puntaje += 2;\nif (intencion.includes('consultor\\u00eda')) puntaje += 8;\nelse puntaje += 3;\n\nconst quiereConsultoria = intencion.toLowerCase().includes('consultor\\u00eda');\nconst noTienePresupuesto = presupuesto.includes('No tengo');\nconst esHot = quiereConsultoria && !noTienePresupuesto;\nif (esHot && puntaje < 28) puntaje = 28;\n\nlet clasificacion = '\\u2744\\ufe0f COLD';\nif (esHot) clasificacion = '\\ud83d\\udd25 HOT';\n\nconst enviarPipeline = esHot;\nconst listaBrevo = esHot ? 3 : 4;\nconst mEst = esHot ? 'Solicit\\u00f3 Llamada' : 'En Nurturing';\n\nconst now = new Date();\nconst yy = String(now.getFullYear()).slice(-2);\nconst mm = String(now.getMonth() + 1).padStart(2, '0');\nconst shortId = Math.random().toString(36).substring(2, 6).toUpperCase();\nconst leadId = 'LEAD-' + yy + mm + '-' + shortId;\n\nfunction findOpt(text, opts) {\n  if (!text) return '';\n  if (opts.includes(text)) return text;\n  const m = opts.find(o => text.includes(o));\n  if (m) return m;\n  return text;\n}\n\nconst mInd = findOpt(industria, ['Otro','Log\\u00edstica','Tecnolog\\u00eda','Automotriz','Construcci\\u00f3n','Finanzas','Legal','Belleza','Fitness','Profesional','Turismo','Marketing','Educaci\\u00f3n','Retail','Ecommerce','Inmobiliaria','Restaurante','Salud']);\nconst mCli = findOpt(clientesMes, ['<10','10-50','50-200','200+']);\nconst mEmp = findOpt(empleados, ['1','2-5','6-15','16-50','50+']);\nconst mPre = findOpt(presenciaDigital, ['Solo redes','Tengo web','Web+Redes+Email','Ninguna']);\nconst mDol = findOpt(dolorPrincipal, ['Pierdo ventas','Respondo lo mismo','No tengo organizado','Quiero escalar','Empleados en tareas repetitivas','Otro']);\nconst mPrs = findOpt(presupuesto, ['$100-300','$300-1000','A\\u00fan no','No tengo']);\nconst mTim = findOpt(timing, ['Ya mismo','1-2 semanas','1-3 meses','Solo informaci\\u00f3n']);\nconst mHor = findOpt(horario, ['Ma\\u00f1ana','Tarde','Noche']);\nconst mDia = dia;\nlet mInt = '\\ud83d\\udce7 Solo Info Email';\nif (quiereConsultoria) mInt = '\\u2b50 Quiero Consultor\\u00eda';\nconst svcOpts = ['WhatsApp','Instagram','Agendamiento','CRM','Email Marketing','Recordatorios','No estoy seguro'];\nconst mSvc = serviciosDeseados.map(s => { const f = svcOpts.find(o => s.toLowerCase().includes(o.toLowerCase())); return f || s; });\n\nlet igUrl = null;\nif (instagram) igUrl = instagram.startsWith('http') ? instagram : 'https://instagram.com/' + instagram.replace('@','');\n\nconst notifMsg = '\\ud83d\\udd25 *\\u00a1NUEVO LEAD HOT!*\\n\\n' +\n  '\\ud83d\\udc64 *' + nombre + '* - ' + negocio + '\\n' +\n  '\\ud83d\\udcf1 ' + whatsapp + '\\n' +\n  '\\ud83d\\udce7 ' + email + '\\n' +\n  '\\ud83c\\udff7\\ufe0f ' + mInd + ' | ' + mPrs + '\\n' +\n  '\\ud83d\\udcca Puntaje: ' + puntaje + ' | ID: ' + leadId + '\\n\\n' +\n  '\\ud83d\\udccc *Dolor:* ' + mDol + '\\n' +\n  '\\u23f0 *Timing:* ' + mTim + '\\n' +\n  '\\ud83d\\udcc5 *Disponibilidad:* ' + mHor + ' - ' + mDia + '\\n\\n' +\n  '\\u2705 Ya est\\u00e1 en Pipeline';\n\nconst props = {\n  'Nombre': { title: [{ text: { content: nombre } }] },\n  'Email': { email: email || null },\n  'WhatsApp': { phone_number: whatsapp || null },\n  'Negocio': { rich_text: [{ text: { content: negocio } }] },\n  'Industria': { select: { name: mInd } },\n  'Pa\\u00eds/Ciudad': { rich_text: [{ text: { content: ciudad } }] },\n  'Clientes/mes': { select: { name: mCli } },\n  'Empleados': { select: { name: mEmp } },\n  'Presencia Digital': { select: { name: mPre } },\n  'Dolor Principal': { select: { name: mDol } },\n  'Servicios Deseados': { multi_select: mSvc.map(s => ({ name: s })) },\n  'Presupuesto': { select: { name: mPrs } },\n  'Timing': { select: { name: mTim } },\n  'Intenci\\u00f3n': { select: { name: mInt } },\n  'Disponibilidad Horario': { select: { name: mHor } },\n  'Disponibilidad D\\u00eda': { rich_text: [{ text: { content: mDia } }] },\n  'Puntaje': { number: puntaje },\n  'Estado': { select: { name: mEst } },\n  'Enviado a Pipeline': { checkbox: enviarPipeline },\n  'Fuente': { select: { name: 'Formulario Web' } },\n  'ID Lead': { rich_text: [{ text: { content: leadId } }] }\n};\nif (igUrl) props['Instagram'] = { url: igUrl };\nif (web) props['Web'] = { url: web };\nif (notas) props['Notas Adicionales'] = { rich_text: [{ text: { content: notas } }] };\n\nconst notionBody = { parent: { database_id: '309668bb-053e-807a-a410-d432654f58fd' }, properties: props };\n\nconst pipelineBody = { parent: { database_id: '309668bb-053e-80d8-a3eb-ea165a96ff1a' }, properties: {\n  'Nombre': { title: [{ text: { content: nombre } }] },\n  'Negocio': { rich_text: [{ text: { content: negocio } }] },\n  'Estado': { select: { name: '\\u2b50 Llamada Solicitada' } },\n  'Clasificaci\\u00f3n': { select: { name: '\\ud83d\\udd25 HOT' } },\n  'WhatsApp': { phone_number: whatsapp || null },\n  'Email': { email: email || null },\n  'Industria': { select: { name: mInd } },\n  'Puntaje': { number: puntaje },\n  'ID Cliente': { rich_text: [{ text: { content: leadId } }] }\n}};\n\nconst brevoBody = { email: email, attributes: { NOMBRE: nombre, NEGOCIO: negocio, WSAPP: whatsapp, INDUSTRIA: mInd, PUNTAJE: puntaje, INTENCION: mInt }, listIds: [listaBrevo], updateEnabled: true };\n\nreturn [{ json: { nombre, email, puntaje, enviarPipeline, leadId, notifMsg, notionBody, pipelineBody, brevoBody } }];"
+      },
+      "id": "87d4d04c-a1e5-4bc7-a043-6eaa7ace06f8",
+      "name": "Procesar Datos y Calcular Puntaje",
+      "position": [
+        2864,
+        3088
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.notion.com/v1/pages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "notionApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.notionBody) }}",
+        "options": {}
+      },
+      "id": "e29254ab-86f2-4a99-8cac-73c0996d8127",
+      "name": "Guardar en Notion Base 1",
+      "position": [
+        3088,
+        2976
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "credentials": {
+        "notionApi": {
+          "id": "0TW8kczx4zP0B6nS",
+          "name": "Notion System-Leads"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "condicion-pipeline",
+              "leftValue": "={{ $json.enviarPipeline }}",
+              "operator": {
+                "operation": "equals",
+                "type": "boolean"
+              },
+              "rightValue": true
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          }
+        },
+        "options": {}
+      },
+      "id": "fcf9db27-ba94-44c0-85a5-deb46fa78ea5",
+      "name": "¿Es HOT y pidió consultoría?",
+      "position": [
+        3232,
+        3408
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.notion.com/v1/pages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "notionApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.pipelineBody) }}",
+        "options": {}
+      },
+      "id": "dfcec41b-07e2-41d8-8301-5350ea335553",
+      "name": "Guardar en Notion Base 2 (Pipeline)",
+      "position": [
+        3664,
+        3120
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "credentials": {
+        "notionApi": {
+          "id": "0TW8kczx4zP0B6nS",
+          "name": "Notion System-Leads"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brevo.com/v3/contacts",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "sendInBlueApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.brevoBody) }}",
+        "options": {}
+      },
+      "id": "979ae3b6-020e-4107-b3c6-15af11b87e72",
+      "name": "Enviar a Brevo 📧 (System IA)",
+      "position": [
+        3200,
+        3152
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "credentials": {
+        "sendInBlueApi": {
+          "id": "zxIZwtDKHCwXjQ7K",
+          "name": "Brevo account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"Lead registrado\", \"nombre\": $json.nombre, \"puntaje\": $json.puntaje } }}",
+        "options": {}
+      },
+      "id": "7e02cacc-cdf7-4384-83f4-4da04a49b8c9",
+      "name": "Responder a Tally",
+      "position": [
+        3312,
+        2976
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: '5493853003153', text: $json.notifMsg }) }}",
+        "options": {}
+      },
+      "id": "31c7003a-03fc-4a45-9413-9dc753f17ed3",
+      "name": "Notificar WhatsApp Socia",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        3680,
+        3328
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## 🚀 Flujo de Captación de Leads (System IA)\n\n**1. Recepción:**\n- Recibe datos del formulario Tally vía Webhook.\n- Calcula **Puntaje** (Scoring) basado en presupuesto, urgencia y tamaño de empresa.\n- Define si es **HOT** 🔥 o **COLD** ❄️.\n\n**2. Registro Base:**\n- Guarda TODOS los leads en Notion (Base General).\n\n**3. Rutas de Acción:**\n- **Si es HOT:** \n  - Crea tarjeta en **Pipeline de Ventas** (Notion).\n  - Notifica al equipo por **WhatsApp** 📱.\n  - Envía a **Brevo Lista 3** (Secuencia de Consultoría).\n- **Si es COLD:**\n  - Envía a **Brevo Lista 4** (Secuencia de Nurturing/Educación).\n\n**4. Cierre:**\n- Responde a Tally para confirmar recepción.\n\n⚠️ Sheets se alimenta desde el Flujo Kickoff (datos completos).",
+        "height": 904,
+        "width": 628,
+        "color": 6
+      },
+      "id": "949a3358-06dc-450f-9f72-85f3c2db6ae5",
+      "name": "📘 Documentación del Flujo",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1952,
+        2928
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Tally": {
+      "main": [
+        [
+          {
+            "node": "Procesar Datos y Calcular Puntaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar Datos y Calcular Puntaje": {
+      "main": [
+        [
+          {
+            "node": "Guardar en Notion Base 1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "¿Es HOT y pidió consultoría?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Enviar a Brevo 📧 (System IA)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar en Notion Base 1": {
+      "main": [
+        [
+          {
+            "node": "Responder a Tally",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es HOT y pidió consultoría?": {
+      "main": [
+        [
+          {
+            "node": "Guardar en Notion Base 2 (Pipeline)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notificar WhatsApp Socia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "1bcd8b2b-17ee-4435-b80e-82228b0e25b4",
+  "activeVersionId": "1bcd8b2b-17ee-4435-b80e-82228b0e25b4",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-16T09:52:50.368Z",
+      "createdAt": "2026-02-16T09:52:50.368Z",
+      "role": "workflow:owner",
+      "workflowId": "6n4T3cbvjKgjbvMP",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-18T23:22:45.111Z",
+    "createdAt": "2026-02-18T23:22:22.973Z",
+    "versionId": "1bcd8b2b-17ee-4435-b80e-82228b0e25b4",
+    "workflowId": "6n4T3cbvjKgjbvMP",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "tally-leads",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "5e3009ac-58fb-4233-ba06-0c47c428b513",
+        "name": "Webhook Tally",
+        "position": [
+          2640,
+          3088
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "webhookId": "a5bf7f90-9c4b-4df6-8d8c-0e47c1af22b6",
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const data = $input.first().json.body.data;\nconst fields = data.fields;\n\nconst getField = (key) => {\n  const field = fields.find(f => f.key === key);\n  return field ? field.value : null;\n};\n\nconst getOptionText = (key) => {\n  const field = fields.find(f => f.key === key);\n  if (!field || !field.value || !field.value[0]) return '';\n  const selectedId = field.value[0];\n  const option = field.options.find(o => o.id === selectedId);\n  return option ? option.text : '';\n};\n\nconst getCheckboxesText = (key) => {\n  const relatedFields = fields.filter(f => f.key.startsWith(key + '_') && f.value === true);\n  return relatedFields.map(f => {\n    const label = f.label.replace('\\u00bfQu\\u00e9 proceso te gustar\\u00eda automatizar? (', '').replace(')', '');\n    return label;\n  });\n};\n\nconst nombre = getField('question_OAGZKa') || '';\nconst whatsapp = getField('question_VZJaXj') || '';\nconst email = getField('question_PAONL1') || '';\nconst negocio = getField('question_EPWGel') || '';\nconst industria = getOptionText('question_rlPQRo');\nconst ciudad = getField('question_42rYRr') || '';\nconst instagram = getField('question_jBPrXQ') || '';\nconst web = getField('question_24PYze') || '';\nconst clientesMes = getOptionText('question_xdY7Ed');\nconst empleados = getOptionText('question_ZdaAXV');\nconst presenciaDigital = getOptionText('question_NAoxv0');\nconst dolorPrincipal = getOptionText('question_qbVqXO');\nconst serviciosDeseados = getCheckboxesText('question_QAVqpY');\nconst presupuesto = getOptionText('question_eBRG8x');\nconst timing = getOptionText('question_WAz6Xe');\nconst intencion = getOptionText('question_aBd1XZ');\nconst horario = getOptionText('question_6dNYGA') || '';\nconst dia = getOptionText('question_7dxYOa') || '';\nconst notas = getField('question_bldMX6') || '';\n\nlet puntaje = 0;\nif (clientesMes.includes('M\\u00e1s de 200')) puntaje += 8;\nelse if (clientesMes.includes('Entre 50 y 200')) puntaje += 6;\nelse if (clientesMes.includes('Entre 10 y 50')) puntaje += 4;\nelse puntaje += 2;\nif (empleados.includes('M\\u00e1s de 50')) puntaje += 6;\nelse if (empleados.includes('16 - 50')) puntaje += 5;\nelse if (empleados.includes('6 - 15')) puntaje += 4;\nelse if (empleados.includes('2 - 5')) puntaje += 3;\nelse puntaje += 1;\nif (presupuesto.includes('$300-1000')) puntaje += 10;\nelse if (presupuesto.includes('$100-300')) puntaje += 6;\nelse if (presupuesto.includes('A\\u00fan no')) puntaje += 3;\nelse puntaje += 0;\nif (timing.includes('Ya mismo')) puntaje += 8;\nelse if (timing.includes('1-2 semanas')) puntaje += 6;\nelse if (timing.includes('1-3 meses')) puntaje += 4;\nelse puntaje += 2;\nif (intencion.includes('consultor\\u00eda')) puntaje += 8;\nelse puntaje += 3;\n\nconst quiereConsultoria = intencion.toLowerCase().includes('consultor\\u00eda');\nconst noTienePresupuesto = presupuesto.includes('No tengo');\nconst esHot = quiereConsultoria && !noTienePresupuesto;\nif (esHot && puntaje < 28) puntaje = 28;\n\nlet clasificacion = '\\u2744\\ufe0f COLD';\nif (esHot) clasificacion = '\\ud83d\\udd25 HOT';\n\nconst enviarPipeline = esHot;\nconst listaBrevo = esHot ? 3 : 4;\nconst mEst = esHot ? 'Solicit\\u00f3 Llamada' : 'En Nurturing';\n\nconst now = new Date();\nconst yy = String(now.getFullYear()).slice(-2);\nconst mm = String(now.getMonth() + 1).padStart(2, '0');\nconst shortId = Math.random().toString(36).substring(2, 6).toUpperCase();\nconst leadId = 'LEAD-' + yy + mm + '-' + shortId;\n\nfunction findOpt(text, opts) {\n  if (!text) return '';\n  if (opts.includes(text)) return text;\n  const m = opts.find(o => text.includes(o));\n  if (m) return m;\n  return text;\n}\n\nconst mInd = findOpt(industria, ['Otro','Log\\u00edstica','Tecnolog\\u00eda','Automotriz','Construcci\\u00f3n','Finanzas','Legal','Belleza','Fitness','Profesional','Turismo','Marketing','Educaci\\u00f3n','Retail','Ecommerce','Inmobiliaria','Restaurante','Salud']);\nconst mCli = findOpt(clientesMes, ['<10','10-50','50-200','200+']);\nconst mEmp = findOpt(empleados, ['1','2-5','6-15','16-50','50+']);\nconst mPre = findOpt(presenciaDigital, ['Solo redes','Tengo web','Web+Redes+Email','Ninguna']);\nconst mDol = findOpt(dolorPrincipal, ['Pierdo ventas','Respondo lo mismo','No tengo organizado','Quiero escalar','Empleados en tareas repetitivas','Otro']);\nconst mPrs = findOpt(presupuesto, ['$100-300','$300-1000','A\\u00fan no','No tengo']);\nconst mTim = findOpt(timing, ['Ya mismo','1-2 semanas','1-3 meses','Solo informaci\\u00f3n']);\nconst mHor = findOpt(horario, ['Ma\\u00f1ana','Tarde','Noche']);\nconst mDia = dia;\nlet mInt = '\\ud83d\\udce7 Solo Info Email';\nif (quiereConsultoria) mInt = '\\u2b50 Quiero Consultor\\u00eda';\nconst svcOpts = ['WhatsApp','Instagram','Agendamiento','CRM','Email Marketing','Recordatorios','No estoy seguro'];\nconst mSvc = serviciosDeseados.map(s => { const f = svcOpts.find(o => s.toLowerCase().includes(o.toLowerCase())); return f || s; });\n\nlet igUrl = null;\nif (instagram) igUrl = instagram.startsWith('http') ? instagram : 'https://instagram.com/' + instagram.replace('@','');\n\nconst notifMsg = '\\ud83d\\udd25 *\\u00a1NUEVO LEAD HOT!*\\n\\n' +\n  '\\ud83d\\udc64 *' + nombre + '* - ' + negocio + '\\n' +\n  '\\ud83d\\udcf1 ' + whatsapp + '\\n' +\n  '\\ud83d\\udce7 ' + email + '\\n' +\n  '\\ud83c\\udff7\\ufe0f ' + mInd + ' | ' + mPrs + '\\n' +\n  '\\ud83d\\udcca Puntaje: ' + puntaje + ' | ID: ' + leadId + '\\n\\n' +\n  '\\ud83d\\udccc *Dolor:* ' + mDol + '\\n' +\n  '\\u23f0 *Timing:* ' + mTim + '\\n' +\n  '\\ud83d\\udcc5 *Disponibilidad:* ' + mHor + ' - ' + mDia + '\\n\\n' +\n  '\\u2705 Ya est\\u00e1 en Pipeline';\n\nconst props = {\n  'Nombre': { title: [{ text: { content: nombre } }] },\n  'Email': { email: email || null },\n  'WhatsApp': { phone_number: whatsapp || null },\n  'Negocio': { rich_text: [{ text: { content: negocio } }] },\n  'Industria': { select: { name: mInd } },\n  'Pa\\u00eds/Ciudad': { rich_text: [{ text: { content: ciudad } }] },\n  'Clientes/mes': { select: { name: mCli } },\n  'Empleados': { select: { name: mEmp } },\n  'Presencia Digital': { select: { name: mPre } },\n  'Dolor Principal': { select: { name: mDol } },\n  'Servicios Deseados': { multi_select: mSvc.map(s => ({ name: s })) },\n  'Presupuesto': { select: { name: mPrs } },\n  'Timing': { select: { name: mTim } },\n  'Intenci\\u00f3n': { select: { name: mInt } },\n  'Disponibilidad Horario': { select: { name: mHor } },\n  'Disponibilidad D\\u00eda': { rich_text: [{ text: { content: mDia } }] },\n  'Puntaje': { number: puntaje },\n  'Estado': { select: { name: mEst } },\n  'Enviado a Pipeline': { checkbox: enviarPipeline },\n  'Fuente': { select: { name: 'Formulario Web' } },\n  'ID Lead': { rich_text: [{ text: { content: leadId } }] }\n};\nif (igUrl) props['Instagram'] = { url: igUrl };\nif (web) props['Web'] = { url: web };\nif (notas) props['Notas Adicionales'] = { rich_text: [{ text: { content: notas } }] };\n\nconst notionBody = { parent: { database_id: '309668bb-053e-807a-a410-d432654f58fd' }, properties: props };\n\nconst pipelineBody = { parent: { database_id: '309668bb-053e-80d8-a3eb-ea165a96ff1a' }, properties: {\n  'Nombre': { title: [{ text: { content: nombre } }] },\n  'Negocio': { rich_text: [{ text: { content: negocio } }] },\n  'Estado': { select: { name: '\\u2b50 Llamada Solicitada' } },\n  'Clasificaci\\u00f3n': { select: { name: '\\ud83d\\udd25 HOT' } },\n  'WhatsApp': { phone_number: whatsapp || null },\n  'Email': { email: email || null },\n  'Industria': { select: { name: mInd } },\n  'Puntaje': { number: puntaje },\n  'ID Cliente': { rich_text: [{ text: { content: leadId } }] }\n}};\n\nconst brevoBody = { email: email, attributes: { NOMBRE: nombre, NEGOCIO: negocio, WSAPP: whatsapp, INDUSTRIA: mInd, PUNTAJE: puntaje, INTENCION: mInt }, listIds: [listaBrevo], updateEnabled: true };\n\nreturn [{ json: { nombre, email, puntaje, enviarPipeline, leadId, notifMsg, notionBody, pipelineBody, brevoBody } }];"
+        },
+        "id": "87d4d04c-a1e5-4bc7-a043-6eaa7ace06f8",
+        "name": "Procesar Datos y Calcular Puntaje",
+        "position": [
+          2864,
+          3088
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.notion.com/v1/pages",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "notionApi",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Notion-Version",
+                "value": "2022-06-28"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify($json.notionBody) }}",
+          "options": {}
+        },
+        "id": "e29254ab-86f2-4a99-8cac-73c0996d8127",
+        "name": "Guardar en Notion Base 1",
+        "position": [
+          3088,
+          2976
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "credentials": {
+          "notionApi": {
+            "id": "0TW8kczx4zP0B6nS",
+            "name": "Notion System-Leads"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "condicion-pipeline",
+                "leftValue": "={{ $json.enviarPipeline }}",
+                "operator": {
+                  "operation": "equals",
+                  "type": "boolean"
+                },
+                "rightValue": true
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict"
+            }
+          },
+          "options": {}
+        },
+        "id": "fcf9db27-ba94-44c0-85a5-deb46fa78ea5",
+        "name": "¿Es HOT y pidió consultoría?",
+        "position": [
+          3232,
+          3408
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.notion.com/v1/pages",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "notionApi",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Notion-Version",
+                "value": "2022-06-28"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify($json.pipelineBody) }}",
+          "options": {}
+        },
+        "id": "dfcec41b-07e2-41d8-8301-5350ea335553",
+        "name": "Guardar en Notion Base 2 (Pipeline)",
+        "position": [
+          3664,
+          3120
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "credentials": {
+          "notionApi": {
+            "id": "0TW8kczx4zP0B6nS",
+            "name": "Notion System-Leads"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.brevo.com/v3/contacts",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "sendInBlueApi",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify($json.brevoBody) }}",
+          "options": {}
+        },
+        "id": "979ae3b6-020e-4107-b3c6-15af11b87e72",
+        "name": "Enviar a Brevo 📧 (System IA)",
+        "position": [
+          3200,
+          3152
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "credentials": {
+          "sendInBlueApi": {
+            "id": "zxIZwtDKHCwXjQ7K",
+            "name": "Brevo account"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ { \"success\": true, \"message\": \"Lead registrado\", \"nombre\": $json.nombre, \"puntaje\": $json.puntaje } }}",
+          "options": {}
+        },
+        "id": "7e02cacc-cdf7-4384-83f4-4da04a49b8c9",
+        "name": "Responder a Tally",
+        "position": [
+          3312,
+          2976
+        ],
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {}
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ number: '5493853003153', text: $json.notifMsg }) }}",
+          "options": {}
+        },
+        "id": "31c7003a-03fc-4a45-9413-9dc753f17ed3",
+        "name": "Notificar WhatsApp Socia",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          3680,
+          3328
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "content": "## 🚀 Flujo de Captación de Leads (System IA)\n\n**1. Recepción:**\n- Recibe datos del formulario Tally vía Webhook.\n- Calcula **Puntaje** (Scoring) basado en presupuesto, urgencia y tamaño de empresa.\n- Define si es **HOT** 🔥 o **COLD** ❄️.\n\n**2. Registro Base:**\n- Guarda TODOS los leads en Notion (Base General).\n\n**3. Rutas de Acción:**\n- **Si es HOT:** \n  - Crea tarjeta en **Pipeline de Ventas** (Notion).\n  - Notifica al equipo por **WhatsApp** 📱.\n  - Envía a **Brevo Lista 3** (Secuencia de Consultoría).\n- **Si es COLD:**\n  - Envía a **Brevo Lista 4** (Secuencia de Nurturing/Educación).\n\n**4. Cierre:**\n- Responde a Tally para confirmar recepción.\n\n⚠️ Sheets se alimenta desde el Flujo Kickoff (datos completos).",
+          "height": 904,
+          "width": 628,
+          "color": 6
+        },
+        "id": "949a3358-06dc-450f-9f72-85f3c2db6ae5",
+        "name": "📘 Documentación del Flujo",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          1952,
+          2928
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook Tally": {
+        "main": [
+          [
+            {
+              "node": "Procesar Datos y Calcular Puntaje",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Procesar Datos y Calcular Puntaje": {
+        "main": [
+          [
+            {
+              "node": "Guardar en Notion Base 1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "¿Es HOT y pidió consultoría?",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Enviar a Brevo 📧 (System IA)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar en Notion Base 1": {
+        "main": [
+          [
+            {
+              "node": "Responder a Tally",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "¿Es HOT y pidió consultoría?": {
+        "main": [
+          [
+            {
+              "node": "Guardar en Notion Base 2 (Pipeline)",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Notificar WhatsApp Socia",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": "Version 1bcd8b2b",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-16T09:53:07.520Z",
+      "createdAt": "2026-02-16T09:53:07.520Z",
+      "id": "NV4DPWxeft6Qc2wd",
+      "name": "LEADS"
+    },
+    {
+      "updatedAt": "2026-02-09T19:43:32.621Z",
+      "createdAt": "2026-02-09T19:43:32.621Z",
+      "id": "igcPlxzoy2OTsvdL",
+      "name": "⚡ Producción"
+    }
+  ]
+}
