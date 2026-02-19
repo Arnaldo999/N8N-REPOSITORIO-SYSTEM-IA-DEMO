@@ -1,0 +1,32 @@
+{
+  "updatedAt": "2026-02-18T13:57:41.827Z",
+  "createdAt": "2026-02-18T13:52:17.565Z",
+  "id": "g0kBSL9FKdRrvO98",
+  "name": "FORMULARIO-KICKOFF DE LEADS→ Notion + Sheets (System IA)",
+  "active": false,
+  "isArchived": true,
+  "nodes": [],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "4c8e321d-3905-47b2-abf4-d9b1560601e3",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-18T13:52:17.565Z",
+      "createdAt": "2026-02-18T13:52:17.565Z",
+      "role": "workflow:owner",
+      "workflowId": "g0kBSL9FKdRrvO98",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
