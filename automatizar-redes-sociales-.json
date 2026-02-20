@@ -1,0 +1,3454 @@
+{
+  "updatedAt": "2026-02-20T14:27:30.559Z",
+  "createdAt": "2026-02-20T13:53:43.277Z",
+  "id": "T9JAp3MxztvfkD5x",
+  "name": "Automatizar Redes Sociales",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "76600172-3325-4ec3-b564-fa722d906087",
+      "name": "Trigger Programado",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2528,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "163zG5AT4YWlmVsqsC-JJzzSAvestojWwJDgXAuAqIZg",
+          "mode": "list",
+          "cachedResultName": "Historial Posts System IA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/163zG5AT4YWlmVsqsC-JJzzSAvestojWwJDgXAuAqIZg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/163zG5AT4YWlmVsqsC-JJzzSAvestojWwJDgXAuAqIZg/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "8b6cb5d6-2620-4537-8b62-128735c56dc6",
+      "name": "Leer Historial",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -2304,
+        256
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "var dias = new Date().getDate();\nvar temas = ['CRM y Gestión de Leads', 'Automatización WhatsApp', 'Agendamiento de Citas', 'Automatización de Redes Sociales'];\nreturn [{ json: { tema_hoy: temas[dias % 4] } }];"
+      },
+      "id": "7298d56b-f831-4587-a2e2-dc3848fd16ce",
+      "name": "Seleccionar Tema",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2080,
+        256
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "0fe6ea2a-2712-48e0-ab94-63f84d292334",
+      "name": "Generar Post",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        -1840,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "gemini-2.5-flash",
+        "options": {
+          "temperature": 0.8
+        }
+      },
+      "id": "e9ae1acb-5bdb-4559-94fa-c92c3adc9860",
+      "name": "Google Gemini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1840,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const respuesta = $('Generar Post').first().json.text || '';\n\n// Separar las 3 secciones\nconst partes = respuesta.split('---SEPARADOR---');\n\nconst linkedin = (partes[0] || '').replace('LINKEDIN:', '').trim();\nconst instagram = (partes[1] || '').replace('INSTAGRAM:', '').trim();\nconst promptImagen = (partes[2] || '').replace('PROMPT_IMAGEN:', '').trim();\n\nreturn [{\n  json: {\n    linkedin_text: linkedin,\n    instagram_text: instagram,\n    prompt_imagen: promptImagen || 'Professional modern marketing graphic about business automation and AI technology, clean corporate style, blue and purple gradient, no text overlay',\n    tema_hoy: $('Seleccionar Tema').first().json.tema_hoy\n  }\n}];"
+      },
+      "id": "75347f5d-bebf-42ca-bd59-770029fd6a3a",
+      "name": "Parsear Contenido",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1536,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key={{ $credentials.googleGeminiApi.apiKey }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"instances\": [\n    {\n      \"prompt\": \"{{ $json.prompt_imagen }}\"\n    }\n  ],\n  \"parameters\": {\n    \"sampleCount\": 1,\n    \"aspectRatio\": \"1:1\",\n    \"personGeneration\": \"dont_allow\"\n  }\n}",
+        "options": {}
+      },
+      "id": "8d22f99c-b83a-4331-81bf-388fab1df064",
+      "name": "Generar Imagen Gemini",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1376,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "string",
+        "body": "=key=TU_IMGBB_API_KEY&image={{ $json.predictions[0].bytesBase64Encoded }}",
+        "options": {}
+      },
+      "id": "3c86c379-5ad8-446c-a93a-a912625dbdbb",
+      "name": "Subir Imagen Hosting",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1152,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://tu-evolution-api.com/message/sendText/tu-instancia",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"5491112345678\",\n  \"text\": \"📝 *BORRADOR PARA APROBACIÓN*\\n\\n📌 Tema: {{ $('Parsear Contenido').first().json.tema_hoy }}\\n\\n━━ LINKEDIN ━━\\n{{ $('Parsear Contenido').first().json.linkedin_text }}\\n\\n━━ INSTAGRAM ━━\\n{{ $('Parsear Contenido').first().json.instagram_text }}\\n\\n🖼️ Imagen: {{ $json.data.url }}\\n\\n━━━━━━━━━━━━━━━━\\n✅ Responde *aprobar* para publicar\\n❌ Responde *rechazar* para cancelar\"\n}",
+        "options": {}
+      },
+      "id": "cf08bbf3-ecc9-4df4-97b8-e5d5da0de4d3",
+      "name": "Pedir Aprobación WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -928,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "options": {
+          "webhookSuffix": "aprobacion-post"
+        }
+      },
+      "id": "b02cebf0-9db8-4536-9485-c79041568a28",
+      "name": "Esperar Aprobación",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -688,
+        256
+      ],
+      "webhookId": "9e72567c-4b6d-49b7-8e45-ce5a7888c520"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-aprobar-001",
+              "leftValue": "={{ $json.body.text }}",
+              "rightValue": "aprobar",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4e3bb5f4-1d0f-47c7-9699-46c1e4ac6cd3",
+      "name": "¿Aprobado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $credentials.facebookGraphApi.igUserId }}/media",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"caption\": \"{{ $('Parsear Contenido').first().json.instagram_text }}\",\n  \"image_url\": \"{{ $('Subir Imagen Hosting').first().json.data.url }}\",\n  \"access_token\": \"TU_IG_ACCESS_TOKEN\"\n}",
+        "options": {}
+      },
+      "id": "8b6108a6-ebfd-48fb-abf3-992e164fce38",
+      "name": "Crear Container IG",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -240,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $credentials.facebookGraphApi.igUserId }}/media_publish",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"creation_id\": \"{{ $json.id }}\",\n  \"access_token\": \"TU_IG_ACCESS_TOKEN\"\n}",
+        "options": {}
+      },
+      "id": "7a617481-5c43-4bd2-b7cf-75a34f5d0b46",
+      "name": "Publicar Instagram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.linkedin.com/rest/images?action=initializeUpload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer TU_LINKEDIN_ACCESS_TOKEN"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "LinkedIn-Version",
+              "value": "202401"
+            },
+            {
+              "name": "X-Restli-Protocol-Version",
+              "value": "2.0.0"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"initializeUploadRequest\": {\n    \"owner\": \"urn:li:person:TU_PERSON_ID\"\n  }\n}",
+        "options": {}
+      },
+      "id": "32e5d324-b0c3-4357-a7a1-db30259690b6",
+      "name": "Init Upload LinkedIn",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -240,
+        368
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $json.value.uploadUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer TU_LINKEDIN_ACCESS_TOKEN"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/octet-stream"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "string",
+        "body": "={{ $('Generar Imagen Gemini').first().json.predictions[0].bytesBase64Encoded }}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "04f4ab24-1e4e-4363-8594-7f6674b7b602",
+      "name": "Subir Imagen LinkedIn",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.linkedin.com/rest/posts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer TU_LINKEDIN_ACCESS_TOKEN"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "LinkedIn-Version",
+              "value": "202401"
+            },
+            {
+              "name": "X-Restli-Protocol-Version",
+              "value": "2.0.0"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"author\": \"urn:li:person:TU_PERSON_ID\",\n  \"commentary\": \"{{ $('Parsear Contenido').first().json.linkedin_text }}\",\n  \"visibility\": \"PUBLIC\",\n  \"distribution\": {\n    \"feedDistribution\": \"MAIN_FEED\",\n    \"targetEntities\": [],\n    \"thirdPartyDistributionChannels\": []\n  },\n  \"content\": {\n    \"media\": {\n      \"id\": \"{{ $('Init Upload LinkedIn').first().json.value.image }}\"\n    }\n  },\n  \"lifecycleState\": \"PUBLISHED\"\n}",
+        "options": {}
+      },
+      "id": "c985e1b8-98df-4ae7-8e6f-10ea8ae176d1",
+      "name": "Crear Post LinkedIn",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Esperar a que ambas publicaciones terminen\nconst igResult = $('Publicar Instagram').first().json;\nconst liResult = $('Crear Post LinkedIn').first().json;\n\nreturn [{\n  json: {\n    instagram_ok: !!igResult.id,\n    linkedin_ok: !!liResult,\n    instagram_id: igResult.id || 'error',\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "1aed2ba9-d9cf-4c76-8de4-bdef8aabfd2e",
+      "name": "Consolidar Resultados",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "163zG5AT4YWlmVsqsC-JJzzSAvestojWwJDgXAuAqIZg",
+          "mode": "list",
+          "cachedResultName": "Historial Posts System IA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/163zG5AT4YWlmVsqsC-JJzzSAvestojWwJDgXAuAqIZg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/163zG5AT4YWlmVsqsC-JJzzSAvestojWwJDgXAuAqIZg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fecha de Publicación",
+              "displayName": "Fecha de Publicación",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Macro-Tema",
+              "displayName": "Macro-Tema",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Angulo / Mini-Tema creado por la IA",
+              "displayName": "Angulo / Mini-Tema creado por la IA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Texto (Copy)",
+              "displayName": "Texto (Copy)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "6cb374ed-e735-45f5-a28e-744fcbc38ce8",
+      "name": "Guardar Historial",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        688,
+        256
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "person": "RX4iw70sG2",
+        "text": "Buen dia Campeones!!!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        240,
+        560
+      ],
+      "id": "50ba753f-9e0d-4607-a102-35c07eec79bf",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "xDShiwyCMQURriZd",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        560
+      ],
+      "id": "e8455930-cbd0-4fa3-8d60-a940b47ee47d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.URL }}",
+        "options": {}
+      },
+      "id": "f317935a-68fc-4760-902c-489da43dfc5c",
+      "name": "Descargar HTML",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3552,
+        2800
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.URL }}",
+                    "rightValue": "https://www.youtube.com/",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notContains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "URL Noticia"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "bb04e04c-6d30-4e5c-80b2-90f2984da1b1",
+                    "leftValue": "={{ $json.URL }}",
+                    "rightValue": "https://www.youtube.com/",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "URL YouTube"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -3776,
+        3040
+      ],
+      "id": "092b8dd9-f4df-4afc-afcf-631ff36d4d8e",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener el HTML\nconst htmlContent = $input.first().json[\"data\"];\n\n// Extraer todos los títulos y párrafos usando expresiones regulares\nconst titles = [];\nconst paragraphs = [];\n\n// Extraer todos los títulos (h1, h2, h3, etc.)\nconst titleMatches = htmlContent.match(/<h[1-6][^>]*>(.*?)<\\/h[1-6]>/g);\nif (titleMatches) {\n    for (let match of titleMatches) {\n        titles.push(match.replace(/<[^>]+>/g, '')); // Eliminar etiquetas HTML\n    }\n}\n\n// Extraer todos los párrafos\nconst paragraphMatches = htmlContent.match(/<p[^>]*>(.*?)<\\/p>/g);\nif (paragraphMatches) {\n    for (let match of paragraphMatches) {\n        paragraphs.push(match.replace(/<[^>]+>/g, '')); // Eliminar etiquetas HTML\n    }\n}\n\n// Unir todos los títulos y párrafos en un solo texto\nconst content = \"Títulos:\\n\" + titles.join(\"\\n\") + \"\\n\\nPárrafos:\\n\" + paragraphs.join(\" \");\n\n// Limitar el número de caracteres para OpenAI (opcional)\nconst maxCharacters = 10000;\nlet finalContent = content;\nif (finalContent.length > maxCharacters) {\n    finalContent = finalContent.slice(0, maxCharacters) + '...';\n}\n\n// Retornar solo el contenido procesado y reducido\nreturn [{ json: { content: finalContent } }];\n"
+      },
+      "id": "0c05dc16-ef2c-490b-8481-d38d65b4329b",
+      "name": "Conversión HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3088,
+        2912
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2a6652d3-d140-4439-9262-b13ccb3c09ec",
+              "leftValue": "={{ $json.error.status }}",
+              "rightValue": 403,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "424b9fad-939a-44e8-b226-b4fc8e04b810",
+      "name": "Verificar Scrapeo",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3328,
+        2800
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2f747e2d-32b7-4500-8082-90ac0abc55b1",
+              "name": "combinedTranscript",
+              "value": "={{ $json.data.transcripts.es_auto.custom.map(item => item.text).join(\" \") }}",
+              "type": "string"
+            },
+            {
+              "id": "651fbe08-8b4a-43d9-b6bf-74284755d36c",
+              "name": "combinedTranscriptEn",
+              "value": "={{ $json.data.transcripts.en_auto.custom.map(item => item.text).join(\" \") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2896,
+        3280
+      ],
+      "id": "bf525e02-dd75-4bf9-9383-25dc120ac33c",
+      "name": "Agrupar"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1a54b1d-a2e6-4ade-b209-5b8f3550478e",
+              "name": "data.transcripts",
+              "value": "={{ $json.data.transcripts }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3072,
+        3280
+      ],
+      "id": "62551117-ebe3-452c-93da-057ae1df6a79",
+      "name": "Extraer"
+    },
+    {
+      "parameters": {
+        "url": "https://youtube-video-summarizer-gpt-ai.p.rapidapi.com/api/v1/get-transcript-v2",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "video_id",
+              "value": "={{ $json.videoID }}"
+            },
+            {
+              "name": "platform",
+              "value": "youtube"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-key",
+              "value": "1dba69f06emsh4de310a8f373dc9p18f8a3jsn123183fdaf6c"
+            },
+            {
+              "name": "x-rapidapi-host",
+              "value": "youtube-video-summarizer-gpt-ai.p.rapidapi.com"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3248,
+        3280
+      ],
+      "id": "4fa45b73-c374-41bf-8e8e-c7e319359ddd",
+      "name": "Petición HTTP"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener la URL desde los datos entrantes\nconst url = $json.link_youtube;\n\n// Función para extraer el ID del video de YouTube\nfunction getYouTubeVideoID(url) {\n    const regex = /[?&]v=([a-zA-Z0-9_-]{11})/;\n    const match = url.match(regex);\n    return match ? match[1] : null;\n}\n\n// Extraer el ID del video\nconst videoID = getYouTubeVideoID(url);\n\n// Devolver el ID como resultado\nreturn { videoID };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3424,
+        3280
+      ],
+      "id": "0705209d-de6a-424b-b3b1-47affba73208",
+      "name": "Código"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a2857bd5-76e7-4db5-ac53-86ad4ee37445",
+              "name": "link_youtube",
+              "value": "={{ $json.URL }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3568,
+        3280
+      ],
+      "id": "8867e1f3-8979-40ec-a3ac-bce348e2caa5",
+      "name": "Extraer Link"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -3952,
+        3040
+      ],
+      "id": "588196d5-278a-4f32-8cc2-ed9ec85cf1e2",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 19
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -4288,
+        3040
+      ],
+      "id": "3e3520f0-dcf1-4dc1-8655-d4a51d75d0c1",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk",
+          "mode": "list",
+          "cachedResultName": "LinkedIn Hoja",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Estado",
+              "lookupValue": "Sin Procesar"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -4096,
+        3040
+      ],
+      "id": "a95fbd98-d423-4ef2-8afa-f0a4f2214f7f",
+      "name": "Obtener Enlace"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un estratega de contenido. Recibirás una o varias NOTICIAS en forma de array JSON, cada una con un campo \"content\" que contiene el texto extraído (puede incluir ruido como \"Tu suscripción...\" o HTML entities). Debes sintetizar TODA la información relevante en un único resumen en español, claro y conciso, sin perder datos clave (quién, qué, cuándo, dónde, por qué es relevante, estatus actual). \n\nREGLAS\n- Devuelve ÚNICAMENTE un objeto JSON válido con una única clave \"content\".\n- No escribas nada fuera del JSON. No añadas explicaciones.\n- No inventes datos. Si algo no está en los textos recibidos, no lo incluyas.\n- Desduplica y limpia ruido (por ejemplo: mensajes de suscripción, navegación, bloques repetidos, HTML entities).\n- Mantén neutralidad y precisión factual. Si hay fechas o cifras, inclúyelas.\n- Longitud orientativa: 150-200 palabras aprox integradas en un solo párrafo.\n- Si el texto no está en español, traduce el resumen al español.\n\nENTRADA\n- articles: {{ $json.content || null }}   // array de objetos; cada objeto puede tener: { \"content\": \"texto de la noticia\" }\n\nSALIDA (SOLO JSON VÁLIDO)\n{\n  \"content\": \"Resumen único, en un solo bloque de texto, claro y completo, que integre: tema principal, hechos clave (quién/qué/cuándo/dónde), contexto y por qué importa; sin viñetas ni títulos, sin texto adicional.\"\n}\n",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -2736,
+        2912
+      ],
+      "id": "fa470f2b-2735-4032-bb5a-0595da56971d",
+      "name": "Sintetizador Noticias"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un estratega de contenido. Recibirás la TRANSCRIPCIÓN completa de un vídeo de YouTube y debes sintetizar TODA la información sin perder puntos clave.\n\nREGLAS\n- Devuelve ÚNICAMENTE un objeto JSON válido con una única clave \"content\".\n- No escribas nada fuera del JSON. No añadas explicaciones.\n- No inventes datos. Si algo no está en la transcripción, no lo incluyas.\n- Si la transcripción no está en español, traduce el resumen al español.\n- Mantén precisión, claridad y concisión (150–200 palabras aprox.). Incluye tema, idea principal y 3–5 puntos clave integrados de forma natural.\n\nENTRADA\n- transcript: {{ $json.combinedTranscript || $json.combinedTranscriptEn || null }}\n\nSALIDA (SOLO JSON VÁLIDO)\n{\n  \"content\": \"Resumen único, en un solo bloque de texto, claro y completo que recoja tema principal, qué, por qué importa, y 3–5 ideas clave integradas sin viñetas.\"\n}\n\n   \n",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -2736,
+        3280
+      ],
+      "id": "10e58de0-d298-42f1-8feb-63d676145fa7",
+      "name": "Sintetizador Transcripciones"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "47bdc278-d955-492d-a741-01742803c1f1",
+              "name": "contenido",
+              "value": "={{ $json.message.content.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2336,
+        3088
+      ],
+      "id": "e235696f-9737-4156-a43b-150b0f28950a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un estratega de LinkedIn. Recibirás un contenido base y debes crear UN único post simple, claro y directo, listo para publicar.\n\nREGLAS\n- Devuelve ÚNICAMENTE un objeto JSON válido con una única clave \"linkedin_content\".\n- No escribas nada fuera del JSON. No añadas explicaciones.\n- No inventes datos. Mantén español neutro.\n- 600–1100 caracteres aprox.\n- Primeras 1–2 líneas: hook breve.\n- Párrafos cortos (1–2 líneas) y espacios entre bloques.\n- Opcional: 3–5 hashtags al final.\n\nENTRADA\n- contenido: {{ $json.contenido || null }}\n\nSALIDA (SOLO JSON)\n{\n  \"linkedin_content\": \"Hook breve.\\n\\nIdea principal y contexto en 2–3 bloques cortos.\\nIncluye 3–5 ideas clave integradas de forma natural sin viñetas.\\nCierra con una pregunta o invitación a comentar.\\n\\n#IA #Automatización #Productividad\"\n}\n",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -2064,
+        2416
+      ],
+      "id": "70896f88-125c-4e9c-8efd-32af9a0f8772",
+      "name": "Publicación LinkedIn"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un estratega de X (Twitter). Recibirás un contenido base y debes crear UN único post breve, claro y directo, listo para publicar.\n\nREGLAS\n- Devuelve ÚNICAMENTE un objeto JSON válido con una única clave \"x_content\".\n- No escribas nada fuera del JSON. No añadas explicaciones.\n- Español neutro. No inventes datos.\n- 220–270 caracteres (incluyendo espacios, hashtags y enlace si existe).\n- Estructura: hook corto + insight 1 línea + CTA breve (pregunta opcional).\n- Evita listas, comillas largas y jerga innecesaria.\n\nENTRADA\n- contenido: {{ $json.contenido || null }}\n\nSALIDA (SOLO JSON)\n{\n  \"x_content\": \"Hook breve. Idea clave en una línea. CTA corta (si aplica).\"\n}\n",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -2048,
+        3632
+      ],
+      "id": "415742ff-8454-4f8f-8b20-a06ec99c17e7",
+      "name": "Publicacion X (Twitter)"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un estratega de Instagram. Recibirás un contenido base y debes crear UN único caption claro y directo, listo para publicar (post o reel).\n\nREGLAS\n- Devuelve ÚNICAMENTE un objeto JSON válido con una única clave \"instagram_content\".\n- No escribas nada fuera del JSON. No añadas explicaciones.\n- Español neutro. No inventes datos.\n- 700–1500 caracteres aprox.\n- Estructura: Hook breve (1–2 líneas) → 2–4 bloques cortos con valor → CTA clara.\n- Usa saltos de línea y emojis de forma moderada (opcionales).\n- 3–8 hashtags relevantes al final.\n- Evita enlaces (usa “link en bio” si corresponde). Si recibes un link explícito, menciónalo al final sin repetirlo varias veces.\n\nENTRADA\n- contenido: {{ $json.contenido || null }}\n- link_opcional: {{ $json.link || null }}\n\nSALIDA (SOLO JSON)\n{\n  \"instagram_content\": \"Hook potente en 1–2 líneas.\\n\\nBloque 1 con la idea principal en lenguaje simple.\\n\\nBloque 2 con 2–3 aprendizajes/beneficios integrados en frases cortas.\\n\\nBloque 3 con ejemplo rápido o tip accionable.\\n\\nCTA: ¿Qué te llevas de esto? Cuéntamelo en los comentarios. {{ $json.link ? 'Más info en el link 👉 ' + $json.link : 'Más en el link de mi bio.' }}\\n\\n#IA #Automatización #Negocios #Productividad #Emprendedores\"\n}\n",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -2064,
+        2880
+      ],
+      "id": "3b948da6-d8bb-4212-9ad7-c17933da3f02",
+      "name": "Publicacion Instagram"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/nano-banana",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key 031cd543-2d44-4333-bc50-86d64baaeee6:948d825aa0635de32b5487e0ea902fdb"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"prompt\": \"{{ $json.message.content.image_prompt }}\",\n  \"num_images\": 1,\n  \"aspect_ratio\": \"4:5\",\n  \"output_format\": \"jpeg\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1360,
+        2416
+      ],
+      "id": "80099149-0090-49bc-b406-7797c57aa95c",
+      "name": "Crear Imagen"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/nano-banana",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key 031cd543-2d44-4333-bc50-86d64baaeee6:948d825aa0635de32b5487e0ea902fdb"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"prompt\": \"{{ $json.message.content.image_prompt }}\",\n  \"num_images\": 1,\n  \"aspect_ratio\": \"4:5\",\n  \"output_format\": \"jpeg\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1360,
+        2880
+      ],
+      "id": "d5fc0e17-2a71-4a9c-b0b9-9d42a6879d0a",
+      "name": "Crear Imagen1"
+    },
+    {
+      "parameters": {
+        "platform": "linkedin",
+        "accountId": {
+          "__rl": true,
+          "value": "7798",
+          "mode": "list",
+          "cachedResultName": "Víctor Pérez Sanz",
+          "cachedResultUrl": "https://backend.blotato.com/v2/accounts/7798"
+        },
+        "postContentText": "={{ $('Publicación LinkedIn').item.json.message.content.linkedin_content }}",
+        "postContentMediaUrls": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        2304
+      ],
+      "id": "28c8a42c-609f-4f10-b5cf-16576ebe8869",
+      "name": "Publicar LinkedIn",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "mediaUrl": "={{ $json.images[0].url }}"
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        2304
+      ],
+      "id": "9f2bd9f1-e8f8-47c6-92e0-4d40aa398fa9",
+      "name": "Subir Imagen",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "platform": "twitter",
+        "accountId": {
+          "__rl": true,
+          "value": "8599",
+          "mode": "list",
+          "cachedResultName": "prez111231",
+          "cachedResultUrl": "https://backend.blotato.com/v2/accounts/8599"
+        },
+        "postContentText": "={{ $json.message.content.x_content }}",
+        "postContentMediaUrls": "=",
+        "options": {}
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        -1712,
+        3632
+      ],
+      "id": "e193ef19-2ae3-4cd7-b3f9-dacb99d1fdb7",
+      "name": "Publicar X (Twitter)",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un generador de prompts para imágenes. A partir del siguiente texto de un post de Instagram, crea UN único prompt listo para un generador de imágenes (SDXL/Midjourney/DALL·E) con solo TÍTULO y VISUAL.\n\nREGLAS\n- Devuelve ÚNICAMENTE un objeto JSON válido con una única clave \"image_prompt\".\n- No escribas nada fuera del JSON. No añadas explicaciones.\n- El diseño debe ser cuadrado, profesional y minimalista para Instagram.\n- SOLO texto permitido: 1 título (≤ 7 palabras). **Sin subtítulo, sin bullets, sin párrafos.**\n\nENTRADA\n- linkedin_content: {{ $json.message.content.instagram_content }}\n- brand_primary (opcional): {{ $json.brand_primary || \"#0A84FF\" }}\n- brand_accent (opcional): {{ $json.brand_accent || \"#1DE9B6\" }}\n- logo_url (opcional): {{ $json.logo_url || null }}\n\nOBJETIVO VISUAL (inclúyelo en el prompt)\n- Crear una imagen para acompañar una publicación de Instagram muy visual, con poco texto pero claro.\n\nSALIDA (SOLO JSON)\n{\n  \"image_prompt\": AQUI EL PROMPT COMPLETO DE LA IMAGEN\n}\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -1712,
+        2880
+      ],
+      "id": "181ebfec-2206-425b-b979-521e3f53ad79",
+      "name": "Prompt Imagen Instagram"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un generador de prompts para imágenes. A partir del siguiente texto de un post de LinkedIn, crea UN único prompt listo para un generador de imágenes (SDXL/Midjourney/DALL·E) con solo TÍTULO y VISUAL.\n\nREGLAS\n- Devuelve ÚNICAMENTE un objeto JSON válido con una única clave \"image_prompt\".\n- No escribas nada fuera del JSON. No añadas explicaciones.\n- El diseño debe ser cuadrado, profesional y minimalista para LinkedIn.\n- SOLO texto permitido: 1 título (≤ 7 palabras). **Sin subtítulo, sin bullets, sin párrafos.**\n\nENTRADA\n- linkedin_content: {{ $json.message.content.linkedin_content }}\n- brand_primary (opcional): {{ $json.brand_primary || \"#0A84FF\" }}\n- brand_accent (opcional): {{ $json.brand_accent || \"#1DE9B6\" }}\n- logo_url (opcional): {{ $json.logo_url || null }}\n\nOBJETIVO VISUAL (inclúyelo en el prompt)\n- Crear una imagen para acompañar una publicación de LinkedIn muy visual, con poco texto pero claro.\n\nSALIDA (SOLO JSON)\n{\n  \"image_prompt\": AQUI EL PROMPT COMPLETO DE LA IMAGEN\n}\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -1712,
+        2416
+      ],
+      "id": "3b65f83c-e794-45a3-975c-3ecf35b45142",
+      "name": "Prompt Imagen LinkedIn"
+    },
+    {
+      "parameters": {
+        "platform": "threads",
+        "accountId": {
+          "__rl": true,
+          "value": "=",
+          "mode": "id"
+        },
+        "postContentText": "={{ $('Publicacion Threads').item.json.message.content.threads_content }}",
+        "options": {}
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        -1712,
+        3904
+      ],
+      "id": "199212f0-ef3d-4b94-906c-9cf67d8c99fe",
+      "name": "Publicar Threads",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un estratega de Threads. Recibirás un contenido base y debes crear UN único post breve, conversacional y claro.\n\nREGLAS\n- Devuelve ÚNICAMENTE un objeto JSON válido con una única clave \"threads_content\".\n- No escribas nada fuera del JSON. No añadas explicaciones.\n- Español neutro. No inventes datos.\n- 220–350 caracteres aprox.\n- Estructura: hook corto → idea clave en lenguaje simple → pregunta/CTA breve.\n- Emojis opcionales y naturales. 1–3 hashtags al final.\n- Si hay enlace, menciónalo una sola vez al final.\n\nENTRADA\n- contenido: {{ $json.contenido || null }}\n- link: {{ $json.link || null }}\n\nSALIDA (SOLO JSON)\n{\n  \"threads_content\": \"Hook breve que despierte curiosidad. Idea principal en una línea y por qué importa. ¿Tú qué opinas? {{ $json.link || '' }} #IA #Automatización\"\n}\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -2064,
+        3904
+      ],
+      "id": "a75e76e4-2451-471d-8c58-c9ced93d6846",
+      "name": "Publicacion Threads"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/nano-banana",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key 031cd543-2d44-4333-bc50-86d64baaeee6:948d825aa0635de32b5487e0ea902fdb"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"prompt\": \"{{ $json.message.content.image_prompt }}\",\n  \"num_images\": 1,\n  \"aspect_ratio\": \"4:5\",\n  \"output_format\": \"jpeg\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1344,
+        3344
+      ],
+      "id": "df6827c6-ca66-4aa5-8e1e-8175fea62cb1",
+      "name": "Crear Imagen2"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un generador de prompts para imágenes. A partir del siguiente texto de un post de Facebook, crea UN único prompt listo para un generador de imágenes (SDXL/Midjourney/DALL·E) con solo TÍTULO y VISUAL.\n\nREGLAS\n- Devuelve ÚNICAMENTE un objeto JSON válido con una única clave \"image_prompt\".\n- No escribas nada fuera del JSON. No añadas explicaciones.\n- El diseño debe ser cuadrado, profesional y minimalista para Facebook.\n- SOLO texto permitido: 1 título (≤ 7 palabras). **Sin subtítulo, sin bullets, sin párrafos.**\n\nENTRADA\n- linkedin_content: {{ $json.message.content.instagram_content }}\n- brand_primary (opcional): {{ $json.brand_primary || \"#0A84FF\" }}\n- brand_accent (opcional): {{ $json.brand_accent || \"#1DE9B6\" }}\n- logo_url (opcional): {{ $json.logo_url || null }}\n\nOBJETIVO VISUAL (inclúyelo en el prompt)\n- Crear una imagen para acompañar una publicación de Facebook muy visual, con poco texto pero claro.\n\nSALIDA (SOLO JSON)\n{\n  \"image_prompt\": AQUI EL PROMPT COMPLETO DE LA IMAGEN\n}\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -1696,
+        3344
+      ],
+      "id": "2126812a-e08a-45fb-965e-c1b49dc23866",
+      "name": "Prompt Imagen Facebook"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk",
+          "mode": "list",
+          "cachedResultName": "Redes Sociales",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "URL": "={{ $('Obtener Enlace').item.json.URL }}",
+            "Publicado": "Si",
+            "Estado": "Procesado",
+            "LinkedIn": "={{ $('Publicación LinkedIn').item.json.message.content.linkedin_content }}",
+            "Imagen LinkedIn": "={{ $('Imagen URL').item.json.images[0].url }}"
+          },
+          "matchingColumns": [
+            "URL"
+          ],
+          "schema": [
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen LinkedIn",
+              "displayName": "Imagen LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Twitter (X)",
+              "displayName": "Twitter (X)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Threads",
+              "displayName": "Threads",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Facebook",
+              "displayName": "Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen Facebook",
+              "displayName": "Imagen Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Instagram",
+              "displayName": "Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen Instagram",
+              "displayName": "Imagen Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Publicado",
+              "displayName": "Publicado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -16,
+        2304
+      ],
+      "id": "ca3000a6-d214-4fd2-9393-08fd9eac9e58",
+      "name": "Actualizar Fila"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk",
+          "mode": "list",
+          "cachedResultName": "Redes Sociales",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "URL": "={{ $('Obtener Enlace').item.json.URL }}",
+            "Publicado": "Si",
+            "Estado": "Procesado",
+            "Instagram": "={{ $('Publicacion Instagram').item.json.message.content.instagram_content }}",
+            "Imagen Instagram": "={{ $('Imagen URL1').item.json.images[0].url }}"
+          },
+          "matchingColumns": [
+            "URL"
+          ],
+          "schema": [
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen LinkedIn",
+              "displayName": "Imagen LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Twitter (X)",
+              "displayName": "Twitter (X)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Threads",
+              "displayName": "Threads",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Facebook",
+              "displayName": "Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen Facebook",
+              "displayName": "Imagen Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Instagram",
+              "displayName": "Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen Instagram",
+              "displayName": "Imagen Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Publicado",
+              "displayName": "Publicado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -16,
+        2768
+      ],
+      "id": "116303e8-93df-4429-936e-9e5d74f0f6a2",
+      "name": "Actualizar Fila1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk",
+          "mode": "list",
+          "cachedResultName": "Redes Sociales",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "URL": "={{ $('Obtener Enlace').item.json.URL }}",
+            "Publicado": "Si",
+            "Estado": "Procesado",
+            "Twitter (X)": "={{ $('Publicacion X (Twitter)').item.json.message.content.x_content }}"
+          },
+          "matchingColumns": [
+            "URL"
+          ],
+          "schema": [
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen LinkedIn",
+              "displayName": "Imagen LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Twitter (X)",
+              "displayName": "Twitter (X)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Threads",
+              "displayName": "Threads",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Facebook",
+              "displayName": "Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen Facebook",
+              "displayName": "Imagen Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Instagram",
+              "displayName": "Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen Instagram",
+              "displayName": "Imagen Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Publicado",
+              "displayName": "Publicado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1488,
+        3632
+      ],
+      "id": "b23e2673-49e8-4299-ad51-275fde6b037a",
+      "name": "Actualizar Fila3"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk",
+          "mode": "list",
+          "cachedResultName": "Redes Sociales",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "URL": "={{ $('Obtener Enlace').item.json.URL }}",
+            "Publicado": "Si",
+            "Estado": "Procesado",
+            "Threads": "={{ $('Publicacion Threads').item.json.message.content.threads_content }}"
+          },
+          "matchingColumns": [
+            "URL"
+          ],
+          "schema": [
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen LinkedIn",
+              "displayName": "Imagen LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Twitter (X)",
+              "displayName": "Twitter (X)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Threads",
+              "displayName": "Threads",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Facebook",
+              "displayName": "Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen Facebook",
+              "displayName": "Imagen Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Instagram",
+              "displayName": "Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen Instagram",
+              "displayName": "Imagen Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Publicado",
+              "displayName": "Publicado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1488,
+        3904
+      ],
+      "id": "4df7a3b6-07d4-4f65-a8e1-1b18c33cbf85",
+      "name": "Actualizar Fila4"
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/nano-banana/requests/{{ $json.request_id }}/status ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key 031cd543-2d44-4333-bc50-86d64baaeee6:948d825aa0635de32b5487e0ea902fdb"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1136,
+        2416
+      ],
+      "id": "8dda1004-aa87-4a9f-a27e-8c30e0f362cb",
+      "name": "Mirar Estado"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1d8e6e8c-7292-495f-b2d3-87b085b3f22d",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "COMPLETED",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -912,
+        2352
+      ],
+      "id": "1aba0d85-2c81-4dbd-9ee6-f81c6a4fc5dc",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -688,
+        2512
+      ],
+      "id": "2508a25b-e3e5-48e3-9a7f-031ff36c513d",
+      "name": "Wait",
+      "webhookId": "8e90848a-ff85-46af-846b-ecdd619d8a7d"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key 031cd543-2d44-4333-bc50-86d64baaeee6:948d825aa0635de32b5487e0ea902fdb"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -688,
+        2304
+      ],
+      "id": "8e709ea8-40b0-44ba-b11f-c32c0d229a7d",
+      "name": "Imagen URL"
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/nano-banana/requests/{{ $json.request_id }}/status ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key 031cd543-2d44-4333-bc50-86d64baaeee6:948d825aa0635de32b5487e0ea902fdb"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1136,
+        2880
+      ],
+      "id": "8f175f8d-a377-4901-ac9b-1c2032751dc0",
+      "name": "Mirar Estado1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1d8e6e8c-7292-495f-b2d3-87b085b3f22d",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "COMPLETED",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -912,
+        2816
+      ],
+      "id": "cd51aa8a-12be-4f68-8868-27c0513ecef0",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -688,
+        2976
+      ],
+      "id": "a7155b5c-e6cd-41ef-a882-9e505aa74bbe",
+      "name": "Wait1",
+      "webhookId": "8e90848a-ff85-46af-846b-ecdd619d8a7d"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key 031cd543-2d44-4333-bc50-86d64baaeee6:948d825aa0635de32b5487e0ea902fdb"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -688,
+        2768
+      ],
+      "id": "930be91b-295d-498c-afe3-2cb9ef2384ae",
+      "name": "Imagen URL1"
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "mediaUrl": "={{ $json.images[0].url }}"
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        2768
+      ],
+      "id": "f2f77c07-a0d9-435b-93a7-3a72ea6a92b0",
+      "name": "Subir Imagen1",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk",
+          "mode": "list",
+          "cachedResultName": "Redes Sociales",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "URL": "={{ $('Obtener Enlace').item.json.URL }}",
+            "Publicado": "Si",
+            "Estado": "Procesado",
+            "Instagram": "=",
+            "Imagen Instagram": "=",
+            "Facebook": "={{ $('Publicacion Facebook').item.json.message.content.linkedin_content }}",
+            "Imagen Facebook": "={{ $('Imagen URL2').item.json.images[0].url }}"
+          },
+          "matchingColumns": [
+            "URL"
+          ],
+          "schema": [
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen LinkedIn",
+              "displayName": "Imagen LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Twitter (X)",
+              "displayName": "Twitter (X)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Threads",
+              "displayName": "Threads",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Facebook",
+              "displayName": "Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen Facebook",
+              "displayName": "Imagen Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Instagram",
+              "displayName": "Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen Instagram",
+              "displayName": "Imagen Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Publicado",
+              "displayName": "Publicado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        16,
+        3216
+      ],
+      "id": "4531b652-c57e-42d1-a124-e0fa60b41d82",
+      "name": "Actualizar Fila2"
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/nano-banana/requests/{{ $json.request_id }}/status ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key 031cd543-2d44-4333-bc50-86d64baaeee6:948d825aa0635de32b5487e0ea902fdb"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1120,
+        3344
+      ],
+      "id": "b8e4397b-db6a-4fa0-8887-50b89ab4a064",
+      "name": "Mirar Estado2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1d8e6e8c-7292-495f-b2d3-87b085b3f22d",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "COMPLETED",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -896,
+        3264
+      ],
+      "id": "c4904de9-c2d4-4cf5-8431-19bec0c11dac",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -672,
+        3440
+      ],
+      "id": "85af1816-203c-46d2-883d-c1e99ebd1351",
+      "name": "Wait2",
+      "webhookId": "8e90848a-ff85-46af-846b-ecdd619d8a7d"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key 031cd543-2d44-4333-bc50-86d64baaeee6:948d825aa0635de32b5487e0ea902fdb"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -672,
+        3216
+      ],
+      "id": "e2e0dfb1-9de9-467f-9465-214dd5f672d6",
+      "name": "Imagen URL2"
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "mediaUrl": "={{ $json.images[0].url }}"
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        3216
+      ],
+      "id": "376858f0-c45c-4551-ac00-ab317cc77098",
+      "name": "Subir Imagen2",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "platform": "facebook",
+        "accountId": {
+          "__rl": true,
+          "value": "18390",
+          "mode": "list",
+          "cachedResultName": "victorperez.ia",
+          "cachedResultUrl": "https://backend.blotato.com/v2/accounts/18390"
+        },
+        "postContentText": "={{ $('Publicacion Facebook').item.json.message.content.linkedin_content }}",
+        "postContentMediaUrls": "={{ $json.url }}",
+        "facebookPageId": {
+          "__rl": true,
+          "value": "=",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        3216
+      ],
+      "id": "b6aa4495-1227-4395-a3a0-fa2afda23e0d",
+      "name": "Publicar Facebook",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un estratega de Facebook. Recibirás un contenido base y debes crear UN único post claro y directo, listo para publicar.\n\nREGLAS\n- Devuelve ÚNICAMENTE un objeto JSON válido con una única clave \"facebook_content\".\n- No escribas nada fuera del JSON. No añadas explicaciones.\n- Español neutro. No inventes datos.\n- 500–1200 caracteres aprox.\n- Estructura: hook breve (1–2 líneas) → desarrollo en 2–3 bloques cortos con valor → CTA clara.\n- Incluye 2–5 hashtags al final (opcionales).\n- Si hay enlace, inclúyelo una sola vez al final.\n\nENTRADA\n- contenido: {{ $json.contenido || null }}\n- link: {{ $json.link || null }}\n\nSALIDA (SOLO JSON)\n{\n  \"facebook_content\": \"Hook breve que capte atención.\\n\\nBloque 1: idea principal en lenguaje simple y por qué importa.\\n\\nBloque 2: 2–3 aprendizajes o beneficios integrados en frases cortas.\\n\\nCTA: ¿Qué opinas? Cuéntamelo en comentarios. {{ $json.link ? 'Más aquí: ' + $json.link : '' }}\\n\\n#IA #Automatización #Negocio #Productividad\"\n}\n",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -2048,
+        3344
+      ],
+      "id": "91fcb31c-720c-4238-bb36-0b51dfe69f51",
+      "name": "Publicacion Facebook"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk",
+          "mode": "list",
+          "cachedResultName": "Redes Sociales",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tQTyYwU1Dy8abT3X2BzqsPveowptuh8mUfqOAPmlgXk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "URL": "={{ $('Obtener Enlace').item.json.URL }}",
+            "Publicado": "Noticia Inaccesible",
+            "Estado": "Procesado",
+            "Threads": "="
+          },
+          "matchingColumns": [
+            "URL"
+          ],
+          "schema": [
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen LinkedIn",
+              "displayName": "Imagen LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Twitter (X)",
+              "displayName": "Twitter (X)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Threads",
+              "displayName": "Threads",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Facebook",
+              "displayName": "Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen Facebook",
+              "displayName": "Imagen Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Instagram",
+              "displayName": "Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imagen Instagram",
+              "displayName": "Imagen Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Publicado",
+              "displayName": "Publicado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -3088,
+        2656
+      ],
+      "id": "97a1697e-e960-4c25-bc4a-00d0d0be769e",
+      "name": "Noticia Inaccesible"
+    },
+    {
+      "parameters": {
+        "accountId": {
+          "__rl": true,
+          "value": "18390",
+          "mode": "list",
+          "cachedResultName": "victorperez.ia",
+          "cachedResultUrl": "https://backend.blotato.com/v2/accounts/18390"
+        },
+        "postContentText": "={{ $('Publicacion Instagram').item.json.message.content.instagram_content }}",
+        "postContentMediaUrls": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        2768
+      ],
+      "id": "511d5877-8385-4b54-a8f5-1d3f16bd5695",
+      "name": "Publicar Instagram1",
+      "credentials": {}
+    }
+  ],
+  "connections": {
+    "Trigger Programado": {
+      "main": [
+        [
+          {
+            "node": "Leer Historial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Historial": {
+      "main": [
+        [
+          {
+            "node": "Seleccionar Tema",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seleccionar Tema": {
+      "main": [
+        [
+          {
+            "node": "Generar Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar Post": {
+      "main": [
+        [
+          {
+            "node": "Parsear Contenido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generar Post",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Contenido": {
+      "main": [
+        [
+          {
+            "node": "Generar Imagen Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar Imagen Gemini": {
+      "main": [
+        [
+          {
+            "node": "Subir Imagen Hosting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Subir Imagen Hosting": {
+      "main": [
+        [
+          {
+            "node": "Pedir Aprobación WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pedir Aprobación WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Esperar Aprobación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esperar Aprobación": {
+      "main": [
+        [
+          {
+            "node": "¿Aprobado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Aprobado?": {
+      "main": [
+        [
+          {
+            "node": "Crear Container IG",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Init Upload LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear Container IG": {
+      "main": [
+        [
+          {
+            "node": "Publicar Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publicar Instagram": {
+      "main": [
+        [
+          {
+            "node": "Consolidar Resultados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Init Upload LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Subir Imagen LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Subir Imagen LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Crear Post LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear Post LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Consolidar Resultados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consolidar Resultados": {
+      "main": [
+        [
+          {
+            "node": "Guardar Historial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar HTML": {
+      "main": [
+        [
+          {
+            "node": "Verificar Scrapeo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Descargar HTML",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extraer Link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conversión HTML": {
+      "main": [
+        [
+          {
+            "node": "Sintetizador Noticias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Scrapeo": {
+      "main": [
+        [
+          {
+            "node": "Noticia Inaccesible",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Conversión HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agrupar": {
+      "main": [
+        [
+          {
+            "node": "Sintetizador Transcripciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer": {
+      "main": [
+        [
+          {
+            "node": "Agrupar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Petición HTTP": {
+      "main": [
+        [
+          {
+            "node": "Extraer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Código": {
+      "main": [
+        [
+          {
+            "node": "Petición HTTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Link": {
+      "main": [
+        [
+          {
+            "node": "Código",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Obtener Enlace",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Enlace": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sintetizador Noticias": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sintetizador Transcripciones": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Publicación LinkedIn",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Publicacion Facebook",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Publicacion X (Twitter)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Publicacion Instagram",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Publicacion Threads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publicación LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Prompt Imagen LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publicacion X (Twitter)": {
+      "main": [
+        [
+          {
+            "node": "Publicar X (Twitter)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publicacion Instagram": {
+      "main": [
+        [
+          {
+            "node": "Prompt Imagen Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear Imagen1": {
+      "main": [
+        [
+          {
+            "node": "Mirar Estado1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear Imagen": {
+      "main": [
+        [
+          {
+            "node": "Mirar Estado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Subir Imagen": {
+      "main": [
+        [
+          {
+            "node": "Publicar LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Imagen Instagram": {
+      "main": [
+        [
+          {
+            "node": "Crear Imagen1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Imagen LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Crear Imagen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publicacion Threads": {
+      "main": [
+        [
+          {
+            "node": "Publicar Threads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear Imagen2": {
+      "main": [
+        [
+          {
+            "node": "Mirar Estado2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Imagen Facebook": {
+      "main": [
+        [
+          {
+            "node": "Crear Imagen2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publicar LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Fila",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publicar X (Twitter)": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Fila3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publicar Threads": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Fila4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mirar Estado": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Imagen URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Mirar Estado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Imagen URL": {
+      "main": [
+        [
+          {
+            "node": "Subir Imagen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mirar Estado1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Imagen URL1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Mirar Estado1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Imagen URL1": {
+      "main": [
+        [
+          {
+            "node": "Subir Imagen1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Subir Imagen1": {
+      "main": [
+        [
+          {
+            "node": "Publicar Instagram1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mirar Estado2": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Imagen URL2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Mirar Estado2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Imagen URL2": {
+      "main": [
+        [
+          {
+            "node": "Subir Imagen2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Subir Imagen2": {
+      "main": [
+        [
+          {
+            "node": "Publicar Facebook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publicar Facebook": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Fila2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publicacion Facebook": {
+      "main": [
+        [
+          {
+            "node": "Prompt Imagen Facebook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publicar Instagram1": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Fila1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "ca2fddd5-f67f-4d7f-a2ce-7d61768e7726",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-20T13:53:43.277Z",
+      "createdAt": "2026-02-20T13:53:43.277Z",
+      "role": "workflow:owner",
+      "workflowId": "T9JAp3MxztvfkD5x",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
