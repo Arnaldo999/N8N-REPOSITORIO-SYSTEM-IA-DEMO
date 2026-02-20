@@ -1,0 +1,494 @@
+{
+  "updatedAt": "2026-02-19T13:21:40.621Z",
+  "createdAt": "2026-02-12T12:47:05.623Z",
+  "id": "rmGLnJ8ApxfkrCK1",
+  "name": "Recordatorio de Cobros — System IA",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
+      },
+      "id": "db4ed0c7-b9d7-4ae7-b8fa-e0c020416c00",
+      "name": "Cron 9am Diario",
+      "position": [
+        128,
+        336
+      ],
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/14HJkGerBAY5KCR6YBarae59aiCPhKzvt374strsGk3M/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1"
+        },
+        "options": {}
+      },
+      "id": "f6668e85-4310-478f-821a-f587e5aa7aa4",
+      "name": "Leer Clientes de Sheets",
+      "position": [
+        352,
+        336
+      ],
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const hoy = new Date();\nhoy.setHours(0,0,0,0);\n\nconst manana = new Date(hoy);\nmanana.setDate(manana.getDate() + 1);\n\nconst clientes = items.map(i => i.json).filter(c => {\n  if (!c['Próximo Pago']) return false;\n  \n  const raw = c['Próximo Pago'].toString().trim();\n  const partes = raw.split('/');\n  if (partes.length !== 3) return false;\n  \n  const dia = parseInt(partes[0]);\n  const mes = parseInt(partes[1]) - 1;\n  const anio = parseInt(partes[2]);\n  \n  const fechaPago = new Date(anio, mes, dia);\n  fechaPago.setHours(0,0,0,0);\n  \n  return fechaPago.getTime() === manana.getTime();\n});\n\nif (clientes.length === 0) {\n  return [{ json: { hayVencimientos: false, clientes: [] } }];\n}\n\nconst lista = clientes.map(c => \n  `• *${c['Nombre']}* (${c['Negocio'] || c['ID Cliente']}) — $${c['Precio Mensual']} — ${c['Próximo Pago']}`\n).join('\\n');\n\nconst mensaje = `💰 *COBROS DE MAÑANA*\\n\\n${lista}\\n\\n_Total: $${clientes.reduce((acc, c) => acc + (parseFloat(c['Precio Mensual']) || 0), 0)}_`;\n\nreturn [{ json: { hayVencimientos: true, clientes, mensaje, total: clientes.length } }];"
+      },
+      "id": "5c2bf2f2-40c7-4082-8523-25a840eea6f2",
+      "name": "Filtrar Vencimientos de Mañana",
+      "position": [
+        576,
+        336
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.hayVencimientos }}",
+              "operator": {
+                "operation": "equals",
+                "type": "boolean"
+              },
+              "rightValue": true,
+              "id": "60291021-c23d-40e4-bdb8-05a385782341"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b1e14d8a-41d0-4bea-ab70-ed65610ba351",
+      "name": "¿Hay Vencimientos?",
+      "position": [
+        800,
+        336
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: '5493765384843', text: $json.mensaje }) }}",
+        "options": {}
+      },
+      "id": "f27f0533-4dad-4c6d-be7c-85fabeffade8",
+      "name": "WhatsApp Arnaldo",
+      "position": [
+        1024,
+        224
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: '5493853003153', text: $json.mensaje }) }}",
+        "options": {}
+      },
+      "id": "6ce3c09a-5dcb-43f8-b3aa-a199771f7fcc",
+      "name": "WhatsApp Mica",
+      "position": [
+        1024,
+        448
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## 💰 Recordatorio de Cobros — System IA\n\n**Trigger:** Cron diario a las 9am\n\n**Lógica:**\n- Lee todos los clientes de Google Sheets\n- Filtra los que tienen Próximo Pago = mañana\n- Si hay vencimientos → avisa por WhatsApp a Arnaldo y Mica\n- Si no hay → termina sin hacer nada\n\n**Mensaje incluye:**\n- Nombre y negocio del cliente\n- Fee mensual a cobrar\n- Fecha de vencimiento\n- Total del día\n\n⚠️ Asegurarse que el campo 'Próximo Pago' en Sheets tenga formato YYYY-MM-DD",
+        "height": 400,
+        "width": 500,
+        "color": 3
+      },
+      "id": "c8cfac55-9a1d-491f-a579-2e3eefd6b36f",
+      "name": "📘 Documentación Cobros",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        144
+      ]
+    }
+  ],
+  "connections": {
+    "Cron 9am Diario": {
+      "main": [
+        [
+          {
+            "node": "Leer Clientes de Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Clientes de Sheets": {
+      "main": [
+        [
+          {
+            "node": "Filtrar Vencimientos de Mañana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar Vencimientos de Mañana": {
+      "main": [
+        [
+          {
+            "node": "¿Hay Vencimientos?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Hay Vencimientos?": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp Arnaldo",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "WhatsApp Mica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:Cron 9am Diario": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "versionId": "67659de1-a3cc-4fd9-a944-2df875478ae3",
+  "activeVersionId": "67659de1-a3cc-4fd9-a944-2df875478ae3",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-12T12:47:05.623Z",
+      "createdAt": "2026-02-12T12:47:05.623Z",
+      "role": "workflow:owner",
+      "workflowId": "rmGLnJ8ApxfkrCK1",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-19T13:21:42.539Z",
+    "createdAt": "2026-02-19T13:21:40.622Z",
+    "versionId": "67659de1-a3cc-4fd9-a944-2df875478ae3",
+    "workflowId": "rmGLnJ8ApxfkrCK1",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "hours",
+                "hoursInterval": 24
+              }
+            ]
+          }
+        },
+        "id": "db4ed0c7-b9d7-4ae7-b8fa-e0c020416c00",
+        "name": "Cron 9am Diario",
+        "position": [
+          128,
+          336
+        ],
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.1
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": "https://docs.google.com/spreadsheets/d/14HJkGerBAY5KCR6YBarae59aiCPhKzvt374strsGk3M/edit"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1"
+          },
+          "options": {}
+        },
+        "id": "f6668e85-4310-478f-821a-f587e5aa7aa4",
+        "name": "Leer Clientes de Sheets",
+        "position": [
+          352,
+          336
+        ],
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const hoy = new Date();\nhoy.setHours(0,0,0,0);\n\nconst manana = new Date(hoy);\nmanana.setDate(manana.getDate() + 1);\n\nconst clientes = items.map(i => i.json).filter(c => {\n  if (!c['Próximo Pago']) return false;\n  \n  const raw = c['Próximo Pago'].toString().trim();\n  const partes = raw.split('/');\n  if (partes.length !== 3) return false;\n  \n  const dia = parseInt(partes[0]);\n  const mes = parseInt(partes[1]) - 1;\n  const anio = parseInt(partes[2]);\n  \n  const fechaPago = new Date(anio, mes, dia);\n  fechaPago.setHours(0,0,0,0);\n  \n  return fechaPago.getTime() === manana.getTime();\n});\n\nif (clientes.length === 0) {\n  return [{ json: { hayVencimientos: false, clientes: [] } }];\n}\n\nconst lista = clientes.map(c => \n  `• *${c['Nombre']}* (${c['Negocio'] || c['ID Cliente']}) — $${c['Precio Mensual']} — ${c['Próximo Pago']}`\n).join('\\n');\n\nconst mensaje = `💰 *COBROS DE MAÑANA*\\n\\n${lista}\\n\\n_Total: $${clientes.reduce((acc, c) => acc + (parseFloat(c['Precio Mensual']) || 0), 0)}_`;\n\nreturn [{ json: { hayVencimientos: true, clientes, mensaje, total: clientes.length } }];"
+        },
+        "id": "5c2bf2f2-40c7-4082-8523-25a840eea6f2",
+        "name": "Filtrar Vencimientos de Mañana",
+        "position": [
+          576,
+          336
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "leftValue": "={{ $json.hayVencimientos }}",
+                "operator": {
+                  "operation": "equals",
+                  "type": "boolean"
+                },
+                "rightValue": true,
+                "id": "60291021-c23d-40e4-bdb8-05a385782341"
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "b1e14d8a-41d0-4bea-ab70-ed65610ba351",
+        "name": "¿Hay Vencimientos?",
+        "position": [
+          800,
+          336
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ number: '5493765384843', text: $json.mensaje }) }}",
+          "options": {}
+        },
+        "id": "f27f0533-4dad-4c6d-be7c-85fabeffade8",
+        "name": "WhatsApp Arnaldo",
+        "position": [
+          1024,
+          224
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ number: '5493853003153', text: $json.mensaje }) }}",
+          "options": {}
+        },
+        "id": "6ce3c09a-5dcb-43f8-b3aa-a199771f7fcc",
+        "name": "WhatsApp Mica",
+        "position": [
+          1024,
+          448
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "content": "## 💰 Recordatorio de Cobros — System IA\n\n**Trigger:** Cron diario a las 9am\n\n**Lógica:**\n- Lee todos los clientes de Google Sheets\n- Filtra los que tienen Próximo Pago = mañana\n- Si hay vencimientos → avisa por WhatsApp a Arnaldo y Mica\n- Si no hay → termina sin hacer nada\n\n**Mensaje incluye:**\n- Nombre y negocio del cliente\n- Fee mensual a cobrar\n- Fecha de vencimiento\n- Total del día\n\n⚠️ Asegurarse que el campo 'Próximo Pago' en Sheets tenga formato YYYY-MM-DD",
+          "height": 400,
+          "width": 500,
+          "color": 3
+        },
+        "id": "c8cfac55-9a1d-491f-a579-2e3eefd6b36f",
+        "name": "📘 Documentación Cobros",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -352,
+          144
+        ]
+      }
+    ],
+    "connections": {
+      "Cron 9am Diario": {
+        "main": [
+          [
+            {
+              "node": "Leer Clientes de Sheets",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Leer Clientes de Sheets": {
+        "main": [
+          [
+            {
+              "node": "Filtrar Vencimientos de Mañana",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filtrar Vencimientos de Mañana": {
+        "main": [
+          [
+            {
+              "node": "¿Hay Vencimientos?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "¿Hay Vencimientos?": {
+        "main": [
+          [
+            {
+              "node": "WhatsApp Arnaldo",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "WhatsApp Mica",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": "Version 67659de1",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-09T19:43:32.621Z",
+      "createdAt": "2026-02-09T19:43:32.621Z",
+      "id": "igcPlxzoy2OTsvdL",
+      "name": "⚡ Producción"
+    },
+    {
+      "updatedAt": "2026-02-19T13:12:09.261Z",
+      "createdAt": "2026-02-19T13:12:09.261Z",
+      "id": "NezYVNq54TA8ClkM",
+      "name": "CLIENTES"
+    }
+  ]
+}
