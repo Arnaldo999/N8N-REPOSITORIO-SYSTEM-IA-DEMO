@@ -1,0 +1,292 @@
+{
+  "updatedAt": "2026-02-20T03:46:27.436Z",
+  "createdAt": "2026-02-20T03:13:11.860Z",
+  "id": "NAooRGnHvBueQXDr",
+  "name": "Auto-Publicación Orgánica (Sin IA)",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "id": "trigger-1",
+      "name": "Schedule Trigger",
+      "parameters": {
+        "rule": {
+          "type": "cron"
+        }
+      },
+      "position": [
+        0,
+        200
+      ],
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1
+    },
+    {
+      "id": "sheets-1",
+      "name": "Leer Historial",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        200,
+        200
+      ],
+      "parameters": {
+        "operation": "getAll"
+      }
+    },
+    {
+      "id": "code-1",
+      "name": "Seleccionar Tema",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        200
+      ],
+      "parameters": {
+        "jsCode": "var dias = new Date().getDate();\nvar temas = ['CRM y Gestión de Leads', 'Automatización WhatsApp', 'Agendamiento de Citas', 'Automatización de Redes Sociales'];\nvar tema_hoy = temas[dias % 4];\n\nreturn [{ json: { tema_hoy: tema_hoy } }];"
+      }
+    },
+    {
+      "id": "http-1",
+      "name": "Pedir Aprobación",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        200
+      ],
+      "parameters": {
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "TU_NUMERO_WHATSAPP"
+            },
+            {
+              "name": "text",
+              "value": "=🤖 ¡Hola! El post de hoy está listo.\n\n📚 *Tema:* {{ $node[\"Seleccionar Tema\"].json.tema_hoy }}\n\n✍️ *Borrador:* \n{{ $('Seleccionar Tema').first().json.texto_generado }}\n\n¿Lo publicamos en nuestras redes?"
+            }
+          ]
+        },
+        "method": "POST",
+        "sendBody": true,
+        "url": "https://TU_URL_EVOLUTION_API/message/sendText/TU_INSTANCIA"
+      }
+    },
+    {
+      "id": "wait-1",
+      "name": "Esperar Aprobación",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        200
+      ],
+      "parameters": {
+        "resume": "webhook",
+        "webhookPath": "aprobar_post"
+      }
+    },
+    {
+      "id": "if-1",
+      "name": "¿Aprobado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        200
+      ],
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.body.data.message.text }}",
+              "operation": "contains",
+              "value2": "aprobar"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "instagram-1",
+      "name": "Publicar Instagram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1400,
+        100
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v19.0/TU_IG_ACCOUNT_ID/media",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "image_url",
+              "value": "URL_IMAGEN_DE_PRUEBA_O_GEMINI"
+            },
+            {
+              "name": "caption",
+              "value": "={{ $('Seleccionar Tema').first().json.texto_generado }}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "linkedin-1",
+      "name": "Publicar LinkedIn",
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        100
+      ],
+      "parameters": {
+        "operation": "create",
+        "person": "TU_URN_DE_LINKEDIN",
+        "resource": "post",
+        "text": "={{ $('Seleccionar Tema').first().json.texto_generado }}"
+      }
+    },
+    {
+      "id": "sheets-2",
+      "name": "Guardar Historial",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1800,
+        100
+      ],
+      "parameters": {
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "'Angulo / Mini-Tema creado por la IA'": "={{ $('Seleccionar Tema').first().json.texto_generado }}",
+            "'Fecha de Publicación'": "={{ $now }}",
+            "'Macro-Tema'": "={{ $node[\"Seleccionar Tema\"].json.tema_hoy }}",
+            "'Texto (Copy)'": "={{ $('Seleccionar Tema').first().json.texto_generado }}",
+            "Estado": "Publicado ✅",
+            "ID": "={{ $execution.id }}"
+          }
+        },
+        "operation": "append",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Leer Historial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Historial": {
+      "main": [
+        [
+          {
+            "node": "Seleccionar Tema",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seleccionar Tema": {
+      "main": [
+        [
+          {
+            "node": "Pedir Aprobación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pedir Aprobación": {
+      "main": [
+        [
+          {
+            "node": "Esperar Aprobación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esperar Aprobación": {
+      "main": [
+        [
+          {
+            "node": "¿Aprobado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Aprobado?": {
+      "main": [
+        [
+          {
+            "node": "Publicar Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publicar Instagram": {
+      "main": [
+        [
+          {
+            "node": "Publicar LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publicar LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Guardar Historial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "b52d5987-c911-4b05-86b6-15c68c201c46",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-20T03:13:11.860Z",
+      "createdAt": "2026-02-20T03:13:11.860Z",
+      "role": "workflow:owner",
+      "workflowId": "NAooRGnHvBueQXDr",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
