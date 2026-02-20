@@ -1,0 +1,47 @@
+{
+  "updatedAt": "2026-02-20T03:46:40.240Z",
+  "createdAt": "2026-02-20T03:17:43.733Z",
+  "id": "KRIOYCgeWOeiRS3X",
+  "name": "tiny-test",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "id": "trigger-1",
+      "name": "Schedule Trigger",
+      "parameters": {
+        "rule": {
+          "type": "cron"
+        }
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "b7fa3015-92f4-4630-acaf-68ed16eec87f",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-20T03:17:43.733Z",
+      "createdAt": "2026-02-20T03:17:43.733Z",
+      "role": "workflow:owner",
+      "workflowId": "KRIOYCgeWOeiRS3X",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
