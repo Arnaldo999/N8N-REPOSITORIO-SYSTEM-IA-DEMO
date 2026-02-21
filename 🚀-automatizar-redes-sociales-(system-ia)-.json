@@ -1,0 +1,1294 @@
+{
+  "updatedAt": "2026-02-21T00:46:48.222Z",
+  "createdAt": "2026-02-20T13:53:43.277Z",
+  "id": "T9JAp3MxztvfkD5x",
+  "name": "🚀 Automatizar Redes Sociales (System IA)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "node-sticky",
+      "name": "📋 Instrucciones",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        100,
+        60
+      ],
+      "parameters": {
+        "width": 740,
+        "height": 240,
+        "content": "## 🚀 Auto-Publicación Redes Sociales — Agencia de Automatizaciones (System IA)\n\n**CREDENCIALES (Settings → Credentials):**\n- 🔑 **Gemini API** → Query Auth | Name: `key` | Value: TU_GEMINI_KEY\n- 🔑 **Meta Token** → Bearer Token | Token: TU_META_ACCESS_TOKEN\n- 🔑 **Evolution API** → Header Auth | Name: `apikey` | Value: TU_EVOLUTION_KEY\n- ✅ **LinkedIn OAuth2 API** → ya conectada (seleccionarla en nodos LI)\n\n**NODO CONFIGURACIÓN — edita con tus datos:**\nLINKEDIN_PERSON_ID · CLOUDINARY_CLOUD_NAME · CLOUDINARY_UPLOAD_PRESET\nEVOLUTION_URL · EVOLUTION_INSTANCE · WHATSAPP_APPROVAL_NUMBER\n\n**FLUJO:** Tema → Estratega → Agentes IG/LI/FB → Imagen (loop 30s) → Aprobación WA → Publicar 3 redes"
+      }
+    },
+    {
+      "id": "node-trigger",
+      "name": "Trigger Programado",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        100,
+        380
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 1-6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-manual",
+      "name": "Ejecutar manualmente",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        100,
+        580
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "node-config",
+      "name": "Configuración",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        480
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// ============================================================\n// CONFIGURACIÓN CENTRAL — edita solo este nodo\n// Las API keys van en las CREDENCIALES de n8n (no aquí)\n// ============================================================\nreturn [{\n  json: {\n    // --- Meta (IDs públicos) ---\n    IG_BUSINESS_ACCOUNT_ID: '17841452133822887',\n    FACEBOOK_PAGE_ID: '355053299059556',\n\n    // --- LinkedIn ---\n    LINKEDIN_PERSON_ID: 'PEGA_TU_PERSON_ID_LINKEDIN',\n\n    // --- Cloudinary ---\n    CLOUDINARY_CLOUD_NAME: 'PEGA_TU_CLOUD_NAME',\n    CLOUDINARY_UPLOAD_PRESET: 'PEGA_TU_UPLOAD_PRESET',\n\n    // --- Evolution API (WhatsApp) ---\n    EVOLUTION_URL: 'PEGA_URL_DE_EVOLUTION_SIN_HTTP',\n    EVOLUTION_INSTANCE: 'PEGA_NOMBRE_INSTANCIA',\n    WHATSAPP_APPROVAL_NUMBER: 'PEGA_TU_NUMERO_CON_CODIGO_PAIS'\n  }\n}];"
+      }
+    },
+    {
+      "id": "node-read-history",
+      "name": "Leer Historial",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        540,
+        480
+      ],
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/163zG5AT4YWlmVsqsC-JJzzSAvestojWwJDgXAuAqIZg/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Contenido"
+        },
+        "range": "Contenido!A:O",
+        "options": {}
+      }
+    },
+    {
+      "id": "node-select-theme",
+      "name": "Seleccionar Tema",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        760,
+        480
+      ],
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst TEMAS = [\n  'Automatización con WhatsApp',\n  'Automatización en Redes Sociales',\n  'Automatización de CRM',\n  'Automatización de Agendamiento de Citas'\n];\nconst historial = items\n  .filter(i => i.json['Estado'] === 'Publicado')\n  .map(i => ({ tema: i.json['Macro-Tema'] || '', angulo: i.json['Angulo Mini-Tema'] || '' }));\nconst conteo = {};\nTEMAS.forEach(t => { conteo[t] = 0; });\nhistorial.forEach(h => { TEMAS.forEach(t => { if (h.tema === t) conteo[t]++; }); });\nconst proximoTema = [...TEMAS].sort((a, b) => (conteo[a] || 0) - (conteo[b] || 0))[0];\nconst angulos_recientes = historial.slice(-20).map(h => h.angulo).filter(Boolean);\nreturn [{ json: { proximoTema, angulos_recientes: angulos_recientes.length > 0 ? '- ' + angulos_recientes.join('\\n- ') : 'ninguno aun', conteo } }];"
+      }
+    },
+    {
+      "id": "node-agente-estratega",
+      "name": "Agente Estratega",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        980,
+        480
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "={{ 'Eres el Estratega de Contenido de una Agencia de Automatizaciones en LATAM.\\n\\nNOS ESPECIALIZAMOS EN:\\n- Automatizacion con WhatsApp Business para ventas y atencion al cliente\\n- CRM automatizado para seguimiento y cierre de leads\\n- Agendamiento de Citas automatizado para negocios de servicios\\n- Automatizacion de Redes Sociales con IA\\n\\nAUDIENCIA: Duenos de PyMEs y emprendedores latinoamericanos que quieren escalar con automatizacion.\\nTONO DE MARCA: Experto accesible, ejemplos concretos de negocios reales, nunca artificial.\\n\\nMACRO-TEMA: ' + $json.proximoTema + '\\nANGULOS RECIENTES (NO repetir): ' + $json.angulos_recientes + '\\n\\nDefine la estrategia para el post de hoy:\\n1. Elige un angulo NUEVO y accionable que no este en la lista\\n2. Define la idea central: que aprendizaje concreto se llevara el lector\\n3. Lista 3 puntos de valor con ejemplos reales de PyMEs latinoamericanas\\n4. Crea un prompt en ingles para imagen flat design minimalista (sin texto, colores: purple blue orange)\\n\\nRegla: Solo contenido educativo. NUNCA precios, ventas ni publicidad.\\n\\nDevuelve SOLO JSON valido sin markdown ni backticks:\\n{\"macroTema\":\"\",\"angulo\":\"\",\"ideaCentral\":\"\",\"puntos\":[\"p1\",\"p2\",\"p3\"],\"promptImagen\":\"\"}' }}"
+                }
+              ]
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-parsear-estrategia",
+      "name": "Parsear Estrategia",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        480
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const items = $input.all();\nconst rawText = items[0].json.candidates?.[0]?.content?.parts?.[0]?.text\n  || items[0].json.text\n  || JSON.stringify(items[0].json);\nlet parsed;\ntry {\n  const match = rawText.match(/\\{[\\s\\S]*\\}/);\n  if (!match) throw new Error('No JSON en respuesta del Agente Estratega: ' + rawText.substring(0, 300));\n  parsed = JSON.parse(match[0]);\n} catch(e) {\n  throw new Error('Error al parsear Agente Estratega: ' + rawText.substring(0, 400));\n}\nconst now = new Date();\nconst pad = n => String(n).padStart(2, '0');\nconst postId = `POST-${String(now.getFullYear()).slice(-2)}${pad(now.getMonth()+1)}${pad(now.getDate())}-${Math.random().toString(36).substring(2,6).toUpperCase()}`;\nreturn [{\n  json: {\n    postId,\n    fechaCreacion: `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()}`,\n    macroTema: parsed.macroTema || '',\n    angulo: parsed.angulo || '',\n    ideaCentral: parsed.ideaCentral || '',\n    puntos: Array.isArray(parsed.puntos) ? parsed.puntos : [],\n    promptImagen: parsed.promptImagen || 'professional automation business illustration flat design colorful no text'\n  }\n}];"
+      }
+    },
+    {
+      "id": "node-agente-li",
+      "name": "Agente LinkedIn",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1420,
+        180
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "={{ 'Eres el Community Manager de LinkedIn de una Agencia de Automatizaciones en LATAM especializada en WhatsApp, CRM, Agendamiento y Redes Sociales.\\n\\nVOZ DE MARCA (identidad, nunca la rompas):\\n- Hablas como un experto que tambien es emprendedor\\n- Directo y cercano, como si le hablaras a un colega de negocios\\n- Usas ejemplos concretos de negocios latinoamericanos reales (clinicas, e-commerce, inmobiliarias, restaurantes)\\n- Nunca robotico ni generico\\n- No empieces con: En el mundo de... o Sabias que...\\n- Escribe en espanol natural y conversacional\\n\\nBRIEF DEL POST HOY:\\n- Tema: ' + $(\\'Parsear Estrategia\\').first().json.macroTema + '\\n- Angulo: ' + $(\\'Parsear Estrategia\\').first().json.angulo + '\\n- Idea central: ' + $(\\'Parsear Estrategia\\').first().json.ideaCentral + '\\n- Puntos clave: ' + $(\\'Parsear Estrategia\\').first().json.puntos.join(\\', \\') + '\\n\\nFORMATO LINKEDIN (obligatorio):\\n- Primera linea: afirmacion fuerte o dato real, sin emoji, max 12 palabras\\n- Parrafos cortos, max 3 lineas cada uno\\n- 300-400 palabras en total\\n- Max 2 emojis, solo donde den enfasis real\\n- Cierre con pregunta que invite a comentar\\n- 3-4 hashtags especificos al final\\n\\nDevuelve SOLO el texto del post listo para publicar.' }}"
+                }
+              ]
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-agente-ig",
+      "name": "Agente Instagram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1640,
+        480
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "={{ 'Eres el Community Manager de Instagram de una Agencia de Automatizaciones en LATAM especializada en WhatsApp, CRM, Agendamiento y Redes Sociales.\\n\\nVOZ DE MARCA (identidad, nunca la rompas):\\n- Energico y cercano, hablas de tu a tu al emprendedor\\n- Emojis estrategicos que refuerzan el mensaje, no decorativos\\n- Lenguaje visual: listas, facil de escanear en movil\\n- Mas dinamico que LinkedIn, misma profundidad de contenido\\n- Nunca artificial ni generico\\n\\nBRIEF DEL POST HOY:\\n- Tema: ' + $(\\'Parsear Estrategia\\').first().json.macroTema + '\\n- Angulo: ' + $(\\'Parsear Estrategia\\').first().json.angulo + '\\n- Idea central: ' + $(\\'Parsear Estrategia\\').first().json.ideaCentral + '\\n- Puntos clave: ' + $(\\'Parsear Estrategia\\').first().json.puntos.join(\\', \\') + '\\n\\nFORMATO INSTAGRAM (obligatorio):\\n- Primera linea: hook poderoso con emoji (max 10 palabras)\\n- Cuerpo: 150-200 palabras con viñetas o numeracion\\n- 4-5 emojis bien distribuidos\\n- CTA al final: Seguime para mas sobre automatizacion\\n- 6-8 hashtags relevantes al final\\n\\nDevuelve SOLO el caption listo para publicar.' }}"
+                }
+              ]
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-agente-fb",
+      "name": "Agente Facebook",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1860,
+        180
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "={{ 'Eres el Community Manager de Facebook de una Agencia de Automatizaciones en LATAM especializada en WhatsApp, CRM, Agendamiento y Redes Sociales.\\n\\nVOZ DE MARCA (identidad, nunca la rompas):\\n- Conversacional, como cuando le explicas algo a un amigo emprendedor\\n- Cuentas una mini-historia o caso real que conecte emocionalmente\\n- Generas conversacion, invitas a comentar de verdad\\n- Menos formal que LinkedIn, mas storytelling y cercania\\n- Nunca artificial ni de consultor corporativo\\n\\nBRIEF DEL POST HOY:\\n- Tema: ' + $(\\'Parsear Estrategia\\').first().json.macroTema + '\\n- Angulo: ' + $(\\'Parsear Estrategia\\').first().json.angulo + '\\n- Idea central: ' + $(\\'Parsear Estrategia\\').first().json.ideaCentral + '\\n- Puntos clave: ' + $(\\'Parsear Estrategia\\').first().json.puntos.join(\\', \\') + '\\n\\nFORMATO FACEBOOK (obligatorio):\\n- Apertura: situacion o historia relatable de 2-3 lineas\\n- Desarrollo: 200-250 palabras\\n- Max 3 emojis en todo el texto\\n- Termina SIEMPRE con pregunta que invite a comentar\\n- 2-3 hashtags al final\\n\\nDevuelve SOLO el texto del post listo para publicar.' }}"
+                }
+              ]
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-combinar-contenido",
+      "name": "Combinar Contenido",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2080,
+        480
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const estrategia = $('Parsear Estrategia').first().json;\n\nconst getText = (nodeName) => {\n  try {\n    const data = $(nodeName).first().json;\n    return data.candidates?.[0]?.content?.parts?.[0]?.text\n      || data.text\n      || '';\n  } catch(e) {\n    return 'Error al obtener contenido de ' + nodeName;\n  }\n};\n\nconst textoLinkedIn = getText('Agente LinkedIn');\nconst textoInstagram = getText('Agente Instagram');\nconst textoFacebook = getText('Agente Facebook');\n\nif (!textoLinkedIn && !textoInstagram && !textoFacebook) {\n  throw new Error('Los 3 agentes de contenido fallaron. Verifica la credencial Gemini API.');\n}\n\nreturn [{\n  json: {\n    postId: estrategia.postId,\n    fechaCreacion: estrategia.fechaCreacion,\n    macroTema: estrategia.macroTema,\n    angulo: estrategia.angulo,\n    textoLinkedIn,\n    textoInstagram,\n    textoFacebook,\n    promptImagen: estrategia.promptImagen\n  }\n}];"
+      }
+    },
+    {
+      "id": "node-gen-image",
+      "name": "Generar Imagen Gemini",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2300,
+        480
+      ],
+      "retryOnFail": true,
+      "maxTries": 4,
+      "waitBetweenTries": 20000,
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "={{ 'Create a professional modern illustration for social media post: ' + $('Combinar Contenido').first().json.promptImagen + '. Requirements: flat design style, vibrant colors (purple, blue, orange), clean minimalist composition, perfect square 1:1 format, absolutely NO text, NO letters, NO words anywhere in the image.' }}"
+                }
+              ]
+            }
+          ],
+          "generationConfig": {
+            "responseModalities": [
+              "IMAGE",
+              "TEXT"
+            ]
+          }
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-extract-b64",
+      "name": "Verificar y Extraer Imagen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2520,
+        480
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const items = $input.all();\nconst parts = items[0].json.candidates?.[0]?.content?.parts || [];\nconst imagePart = parts.find(p => p.inlineData);\n\nif (imagePart) {\n  return [{ json: {\n    base64Image: imagePart.inlineData.data,\n    mimeType: imagePart.inlineData.mimeType || 'image/png',\n    imagenLista: 'si'\n  }}];\n}\n\n// Imagen no generada todavia — el loop volvera a intentar\nreturn [{ json: {\n  base64Image: '',\n  mimeType: 'image/png',\n  imagenLista: 'no',\n  motivo: 'Gemini no genero imagen en esta respuesta'\n} }];"
+      }
+    },
+    {
+      "id": "node-verificar-imagen",
+      "name": "¿Imagen Lista?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2740,
+        480
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": false,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-img",
+              "leftValue": "={{ $json.imagenLista }}",
+              "rightValue": "si",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "node-esperar-imagen",
+      "name": "Esperar Imagen 30s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2740,
+        720
+      ],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 30,
+        "unit": "seconds"
+      }
+    },
+    {
+      "id": "node-cloudinary",
+      "name": "Subir Cloudinary",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2960,
+        480
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://api.cloudinary.com/v1_1/' + $('Configuración').first().json.CLOUDINARY_CLOUD_NAME + '/image/upload' }}",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "body": {
+          "parameters": [
+            {
+              "name": "file",
+              "value": "={{ 'data:' + $json.mimeType + ';base64,' + $json.base64Image }}"
+            },
+            {
+              "name": "upload_preset",
+              "value": "={{ $('Configuración').first().json.CLOUDINARY_UPLOAD_PRESET }}"
+            },
+            {
+              "name": "folder",
+              "value": "social-media-ai"
+            },
+            {
+              "name": "public_id",
+              "value": "={{ $('Combinar Contenido').first().json.postId }}"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-save-draft",
+      "name": "Guardar Borrador",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3180,
+        480
+      ],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/163zG5AT4YWlmVsqsC-JJzzSAvestojWwJDgXAuAqIZg/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Contenido"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": {
+              "__rl": true,
+              "value": "={{ $('Combinar Contenido').first().json.postId }}",
+              "mode": "expression"
+            },
+            "Fecha Creacion": "={{ $('Combinar Contenido').first().json.fechaCreacion }}",
+            "Macro-Tema": "={{ $('Combinar Contenido').first().json.macroTema }}",
+            "Angulo Mini-Tema": "={{ $('Combinar Contenido').first().json.angulo }}",
+            "Texto Instagram": "={{ $('Combinar Contenido').first().json.textoInstagram }}",
+            "Texto LinkedIn": "={{ $('Combinar Contenido').first().json.textoLinkedIn }}",
+            "Texto Facebook": "={{ $('Combinar Contenido').first().json.textoFacebook }}",
+            "Prompt Imagen": "={{ $('Combinar Contenido').first().json.promptImagen }}",
+            "URL Imagen": "={{ $json.secure_url }}",
+            "Estado": "Pendiente"
+          },
+          "matchingColumns": [
+            "ID"
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-wa-approval",
+      "name": "Pedir Aprobación WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3400,
+        480
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://' + $('Configuración').first().json.EVOLUTION_URL + '/message/sendText/' + $('Configuración').first().json.EVOLUTION_INSTANCE }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "number": "={{ $('Configuración').first().json.WHATSAPP_APPROVAL_NUMBER }}",
+          "text": "={{ '🚀 CONTENIDO LISTO PARA APROBAR\\n\\nTema: ' + $('Combinar Contenido').first().json.macroTema + '\\nAngulo: ' + $('Combinar Contenido').first().json.angulo + '\\n\\nImagen: ' + $json.secure_url + '\\n\\n✅ APROBAR:\\n' + $execution.resumeUrl + '?respuesta=si\\n\\n❌ RECHAZAR:\\n' + $execution.resumeUrl + '?respuesta=no' }}"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-wait",
+      "name": "Esperar Aprobación",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3620,
+        480
+      ],
+      "parameters": {
+        "resume": "webhook"
+      }
+    },
+    {
+      "id": "node-approved",
+      "name": "¿Aprobado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3840,
+        480
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": false,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-1",
+              "leftValue": "={{ $json.query.respuesta }}",
+              "rightValue": "si",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "node-ig-container",
+      "name": "IG Crear Container",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4060,
+        240
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://graph.facebook.com/v22.0/' + $('Configuración').first().json.IG_BUSINESS_ACCOUNT_ID + '/media' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "image_url": "={{ $('Subir Cloudinary').first().json.secure_url }}",
+          "caption": "={{ $('Combinar Contenido').first().json.textoInstagram }}"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-ig-wait",
+      "name": "Esperar IG 30s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4280,
+        240
+      ],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 30,
+        "unit": "seconds"
+      }
+    },
+    {
+      "id": "node-ig-publish",
+      "name": "IG Publicar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4500,
+        240
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://graph.facebook.com/v22.0/' + $('Configuración').first().json.IG_BUSINESS_ACCOUNT_ID + '/media_publish' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "creation_id": "={{ $('IG Crear Container').first().json.id }}"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-li-init",
+      "name": "LI Init Upload",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4720,
+        240
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.linkedin.com/rest/images?action=initializeUpload",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "linkedInOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "LinkedIn-Version",
+              "value": "202501"
+            },
+            {
+              "name": "X-Restli-Protocol-Version",
+              "value": "2.0.0"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "initializeUploadRequest": {
+            "owner": "={{ 'urn:li:person:' + $('Configuración').first().json.LINKEDIN_PERSON_ID }}"
+          }
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-li-download",
+      "name": "LI Descargar Imagen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4940,
+        240
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Subir Cloudinary').first().json.secure_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "node-li-combine",
+      "name": "LI Combinar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5160,
+        240
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const liInit = $('LI Init Upload').first().json;\nconst uploadUrl = liInit.value.uploadUrl;\nconst imageUrn = liInit.value.image;\nconst binaryData = $input.first().binary;\n\nreturn [{\n  json: {\n    uploadUrl,\n    imageUrn,\n    linkedinPersonId: $('Configuración').first().json.LINKEDIN_PERSON_ID\n  },\n  binary: binaryData\n}];"
+      }
+    },
+    {
+      "id": "node-li-upload",
+      "name": "LI Subir Imagen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        5380,
+        240
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $json.uploadUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "image/jpeg"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      }
+    },
+    {
+      "id": "node-li-post",
+      "name": "LI Crear Post",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        5600,
+        240
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.linkedin.com/rest/posts",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "linkedInOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "LinkedIn-Version",
+              "value": "202501"
+            },
+            {
+              "name": "X-Restli-Protocol-Version",
+              "value": "2.0.0"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "author": "={{ 'urn:li:person:' + $('LI Combinar').first().json.linkedinPersonId }}",
+          "commentary": "={{ $('Combinar Contenido').first().json.textoLinkedIn }}",
+          "visibility": "PUBLIC",
+          "distribution": {
+            "feedDistribution": "MAIN_FEED",
+            "targetEntities": [],
+            "thirdPartyDistributionChannels": []
+          },
+          "content": {
+            "media": {
+              "title": "={{ $('Combinar Contenido').first().json.angulo }}",
+              "id": "={{ $('LI Combinar').first().json.imageUrn }}"
+            }
+          },
+          "lifecycleState": "PUBLISHED",
+          "isReshareDisabledByAuthor": false
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-fb-publish",
+      "name": "FB Publicar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        5820,
+        240
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://graph.facebook.com/v22.0/' + $('Configuración').first().json.FACEBOOK_PAGE_ID + '/photos' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "url": "={{ $('Subir Cloudinary').first().json.secure_url }}",
+          "caption": "={{ $('Combinar Contenido').first().json.textoFacebook }}"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-consolidate",
+      "name": "Consolidar Resultados",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6040,
+        240
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const post = $('Combinar Contenido').first().json;\nconst pad = n => String(n).padStart(2, '0');\nconst hoy = new Date();\nconst fechaPublicacion = `${pad(hoy.getDate())}/${pad(hoy.getMonth()+1)}/${hoy.getFullYear()}`;\n\nlet linkIG = '', linkLI = '', linkFB = '', errores = [];\n\ntry {\n  const igResult = $('IG Publicar').first().json;\n  if (igResult && igResult.id) {\n    linkIG = 'media_id:' + igResult.id;\n  } else {\n    errores.push('IG: sin ID de publicacion');\n  }\n} catch(e) { errores.push('IG: ' + e.message); }\n\ntry {\n  const liData = $('LI Combinar').first().json;\n  if (liData && liData.imageUrn) {\n    linkLI = 'https://www.linkedin.com/feed/update/' + liData.imageUrn;\n  } else {\n    errores.push('LI: sin imageUrn');\n  }\n} catch(e) { errores.push('LI: ' + e.message); }\n\ntry {\n  const fbResult = $('FB Publicar').first().json;\n  const fbId = (fbResult && (fbResult.post_id || fbResult.id)) || '';\n  if (fbId) {\n    linkFB = 'https://www.facebook.com/' + fbId;\n  } else {\n    errores.push('FB: sin ID de publicacion');\n  }\n} catch(e) { errores.push('FB: ' + e.message); }\n\nreturn [{ json: { postId: post.postId, fechaPublicacion, linkIG, linkLI, linkFB, errores } }];"
+      }
+    },
+    {
+      "id": "node-update-published",
+      "name": "Actualizar Sheets Publicado",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        6260,
+        240
+      ],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/163zG5AT4YWlmVsqsC-JJzzSAvestojWwJDgXAuAqIZg/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Contenido"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": {
+              "__rl": true,
+              "value": "={{ $json.postId }}",
+              "mode": "expression"
+            },
+            "Fecha Publicacion": "={{ $json.fechaPublicacion }}",
+            "Estado": "Publicado",
+            "Link Instagram": "={{ $json.linkIG }}",
+            "Link LinkedIn": "={{ $json.linkLI }}",
+            "Link Facebook": "={{ $json.linkFB }}",
+            "Notas": "={{ $json.errores.length > 0 ? 'Errores: ' + $json.errores.join(', ') : 'OK' }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-notify-success",
+      "name": "Notificar Éxito WA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        6480,
+        240
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://' + $('Configuración').first().json.EVOLUTION_URL + '/message/sendText/' + $('Configuración').first().json.EVOLUTION_INSTANCE }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "number": "={{ $('Configuración').first().json.WHATSAPP_APPROVAL_NUMBER }}",
+          "text": "={{ '✅ PUBLICADO EN 3 REDES\\n\\nTema: ' + $('Combinar Contenido').first().json.macroTema + '\\nAngulo: ' + $('Combinar Contenido').first().json.angulo + '\\n\\n📸 Instagram: ' + ($json.linkIG || 'error') + '\\n👤 LinkedIn: ' + ($json.linkLI || 'error') + '\\n🌍 Facebook: ' + ($json.linkFB || 'error') + ($json.errores.length > 0 ? '\\n\\n⚠️ Errores: ' + $json.errores.join(', ') : '') }}"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-update-rejected",
+      "name": "Actualizar Sheets Rechazado",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4060,
+        720
+      ],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/163zG5AT4YWlmVsqsC-JJzzSAvestojWwJDgXAuAqIZg/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Contenido"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": {
+              "__rl": true,
+              "value": "={{ $('Combinar Contenido').first().json.postId }}",
+              "mode": "expression"
+            },
+            "Estado": "Rechazado",
+            "Notas": "={{ $json.query ? $json.query.motivo : 'Rechazado por el usuario' }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-notify-rejected",
+      "name": "Notificar Rechazo WA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4280,
+        720
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://' + $('Configuración').first().json.EVOLUTION_URL + '/message/sendText/' + $('Configuración').first().json.EVOLUTION_INSTANCE }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "number": "={{ $('Configuración').first().json.WHATSAPP_APPROVAL_NUMBER }}",
+          "text": "={{ '❌ Contenido rechazado.\\n\\nTema: ' + $('Combinar Contenido').first().json.macroTema + '\\nGuardado en Sheets como Rechazado.\\nEl proximo ciclo generara nuevo contenido.' }}"
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Trigger Programado": {
+      "main": [
+        [
+          {
+            "node": "Configuración",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ejecutar manualmente": {
+      "main": [
+        [
+          {
+            "node": "Configuración",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configuración": {
+      "main": [
+        [
+          {
+            "node": "Leer Historial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Historial": {
+      "main": [
+        [
+          {
+            "node": "Seleccionar Tema",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seleccionar Tema": {
+      "main": [
+        [
+          {
+            "node": "Agente Estratega",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Estratega": {
+      "main": [
+        [
+          {
+            "node": "Parsear Estrategia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Estrategia": {
+      "main": [
+        [
+          {
+            "node": "Agente LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Agente Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Instagram": {
+      "main": [
+        [
+          {
+            "node": "Agente Facebook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Facebook": {
+      "main": [
+        [
+          {
+            "node": "Combinar Contenido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combinar Contenido": {
+      "main": [
+        [
+          {
+            "node": "Generar Imagen Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar Imagen Gemini": {
+      "main": [
+        [
+          {
+            "node": "Verificar y Extraer Imagen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar y Extraer Imagen": {
+      "main": [
+        [
+          {
+            "node": "¿Imagen Lista?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Imagen Lista?": {
+      "main": [
+        [
+          {
+            "node": "Subir Cloudinary",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Esperar Imagen 30s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esperar Imagen 30s": {
+      "main": [
+        [
+          {
+            "node": "Generar Imagen Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Subir Cloudinary": {
+      "main": [
+        [
+          {
+            "node": "Guardar Borrador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Borrador": {
+      "main": [
+        [
+          {
+            "node": "Pedir Aprobación WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pedir Aprobación WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Esperar Aprobación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esperar Aprobación": {
+      "main": [
+        [
+          {
+            "node": "¿Aprobado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Aprobado?": {
+      "main": [
+        [
+          {
+            "node": "IG Crear Container",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Actualizar Sheets Rechazado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IG Crear Container": {
+      "main": [
+        [
+          {
+            "node": "Esperar IG 30s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esperar IG 30s": {
+      "main": [
+        [
+          {
+            "node": "IG Publicar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IG Publicar": {
+      "main": [
+        [
+          {
+            "node": "LI Init Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LI Init Upload": {
+      "main": [
+        [
+          {
+            "node": "LI Descargar Imagen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LI Descargar Imagen": {
+      "main": [
+        [
+          {
+            "node": "LI Combinar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LI Combinar": {
+      "main": [
+        [
+          {
+            "node": "LI Subir Imagen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LI Subir Imagen": {
+      "main": [
+        [
+          {
+            "node": "LI Crear Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LI Crear Post": {
+      "main": [
+        [
+          {
+            "node": "FB Publicar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FB Publicar": {
+      "main": [
+        [
+          {
+            "node": "Consolidar Resultados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consolidar Resultados": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Sheets Publicado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar Sheets Publicado": {
+      "main": [
+        [
+          {
+            "node": "Notificar Éxito WA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar Sheets Rechazado": {
+      "main": [
+        [
+          {
+            "node": "Notificar Rechazo WA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "saveManualExecutions": true,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "e1abe309-8882-4068-88ac-eec23843606c",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-20T13:53:43.277Z",
+      "createdAt": "2026-02-20T13:53:43.277Z",
+      "role": "workflow:owner",
+      "workflowId": "T9JAp3MxztvfkD5x",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
