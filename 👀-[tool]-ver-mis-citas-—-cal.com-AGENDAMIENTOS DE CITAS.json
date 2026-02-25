@@ -1,0 +1,250 @@
+{
+  "updatedAt": "2026-02-24T19:49:43.859Z",
+  "createdAt": "2026-02-24T12:36:44.749Z",
+  "id": "g50Yu6IcJ7NfRm0N",
+  "name": "👀 [Tool] Ver Mis Citas — Cal.com",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-view",
+      "name": "Execute Workflow Trigger",
+      "position": [
+        240,
+        304
+      ],
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "https://api.cal.com/v2/bookings",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "attendeeEmail",
+              "value": "={{ $json.email }}"
+            },
+            {
+              "name": "status",
+              "value": "upcoming"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http-get-bookings",
+      "name": "GET Citas del Paciente",
+      "position": [
+        464,
+        304
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "iwHFpfPGDViqragO",
+          "name": "Header Auth Cal.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "format-citas",
+      "name": "Formatear Citas",
+      "position": [
+        688,
+        304
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "content": "## 👀 Ver Mis Citas\n\n**Input esperado:**\n- `email` → email del paciente\n\n**Output:**\n- Lista de citas próximas con ID, fecha y estado",
+        "height": 180,
+        "width": 220
+      },
+      "id": "sticky-view",
+      "name": "Sticky Note",
+      "position": [
+        192,
+        128
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "GET Citas del Paciente",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "GET Citas del Paciente": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Formatear Citas",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "b7962b2c-9f0d-4ac3-940c-e11f95710ffb",
+  "activeVersionId": "b7962b2c-9f0d-4ac3-940c-e11f95710ffb",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-24T12:36:44.749Z",
+      "createdAt": "2026-02-24T12:36:44.749Z",
+      "role": "workflow:owner",
+      "workflowId": "g50Yu6IcJ7NfRm0N",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-24T19:49:46.508Z",
+    "createdAt": "2026-02-24T19:49:43.860Z",
+    "versionId": "b7962b2c-9f0d-4ac3-940c-e11f95710ffb",
+    "workflowId": "g50Yu6IcJ7NfRm0N",
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "trigger-view",
+        "name": "Execute Workflow Trigger",
+        "position": [
+          240,
+          304
+        ],
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "url": "https://api.cal.com/v2/bookings",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "attendeeEmail",
+                "value": "={{ $json.email }}"
+              },
+              {
+                "name": "status",
+                "value": "upcoming"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "http-get-bookings",
+        "name": "GET Citas del Paciente",
+        "position": [
+          464,
+          304
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "iwHFpfPGDViqragO",
+            "name": "Header Auth Cal.com"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "format-citas",
+        "name": "Formatear Citas",
+        "position": [
+          688,
+          304
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "parameters": {
+          "content": "## 👀 Ver Mis Citas\n\n**Input esperado:**\n- `email` → email del paciente\n\n**Output:**\n- Lista de citas próximas con ID, fecha y estado",
+          "height": 180,
+          "width": 220
+        },
+        "id": "sticky-view",
+        "name": "Sticky Note",
+        "position": [
+          192,
+          128
+        ],
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1
+      }
+    ],
+    "connections": {
+      "Execute Workflow Trigger": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "GET Citas del Paciente",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "GET Citas del Paciente": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Formatear Citas",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": "Version b7962b2c",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-11T14:08:04.189Z",
+      "createdAt": "2026-02-11T14:08:04.189Z",
+      "id": "ZZDS4bKCWZOINbx2",
+      "name": "AGENDAMIENTOS DE CITAS"
+    }
+  ]
+}
