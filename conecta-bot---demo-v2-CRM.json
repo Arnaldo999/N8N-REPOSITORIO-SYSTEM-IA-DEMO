@@ -1,0 +1,5607 @@
+{
+  "updatedAt": "2026-02-24T19:20:25.772Z",
+  "createdAt": "2026-02-07T04:32:36.552Z",
+  "id": "OXl643yS6CeKLKj3deLuW",
+  "name": "Conecta Bot - Demo v2",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.body.event }}",
+              "rightValue": "messages.upsert",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "c2",
+              "leftValue": "={{ $json.body.data.message.conversation }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "c3",
+              "leftValue": "={{ $json.body.data.key.remoteJid }}",
+              "rightValue": "@s.whatsapp.net",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f592d5b4-26d4-45f3-8531-37dce5c51aba",
+      "name": "Filtro Webhook",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -3232,
+        20704
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "telefono",
+              "value": "={{ ($json.body?.data?.key?.remoteJid || '').replace('@s.whatsapp.net','') }}",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "mensaje",
+              "value": "={{ ($json.body?.data?.message?.conversation || '').trim().toLowerCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "nombre_wa",
+              "value": "={{ $json.body?.data?.pushName || 'Sin nombre' }}",
+              "type": "string"
+            },
+            {
+              "id": "a4",
+              "name": "es_mio",
+              "value": "={{ String($json.body?.data?.key?.fromMe ?? false) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b5f4fc4c-9457-4deb-9266-4ce38cfb35dd",
+      "name": "Extraer Datos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3008,
+        20704
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "f1",
+              "leftValue": "={{ $json.es_mio }}",
+              "rightValue": "false",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "745c39b9-c704-410e-adb0-741e41f3a130",
+      "name": "No es mensaje mio",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        -2800,
+        20704
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+          "mode": "list",
+          "cachedResultName": "LEADS_CONECTA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "bot_estado"
+        },
+        "options": {}
+      },
+      "id": "cd4b8976-0203-4b18-a0b1-f4777bba495c",
+      "name": "Leer Bot Estado",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -2576,
+        20704
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const telefono = $('Extraer Datos').first().json.telefono;\nconst mensaje = $('Extraer Datos').first().json.mensaje;\nconst nombre_wa = $('Extraer Datos').first().json.nombre_wa;\nlet filas = [];\ntry { filas = $input.all().map(i => i.json); } catch(e) { filas = []; }\nconst telLimpio = String(telefono).trim();\nconst encontrado = filas.find(f => String(f.telefono || '').trim() === telLimpio);\nif (encontrado && encontrado.paso) {\n  return [{ json: { existe: true, telefono: telLimpio, mensaje, nombre_wa, paso: String(encontrado.paso || '').trim().toLowerCase(), opcion1: String(encontrado.opcion1 || '').trim().toLowerCase(), opcion2: String(encontrado.opcion2 || '').trim().toLowerCase(), nombre: encontrado.nombre || '', ciudad: encontrado.ciudad || '', dato_extra: encontrado.dato_extra || '' } }];\n} else {\n  return [{ json: { existe: false, telefono: telLimpio, mensaje, nombre_wa, paso: 'nuevo', opcion1: '', opcion2: '', nombre: '', ciudad: '', dato_extra: '' } }];\n}"
+      },
+      "id": "da68a6be-b69a-4c93-a62e-bddfbed2da16",
+      "name": "Buscar Telefono",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2352,
+        20704
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "e1",
+              "leftValue": "={{ $json.existe }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "70cc54b2-8080-45b0-b47e-edf3eb295465",
+      "name": "Ya Existe?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -2128,
+        20704
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+          "mode": "list",
+          "cachedResultName": "LEADS_CONECTA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "bot_estado"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "paso": "menu",
+            "opcion1": "",
+            "opcion2": "",
+            "nombre": "",
+            "ciudad": "",
+            "dato_extra": "",
+            "timestamp": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "opcion1",
+              "displayName": "opcion1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "opcion2",
+              "displayName": "opcion2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ciudad",
+              "displayName": "ciudad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "dato_extra",
+              "displayName": "dato_extra",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "4e2daa82-aafb-4498-a2bd-1610c3608159",
+      "name": "Guardar Nuevo Estado",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1920,
+        20896
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $('Extraer Datos').first().json.telefono }}\",\n  \"text\": \"¡Hola {{ $('Extraer Datos').first().json.nombre_wa }}! 👋\\n\\nBienvenido a *Conecta Inversiones & Negocios* 🏢\\n\\n¿En qué podemos ayudarte?\\n\\n1️⃣ Quiero *invertir* en un negocio\\n2️⃣ Quiero *vender* mi negocio\\n3️⃣ *Consultoría* empresarial\\n4️⃣ Hablar con un *asesor*\\n\\nRespondé con el *número* de la opción 😊\"\n}",
+        "options": {}
+      },
+      "id": "e4724678-cb57-450f-b574-e6a374436199",
+      "name": "Enviar Menu Principal",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1696,
+        20896
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "p1",
+              "leftValue": "={{ $json.paso }}",
+              "rightValue": "menu",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "675464a9-b246-4332-be2a-5729fec7fdc5",
+      "name": "Paso=menu?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1920,
+        20496
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "p2",
+              "leftValue": "={{ $json.paso }}",
+              "rightValue": "sub",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "bd9707c6-e04c-4579-aecf-2ef1cd8d35b8",
+      "name": "Paso=sub?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1696,
+        20608
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "p3",
+              "leftValue": "={{ $json.paso }}",
+              "rightValue": "nombre",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f056752a-be5a-4fe6-b7ea-bac7cbca144f",
+      "name": "Paso=nombre?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1472,
+        20704
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "p4",
+              "leftValue": "={{ $json.paso }}",
+              "rightValue": "ciudad",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e941e171-4ae3-48c7-91c9-0cf71d19d360",
+      "name": "Paso=ciudad?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1248,
+        20800
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "p5",
+              "leftValue": "={{ $json.paso }}",
+              "rightValue": "dato_final",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "da9705c0-486d-46f8-9b7f-c0041084febc",
+      "name": "Paso=dato_final?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1040,
+        20896
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "m1",
+              "leftValue": "={{ $json.mensaje }}",
+              "rightValue": "1",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "28cd6217-9efa-40db-8a68-a1c9d8d11740",
+      "name": "Msg=1?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1696,
+        20304
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "m2",
+              "leftValue": "={{ $json.mensaje }}",
+              "rightValue": "2",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "cecb2ad9-5495-4377-8722-04b76567a441",
+      "name": "Msg=2?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1472,
+        20400
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "m3",
+              "leftValue": "={{ $json.mensaje }}",
+              "rightValue": "3",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4f48905f-452e-4051-a1c8-42290687f870",
+      "name": "Msg=3?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1248,
+        20496
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "m4",
+              "leftValue": "={{ $json.mensaje }}",
+              "rightValue": "4",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d63d9c10-106c-4863-a61c-32194c16398e",
+      "name": "Msg=4?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1040,
+        20608
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+          "mode": "list",
+          "cachedResultName": "LEADS_CONECTA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "bot_estado"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "opcion1": "invertir",
+            "paso": "sub"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "opcion1",
+              "displayName": "opcion1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "68dd4fa9-f752-44bb-9bfc-001517d2b74b",
+      "name": "Update Invertir",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1472,
+        20096
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Genial! 💼 Tenemos estas oportunidades de inversión:\\n\\nA) 🍔 Franquicias\\nB) 🏪 Comercios establecidos\\nC) 🏗️ Proyectos inmobiliarios\\nD) 💻 Negocios digitales\\n\\nRespondé con la *letra* de tu interés\"\n}",
+        "options": {}
+      },
+      "id": "a38f580e-1c8a-471c-bac8-d2f1a3bb0d0b",
+      "name": "Enviar Sub Invertir",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1248,
+        20096
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+          "mode": "list",
+          "cachedResultName": "LEADS_CONECTA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "bot_estado"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "paso": "sub",
+            "opcion1": "vender"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "opcion1",
+              "displayName": "opcion1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "6ecf7b37-14d0-4f71-9cae-95c87f37dbc7",
+      "name": "Update Vender",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1248,
+        20256
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Perfecto! 🏪 ¿Qué tipo de negocio querés vender?\\n\\nA) 🍔 Gastronómico\\nB) 🏪 Comercio / Retail\\nC) 🏭 Industrial / Productivo\\nD) 💻 Digital / Tecnología\\n\\nRespondé con la *letra*\"\n}",
+        "options": {}
+      },
+      "id": "2dc65cf4-14a6-4a13-af06-8e3a783c564a",
+      "name": "Enviar Sub Vender",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1040,
+        20256
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+          "mode": "list",
+          "cachedResultName": "LEADS_CONECTA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "bot_estado"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "paso": "sub",
+            "opcion1": "consultoria"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "opcion1",
+              "displayName": "opcion1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "1c08a24a-7896-4b22-93aa-85b6a4d36740",
+      "name": "Update Consultoria",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1040,
+        20400
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Buena decisión! 📊 ¿En qué área necesitás consultoría?\\n\\nA) 📊 Estrategia de negocios\\nB) 💰 Finanzas y costos\\nC) 📈 Marketing y ventas\\nD) ⚙️ Operaciones y procesos\\n\\nRespondé con la *letra*\"\n}",
+        "options": {}
+      },
+      "id": "c7b81bf9-b029-4999-9479-3e211843a78b",
+      "name": "Enviar Sub Consultoria",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -816,
+        20400
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+          "mode": "list",
+          "cachedResultName": "LEADS_CONECTA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "bot_estado"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "paso": "nombre",
+            "opcion1": "asesor",
+            "opcion2": "directo"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "opcion1",
+              "displayName": "opcion1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "opcion2",
+              "displayName": "opcion2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "11c19cb6-3f25-4ded-ad6a-e316d66a8615",
+      "name": "Update Asesor",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -816,
+        20528
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Por supuesto! 🤝\\n\\nPara derivarte con el asesor indicado necesitamos algunos datos.\\n\\n📌 ¿Cuál es tu *nombre completo*?\"\n}",
+        "options": {}
+      },
+      "id": "a491ff27-3b86-4678-bbb0-ef80dda11121",
+      "name": "Pedir Nombre Asesor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -592,
+        20528
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"No entendí tu respuesta 😅\\n\\nPor favor respondé con el *número* de la opción:\\n\\n1️⃣ Quiero *invertir* en un negocio\\n2️⃣ Quiero *vender* mi negocio\\n3️⃣ *Consultoría* empresarial\\n4️⃣ Hablar con un *asesor*\"\n}",
+        "options": {}
+      },
+      "id": "73853fe1-c819-4728-aae7-631a5b360342",
+      "name": "No Entendi Menu",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -816,
+        20688
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.all()[0].json;\nconst mensaje = String(item.mensaje || '').trim().toLowerCase();\nconst opcion1 = String(item.opcion1 || '').trim().toLowerCase();\nconst telefono = String(item.telefono || '');\nconst mapa = {\n  'invertir': {'a':'franquicias','b':'comercios','c':'inmobiliarios','d':'digitales'},\n  'vender': {'a':'gastronomico','b':'comercio_retail','c':'industrial','d':'digital_tech'},\n  'consultoria': {'a':'estrategia','b':'finanzas','c':'marketing','d':'operaciones'}\n};\nlet opcion2 = 'sin_especificar';\nif (mapa[opcion1] && mapa[opcion1][mensaje]) { opcion2 = mapa[opcion1][mensaje]; }\nreturn [{ json: { opcion2_valor: opcion2, telefono, mensaje } }];"
+      },
+      "id": "8b54f8a3-3d74-4aa1-a758-a71b92b6c00c",
+      "name": "Resolver Submenu",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1472,
+        21008
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+          "mode": "list",
+          "cachedResultName": "LEADS_CONECTA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "bot_estado"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "paso": "nombre",
+            "opcion2": "={{ $json.opcion2_valor }}"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "opcion2",
+              "displayName": "opcion2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "3d2c7485-43ba-46a7-8486-394200ae353f",
+      "name": "Update Submenu",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1248,
+        21008
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "ytn1",
+              "leftValue": "={{ $('Buscar Telefono').first().json.nombre }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "22bb5183-1132-4437-8d7e-fbdc5b538f2a",
+      "name": "Ya Tiene Nombre?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1040,
+        21008
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+          "mode": "list",
+          "cachedResultName": "LEADS_CONECTA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "bot_estado"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $('Buscar Telefono').first().json.telefono }}",
+            "paso": "dato_final"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "55f3d6f0-4cec-4dc5-b460-d091e513d2b8",
+      "name": "Saltar a Dato Final",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -816,
+        20896
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $('Buscar Telefono').first().json.telefono }}\",\n  \"text\": \"¡Hola de nuevo {{ $('Buscar Telefono').first().json.nombre }}! 😊\\n\\n📌 Último dato: ¿Cuál es tu *presupuesto estimado* de inversión?\\n\\n(Podés responder en pesos o dólares, ej: USD 30.000)\"\n}",
+        "options": {}
+      },
+      "id": "07ee988e-e191-4fbf-841b-71484fb115f9",
+      "name": "Pedir Presupuesto Directo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -592,
+        20960
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Excelente elección! ✅\\n\\nPara conectarte con el especialista indicado necesitamos algunos datos.\\n\\n📌 ¿Cuál es tu *nombre completo*?\"\n}",
+        "options": {}
+      },
+      "id": "bfccba37-ed68-4695-b4c2-b8bfe741d3eb",
+      "name": "Pedir Nombre",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1040,
+        21008
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+          "mode": "list",
+          "cachedResultName": "LEADS_CONECTA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "bot_estado"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "paso": "ciudad",
+            "nombre": "={{ $json.mensaje }}"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "b231adf3-f444-4ed4-9697-92bc1a32f665",
+      "name": "Guardar Nombre",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1248,
+        21200
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"Gracias {{ $json.nombre }} 😊\\n\\n📌 ¿De qué *ciudad* nos escribís?\"\n}",
+        "options": {}
+      },
+      "id": "02303eab-b90a-47c1-973b-e3ec690a83de",
+      "name": "Pedir Ciudad",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1040,
+        21200
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+          "mode": "list",
+          "cachedResultName": "LEADS_CONECTA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "bot_estado"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "paso": "dato_final",
+            "ciudad": "={{ $json.mensaje }}"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ciudad",
+              "displayName": "ciudad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "6f0fa12a-397e-4d9b-8b5f-bcc674a2fa96",
+      "name": "Guardar Ciudad",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1040,
+        21408
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"📌 Último dato: ¿Cuál es tu *presupuesto estimado* de inversión?\\n\\n(Podés responder en pesos o dólares, ej: USD 30.000)\"\n}",
+        "options": {}
+      },
+      "id": "38a6da2e-07b1-4f2e-9107-fb928805c270",
+      "name": "Pedir Dato Final",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -816,
+        21408
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+          "mode": "list",
+          "cachedResultName": "LEADS_CONECTA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "bot_estado"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "paso": "completado",
+            "dato_extra": "={{ $json.mensaje }}"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "dato_extra",
+              "displayName": "dato_extra",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "2f07923c-9673-4d7c-9fd5-c4da191b8d8f",
+      "name": "Guardar Dato Final",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -816,
+        21600
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+          "mode": "list",
+          "cachedResultName": "LEADS_CONECTA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "bot_estado"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "telefono",
+              "lookupValue": "={{ $json.telefono }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a62eea5e-2f86-4064-b07a-7963aa1b6f12",
+      "name": "Leer Datos Completos",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -592,
+        21600
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Perfecto {{ $json.nombre }}! ✅\\n\\nYa registramos tu consulta.\\n\\n📋 *Resumen:*\\n👤 {{ $json.nombre }}\\n📍 {{ $json.ciudad }}\\n💼 {{ $json.opcion1 }} - {{ $json.opcion2 }}\\n💰 {{ $json.dato_extra }}\\n\\nUn especialista de *Conecta Inversiones & Negocios* te va a contactar en las próximas horas. 🤝\\n\\n¡Gracias por elegirnos! 🏢\"\n}",
+        "options": {}
+      },
+      "id": "8e087556-df73-4670-add4-f07abccb1fde",
+      "name": "Enviar Despedida",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -368,
+        21504
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+          "mode": "list",
+          "cachedResultName": "LEADS_CONECTA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=1480993681",
+          "mode": "list",
+          "cachedResultName": "leads_conecta"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "telefono",
+              "lookupValue": "={{ $json.telefono }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dcaee71f-a6a8-483c-b189-5bd7d74c2188",
+      "name": "Leer Leads Existentes",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -368,
+        22128
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const datosActuales = $('Leer Datos Completos').first().json;\nconst leadsExistentes = $input.all().map(i => i.json);\n\nconst telefono = String(datosActuales.telefono || '').trim();\nconst interes = String(datosActuales.opcion1 || '').trim().toLowerCase();\nconst especifico = String(datosActuales.opcion2 || '').trim().toLowerCase();\n\n// Verificar si ya existe un lead con el mismo telefono + interes + especifico\nconst duplicado = leadsExistentes.find(lead => {\n  const leadTel = String(lead.telefono || '').trim();\n  const leadInt = String(lead.interes || '').trim().toLowerCase();\n  const leadEsp = String(lead.especifico || '').trim().toLowerCase();\n  return leadTel === telefono && leadInt === interes && leadEsp === especifico;\n});\n\nreturn [{ json: { \n  ...datosActuales,\n  esNuevo: !duplicado,\n  duplicadoEncontrado: duplicado ? true : false\n}}];"
+      },
+      "id": "f2403b56-c60b-4a4a-b9b5-bd388c995253",
+      "name": "Verificar Duplicado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        22128
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "ln1",
+              "leftValue": "={{ $json.esNuevo }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "17cf778b-4664-4340-96e4-3c0028a199a8",
+      "name": "Es Lead Nuevo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        96,
+        22128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+          "mode": "list",
+          "cachedResultName": "LEADS_CONECTA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1480993681,
+          "mode": "list",
+          "cachedResultName": "leads_conecta",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w/edit#gid=1480993681"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "={{ $now.format('dd/MM/yyyy HH:mm') }}",
+            "nombre": "={{ $json.nombre }}",
+            "telefono": "={{ $json.telefono }}",
+            "ciudad": "={{ $json.ciudad }}",
+            "interes": "={{ $json.opcion1 }}",
+            "especifico": "={{ $json.opcion2 }}",
+            "presupuesto": "={{ $json.dato_extra }}",
+            "estado": "Nuevo"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ciudad",
+              "displayName": "ciudad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "interes",
+              "displayName": "interes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "especifico",
+              "displayName": "especifico",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "presupuesto",
+              "displayName": "presupuesto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0fa9d184-f51a-4b84-a977-2b285e4f0591",
+      "name": "Registrar Lead Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -368,
+        21696
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "appToken",
+        "operation": "create"
+      },
+      "id": "8fa9583b-885b-41c4-8393-c4ec801d8268",
+      "name": "Crear Contacto HubSpot",
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        21872
+      ],
+      "credentials": {
+        "hubspotAppToken": {
+          "id": "PkTUVbFow7oYPyQf",
+          "name": "HubSpot App Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "pc1",
+              "leftValue": "={{ $json.paso }}",
+              "rightValue": "completado",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9d399a4e-676b-42b1-ad3d-c3950aabe8dd",
+      "name": "Paso=completado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -816,
+        20992
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "qr1",
+              "leftValue": "={{ $json.mensaje }}",
+              "rightValue": "1",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b40c6f0a-27e3-4083-9c5c-c57a46e71273",
+      "name": "Quiere Reiniciar?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -576,
+        21248
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Hola {{ $json.nombre }}! 👋\\n\\nYa tenemos tu consulta registrada. 📋\\n\\n*Tu último interés:*\\n💼 {{ $json.opcion1 }} - {{ $json.opcion2 }}\\n\\n¿Querés realizar otra consulta?\\n\\n1️⃣ Sí, quiero explorar otro servicio\\n2️⃣ No, gracias\\n\\nRespondé con el *número* 😊\"\n}",
+        "options": {}
+      },
+      "id": "cc4c0da2-9582-4a32-8e40-d72099bda68c",
+      "name": "Mensaje Usuario Completado",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -592,
+        20752
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+          "mode": "list",
+          "cachedResultName": "LEADS_CONECTA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "bot_estado"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "paso": "menu"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "fca30a2e-06f6-49cb-8b38-edcc1564da40",
+      "name": "Reiniciar Estado",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -368,
+        20896
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Perfecto! 😊\\n\\nSi necesitás algo más, escribinos cuando quieras.\\n\\n¡Que tengas un excelente día! 🙌\"\n}",
+        "options": {}
+      },
+      "id": "1ded62c5-24dc-406b-8a37-3b210ef3911d",
+      "name": "Despedida No Reinicia",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -352,
+        21184
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Perfecto! 😊\\n\\n¿En qué más podemos ayudarte?\\n\\n1️⃣ Quiero *invertir* en un negocio\\n2️⃣ Quiero *vender* mi negocio\\n3️⃣ *Consultoría* empresarial\\n4️⃣ Hablar con un *asesor*\\n\\nRespondé con el *número* de la opción 😊\"\n}",
+        "options": {}
+      },
+      "id": "28870617-e5f2-4e19-a5f7-37e55e7a1863",
+      "name": "Enviar Menu Sin Saludo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -144,
+        20896
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "qd1",
+              "leftValue": "={{ $json.mensaje }}",
+              "rightValue": "2",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "45a357eb-3e01-45dd-8c14-dfc8b38e8f87",
+      "name": "Quiere Despedirse?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -368,
+        21040
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "4973a60b-fbc7-4499-9fce-b76c25785570",
+        "options": {}
+      },
+      "id": "eb492e45-ae75-4513-8ccc-514a8dcb0c08",
+      "name": "Webhook Evolution API",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        -3456,
+        20704
+      ],
+      "webhookId": "4973a60b-fbc7-4499-9fce-b76c25785570"
+    }
+  ],
+  "connections": {
+    "Filtro Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extraer Datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Datos": {
+      "main": [
+        [
+          {
+            "node": "No es mensaje mio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No es mensaje mio": {
+      "main": [
+        [
+          {
+            "node": "Leer Bot Estado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Bot Estado": {
+      "main": [
+        [
+          {
+            "node": "Buscar Telefono",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Telefono": {
+      "main": [
+        [
+          {
+            "node": "Ya Existe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ya Existe?": {
+      "main": [
+        [
+          {
+            "node": "Paso=menu?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Guardar Nuevo Estado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Nuevo Estado": {
+      "main": [
+        [
+          {
+            "node": "Enviar Menu Principal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Paso=menu?": {
+      "main": [
+        [
+          {
+            "node": "Msg=1?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Paso=sub?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Paso=sub?": {
+      "main": [
+        [
+          {
+            "node": "Resolver Submenu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Paso=nombre?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Paso=nombre?": {
+      "main": [
+        [
+          {
+            "node": "Guardar Nombre",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Paso=ciudad?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Paso=ciudad?": {
+      "main": [
+        [
+          {
+            "node": "Guardar Ciudad",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Paso=dato_final?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Paso=dato_final?": {
+      "main": [
+        [
+          {
+            "node": "Guardar Dato Final",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Paso=completado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Msg=1?": {
+      "main": [
+        [
+          {
+            "node": "Update Invertir",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Msg=2?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Msg=2?": {
+      "main": [
+        [
+          {
+            "node": "Update Vender",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Msg=3?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Msg=3?": {
+      "main": [
+        [
+          {
+            "node": "Update Consultoria",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Msg=4?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Msg=4?": {
+      "main": [
+        [
+          {
+            "node": "Update Asesor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Entendi Menu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Invertir": {
+      "main": [
+        [
+          {
+            "node": "Enviar Sub Invertir",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Vender": {
+      "main": [
+        [
+          {
+            "node": "Enviar Sub Vender",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Consultoria": {
+      "main": [
+        [
+          {
+            "node": "Enviar Sub Consultoria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Asesor": {
+      "main": [
+        [
+          {
+            "node": "Pedir Nombre Asesor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resolver Submenu": {
+      "main": [
+        [
+          {
+            "node": "Update Submenu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Submenu": {
+      "main": [
+        [
+          {
+            "node": "Ya Tiene Nombre?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Nombre": {
+      "main": [
+        [
+          {
+            "node": "Pedir Ciudad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Ciudad": {
+      "main": [
+        [
+          {
+            "node": "Pedir Dato Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Dato Final": {
+      "main": [
+        [
+          {
+            "node": "Leer Datos Completos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Datos Completos": {
+      "main": [
+        [
+          {
+            "node": "Enviar Despedida",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Leer Leads Existentes",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Crear Contacto HubSpot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Paso=completado?": {
+      "main": [
+        [
+          {
+            "node": "Quiere Reiniciar?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quiere Reiniciar?": {
+      "main": [
+        [
+          {
+            "node": "Reiniciar Estado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Quiere Despedirse?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quiere Despedirse?": {
+      "main": [
+        [
+          {
+            "node": "Despedida No Reinicia",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mensaje Usuario Completado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reiniciar Estado": {
+      "main": [
+        [
+          {
+            "node": "Enviar Menu Sin Saludo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Leads Existentes": {
+      "main": [
+        [
+          {
+            "node": "Verificar Duplicado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Duplicado": {
+      "main": [
+        [
+          {
+            "node": "Es Lead Nuevo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es Lead Nuevo?": {
+      "main": [
+        [
+          {
+            "node": "Registrar Lead Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ya Tiene Nombre?": {
+      "main": [
+        [
+          {
+            "node": "Saltar a Dato Final",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pedir Nombre",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Saltar a Dato Final": {
+      "main": [
+        [
+          {
+            "node": "Pedir Presupuesto Directo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Evolution API": {
+      "main": [
+        [
+          {
+            "node": "Filtro Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "5a56619e-944a-4823-a222-1170a5483a09",
+  "activeVersionId": "5a56619e-944a-4823-a222-1170a5483a09",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-07T04:32:36.552Z",
+      "createdAt": "2026-02-07T04:32:36.552Z",
+      "role": "workflow:owner",
+      "workflowId": "OXl643yS6CeKLKj3deLuW",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-09T20:30:08.092Z",
+    "createdAt": "2026-02-09T20:30:06.121Z",
+    "versionId": "5a56619e-944a-4823-a222-1170a5483a09",
+    "workflowId": "OXl643yS6CeKLKj3deLuW",
+    "nodes": [
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c1",
+                "leftValue": "={{ $json.body.event }}",
+                "rightValue": "messages.upsert",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              },
+              {
+                "id": "c2",
+                "leftValue": "={{ $json.body.data.message.conversation }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              },
+              {
+                "id": "c3",
+                "leftValue": "={{ $json.body.data.key.remoteJid }}",
+                "rightValue": "@s.whatsapp.net",
+                "operator": {
+                  "type": "string",
+                  "operation": "endsWith"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "f592d5b4-26d4-45f3-8531-37dce5c51aba",
+        "name": "Filtro Webhook",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -3232,
+          20704
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a1",
+                "name": "telefono",
+                "value": "={{ ($json.body?.data?.key?.remoteJid || '').replace('@s.whatsapp.net','') }}",
+                "type": "string"
+              },
+              {
+                "id": "a2",
+                "name": "mensaje",
+                "value": "={{ ($json.body?.data?.message?.conversation || '').trim().toLowerCase() }}",
+                "type": "string"
+              },
+              {
+                "id": "a3",
+                "name": "nombre_wa",
+                "value": "={{ $json.body?.data?.pushName || 'Sin nombre' }}",
+                "type": "string"
+              },
+              {
+                "id": "a4",
+                "name": "es_mio",
+                "value": "={{ String($json.body?.data?.key?.fromMe ?? false) }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "b5f4fc4c-9457-4deb-9266-4ce38cfb35dd",
+        "name": "Extraer Datos",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -3008,
+          20704
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "f1",
+                "leftValue": "={{ $json.es_mio }}",
+                "rightValue": "false",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "745c39b9-c704-410e-adb0-741e41f3a130",
+        "name": "No es mensaje mio",
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2,
+        "position": [
+          -2800,
+          20704
+        ]
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+            "mode": "list",
+            "cachedResultName": "LEADS_CONECTA"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "bot_estado"
+          },
+          "options": {}
+        },
+        "id": "cd4b8976-0203-4b18-a0b1-f4777bba495c",
+        "name": "Leer Bot Estado",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -2576,
+          20704
+        ],
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const telefono = $('Extraer Datos').first().json.telefono;\nconst mensaje = $('Extraer Datos').first().json.mensaje;\nconst nombre_wa = $('Extraer Datos').first().json.nombre_wa;\nlet filas = [];\ntry { filas = $input.all().map(i => i.json); } catch(e) { filas = []; }\nconst telLimpio = String(telefono).trim();\nconst encontrado = filas.find(f => String(f.telefono || '').trim() === telLimpio);\nif (encontrado && encontrado.paso) {\n  return [{ json: { existe: true, telefono: telLimpio, mensaje, nombre_wa, paso: String(encontrado.paso || '').trim().toLowerCase(), opcion1: String(encontrado.opcion1 || '').trim().toLowerCase(), opcion2: String(encontrado.opcion2 || '').trim().toLowerCase(), nombre: encontrado.nombre || '', ciudad: encontrado.ciudad || '', dato_extra: encontrado.dato_extra || '' } }];\n} else {\n  return [{ json: { existe: false, telefono: telLimpio, mensaje, nombre_wa, paso: 'nuevo', opcion1: '', opcion2: '', nombre: '', ciudad: '', dato_extra: '' } }];\n}"
+        },
+        "id": "da68a6be-b69a-4c93-a62e-bddfbed2da16",
+        "name": "Buscar Telefono",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -2352,
+          20704
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "e1",
+                "leftValue": "={{ $json.existe }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "70cc54b2-8080-45b0-b47e-edf3eb295465",
+        "name": "Ya Existe?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -2128,
+          20704
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+            "mode": "list",
+            "cachedResultName": "LEADS_CONECTA"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "bot_estado"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "paso": "menu",
+              "opcion1": "",
+              "opcion2": "",
+              "nombre": "",
+              "ciudad": "",
+              "dato_extra": "",
+              "timestamp": "={{ $now.toISO() }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "opcion1",
+                "displayName": "opcion1",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "opcion2",
+                "displayName": "opcion2",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "nombre",
+                "displayName": "nombre",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "ciudad",
+                "displayName": "ciudad",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "dato_extra",
+                "displayName": "dato_extra",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "timestamp",
+                "displayName": "timestamp",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "4e2daa82-aafb-4498-a2bd-1610c3608159",
+        "name": "Guardar Nuevo Estado",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -1920,
+          20896
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $('Extraer Datos').first().json.telefono }}\",\n  \"text\": \"¡Hola {{ $('Extraer Datos').first().json.nombre_wa }}! 👋\\n\\nBienvenido a *Conecta Inversiones & Negocios* 🏢\\n\\n¿En qué podemos ayudarte?\\n\\n1️⃣ Quiero *invertir* en un negocio\\n2️⃣ Quiero *vender* mi negocio\\n3️⃣ *Consultoría* empresarial\\n4️⃣ Hablar con un *asesor*\\n\\nRespondé con el *número* de la opción 😊\"\n}",
+          "options": {}
+        },
+        "id": "e4724678-cb57-450f-b574-e6a374436199",
+        "name": "Enviar Menu Principal",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -1696,
+          20896
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "p1",
+                "leftValue": "={{ $json.paso }}",
+                "rightValue": "menu",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "675464a9-b246-4332-be2a-5729fec7fdc5",
+        "name": "Paso=menu?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -1920,
+          20496
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "p2",
+                "leftValue": "={{ $json.paso }}",
+                "rightValue": "sub",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "bd9707c6-e04c-4579-aecf-2ef1cd8d35b8",
+        "name": "Paso=sub?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -1696,
+          20608
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "p3",
+                "leftValue": "={{ $json.paso }}",
+                "rightValue": "nombre",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "f056752a-be5a-4fe6-b7ea-bac7cbca144f",
+        "name": "Paso=nombre?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -1472,
+          20704
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "p4",
+                "leftValue": "={{ $json.paso }}",
+                "rightValue": "ciudad",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "e941e171-4ae3-48c7-91c9-0cf71d19d360",
+        "name": "Paso=ciudad?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -1248,
+          20800
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "p5",
+                "leftValue": "={{ $json.paso }}",
+                "rightValue": "dato_final",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "da9705c0-486d-46f8-9b7f-c0041084febc",
+        "name": "Paso=dato_final?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -1040,
+          20896
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "m1",
+                "leftValue": "={{ $json.mensaje }}",
+                "rightValue": "1",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "28cd6217-9efa-40db-8a68-a1c9d8d11740",
+        "name": "Msg=1?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -1696,
+          20304
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "m2",
+                "leftValue": "={{ $json.mensaje }}",
+                "rightValue": "2",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "cecb2ad9-5495-4377-8722-04b76567a441",
+        "name": "Msg=2?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -1472,
+          20400
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "m3",
+                "leftValue": "={{ $json.mensaje }}",
+                "rightValue": "3",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "4f48905f-452e-4051-a1c8-42290687f870",
+        "name": "Msg=3?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -1248,
+          20496
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "m4",
+                "leftValue": "={{ $json.mensaje }}",
+                "rightValue": "4",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "d63d9c10-106c-4863-a61c-32194c16398e",
+        "name": "Msg=4?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -1040,
+          20608
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+            "mode": "list",
+            "cachedResultName": "LEADS_CONECTA"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "bot_estado"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "opcion1": "invertir",
+              "paso": "sub"
+            },
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "opcion1",
+                "displayName": "opcion1",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "68dd4fa9-f752-44bb-9bfc-001517d2b74b",
+        "name": "Update Invertir",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -1472,
+          20096
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Genial! 💼 Tenemos estas oportunidades de inversión:\\n\\nA) 🍔 Franquicias\\nB) 🏪 Comercios establecidos\\nC) 🏗️ Proyectos inmobiliarios\\nD) 💻 Negocios digitales\\n\\nRespondé con la *letra* de tu interés\"\n}",
+          "options": {}
+        },
+        "id": "a38f580e-1c8a-471c-bac8-d2f1a3bb0d0b",
+        "name": "Enviar Sub Invertir",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -1248,
+          20096
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+            "mode": "list",
+            "cachedResultName": "LEADS_CONECTA"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "bot_estado"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "paso": "sub",
+              "opcion1": "vender"
+            },
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "opcion1",
+                "displayName": "opcion1",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ]
+          },
+          "options": {
+            "cellFormat": "USER_ENTERED"
+          }
+        },
+        "id": "6ecf7b37-14d0-4f71-9cae-95c87f37dbc7",
+        "name": "Update Vender",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -1248,
+          20256
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Perfecto! 🏪 ¿Qué tipo de negocio querés vender?\\n\\nA) 🍔 Gastronómico\\nB) 🏪 Comercio / Retail\\nC) 🏭 Industrial / Productivo\\nD) 💻 Digital / Tecnología\\n\\nRespondé con la *letra*\"\n}",
+          "options": {}
+        },
+        "id": "2dc65cf4-14a6-4a13-af06-8e3a783c564a",
+        "name": "Enviar Sub Vender",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -1040,
+          20256
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+            "mode": "list",
+            "cachedResultName": "LEADS_CONECTA"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "bot_estado"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "paso": "sub",
+              "opcion1": "consultoria"
+            },
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "opcion1",
+                "displayName": "opcion1",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ]
+          },
+          "options": {
+            "cellFormat": "USER_ENTERED"
+          }
+        },
+        "id": "1c08a24a-7896-4b22-93aa-85b6a4d36740",
+        "name": "Update Consultoria",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -1040,
+          20400
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Buena decisión! 📊 ¿En qué área necesitás consultoría?\\n\\nA) 📊 Estrategia de negocios\\nB) 💰 Finanzas y costos\\nC) 📈 Marketing y ventas\\nD) ⚙️ Operaciones y procesos\\n\\nRespondé con la *letra*\"\n}",
+          "options": {}
+        },
+        "id": "c7b81bf9-b029-4999-9479-3e211843a78b",
+        "name": "Enviar Sub Consultoria",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -816,
+          20400
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+            "mode": "list",
+            "cachedResultName": "LEADS_CONECTA"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "bot_estado"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "paso": "nombre",
+              "opcion1": "asesor",
+              "opcion2": "directo"
+            },
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "opcion1",
+                "displayName": "opcion1",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "opcion2",
+                "displayName": "opcion2",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ]
+          },
+          "options": {
+            "cellFormat": "USER_ENTERED"
+          }
+        },
+        "id": "11c19cb6-3f25-4ded-ad6a-e316d66a8615",
+        "name": "Update Asesor",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -816,
+          20528
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Por supuesto! 🤝\\n\\nPara derivarte con el asesor indicado necesitamos algunos datos.\\n\\n📌 ¿Cuál es tu *nombre completo*?\"\n}",
+          "options": {}
+        },
+        "id": "a491ff27-3b86-4678-bbb0-ef80dda11121",
+        "name": "Pedir Nombre Asesor",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -592,
+          20528
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"No entendí tu respuesta 😅\\n\\nPor favor respondé con el *número* de la opción:\\n\\n1️⃣ Quiero *invertir* en un negocio\\n2️⃣ Quiero *vender* mi negocio\\n3️⃣ *Consultoría* empresarial\\n4️⃣ Hablar con un *asesor*\"\n}",
+          "options": {}
+        },
+        "id": "73853fe1-c819-4728-aae7-631a5b360342",
+        "name": "No Entendi Menu",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -816,
+          20688
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const item = $input.all()[0].json;\nconst mensaje = String(item.mensaje || '').trim().toLowerCase();\nconst opcion1 = String(item.opcion1 || '').trim().toLowerCase();\nconst telefono = String(item.telefono || '');\nconst mapa = {\n  'invertir': {'a':'franquicias','b':'comercios','c':'inmobiliarios','d':'digitales'},\n  'vender': {'a':'gastronomico','b':'comercio_retail','c':'industrial','d':'digital_tech'},\n  'consultoria': {'a':'estrategia','b':'finanzas','c':'marketing','d':'operaciones'}\n};\nlet opcion2 = 'sin_especificar';\nif (mapa[opcion1] && mapa[opcion1][mensaje]) { opcion2 = mapa[opcion1][mensaje]; }\nreturn [{ json: { opcion2_valor: opcion2, telefono, mensaje } }];"
+        },
+        "id": "8b54f8a3-3d74-4aa1-a758-a71b92b6c00c",
+        "name": "Resolver Submenu",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1472,
+          21008
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+            "mode": "list",
+            "cachedResultName": "LEADS_CONECTA"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "bot_estado"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "paso": "nombre",
+              "opcion2": "={{ $json.opcion2_valor }}"
+            },
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "opcion2",
+                "displayName": "opcion2",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ]
+          },
+          "options": {
+            "cellFormat": "USER_ENTERED"
+          }
+        },
+        "id": "3d2c7485-43ba-46a7-8486-394200ae353f",
+        "name": "Update Submenu",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -1248,
+          21008
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "ytn1",
+                "leftValue": "={{ $('Buscar Telefono').first().json.nombre }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEquals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "22bb5183-1132-4437-8d7e-fbdc5b538f2a",
+        "name": "Ya Tiene Nombre?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -1040,
+          21008
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+            "mode": "list",
+            "cachedResultName": "LEADS_CONECTA"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "bot_estado"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $('Buscar Telefono').first().json.telefono }}",
+              "paso": "dato_final"
+            },
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ]
+          },
+          "options": {
+            "cellFormat": "USER_ENTERED"
+          }
+        },
+        "id": "55f3d6f0-4cec-4dc5-b460-d091e513d2b8",
+        "name": "Saltar a Dato Final",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -816,
+          20896
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $('Buscar Telefono').first().json.telefono }}\",\n  \"text\": \"¡Hola de nuevo {{ $('Buscar Telefono').first().json.nombre }}! 😊\\n\\n📌 Último dato: ¿Cuál es tu *presupuesto estimado* de inversión?\\n\\n(Podés responder en pesos o dólares, ej: USD 30.000)\"\n}",
+          "options": {}
+        },
+        "id": "07ee988e-e191-4fbf-841b-71484fb115f9",
+        "name": "Pedir Presupuesto Directo",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -592,
+          20960
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Excelente elección! ✅\\n\\nPara conectarte con el especialista indicado necesitamos algunos datos.\\n\\n📌 ¿Cuál es tu *nombre completo*?\"\n}",
+          "options": {}
+        },
+        "id": "bfccba37-ed68-4695-b4c2-b8bfe741d3eb",
+        "name": "Pedir Nombre",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -1040,
+          21008
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+            "mode": "list",
+            "cachedResultName": "LEADS_CONECTA"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "bot_estado"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "paso": "ciudad",
+              "nombre": "={{ $json.mensaje }}"
+            },
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "nombre",
+                "displayName": "nombre",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ]
+          },
+          "options": {
+            "cellFormat": "USER_ENTERED"
+          }
+        },
+        "id": "b231adf3-f444-4ed4-9697-92bc1a32f665",
+        "name": "Guardar Nombre",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -1248,
+          21200
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"Gracias {{ $json.nombre }} 😊\\n\\n📌 ¿De qué *ciudad* nos escribís?\"\n}",
+          "options": {}
+        },
+        "id": "02303eab-b90a-47c1-973b-e3ec690a83de",
+        "name": "Pedir Ciudad",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -1040,
+          21200
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+            "mode": "list",
+            "cachedResultName": "LEADS_CONECTA"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "bot_estado"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "paso": "dato_final",
+              "ciudad": "={{ $json.mensaje }}"
+            },
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "ciudad",
+                "displayName": "ciudad",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ]
+          },
+          "options": {
+            "cellFormat": "USER_ENTERED"
+          }
+        },
+        "id": "6f0fa12a-397e-4d9b-8b5f-bcc674a2fa96",
+        "name": "Guardar Ciudad",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -1040,
+          21408
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"📌 Último dato: ¿Cuál es tu *presupuesto estimado* de inversión?\\n\\n(Podés responder en pesos o dólares, ej: USD 30.000)\"\n}",
+          "options": {}
+        },
+        "id": "38a6da2e-07b1-4f2e-9107-fb928805c270",
+        "name": "Pedir Dato Final",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -816,
+          21408
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+            "mode": "list",
+            "cachedResultName": "LEADS_CONECTA"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "bot_estado"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "paso": "completado",
+              "dato_extra": "={{ $json.mensaje }}"
+            },
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "dato_extra",
+                "displayName": "dato_extra",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ]
+          },
+          "options": {
+            "cellFormat": "USER_ENTERED"
+          }
+        },
+        "id": "2f07923c-9673-4d7c-9fd5-c4da191b8d8f",
+        "name": "Guardar Dato Final",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -816,
+          21600
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+            "mode": "list",
+            "cachedResultName": "LEADS_CONECTA"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "bot_estado"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "telefono",
+                "lookupValue": "={{ $json.telefono }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "a62eea5e-2f86-4064-b07a-7963aa1b6f12",
+        "name": "Leer Datos Completos",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -592,
+          21600
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Perfecto {{ $json.nombre }}! ✅\\n\\nYa registramos tu consulta.\\n\\n📋 *Resumen:*\\n👤 {{ $json.nombre }}\\n📍 {{ $json.ciudad }}\\n💼 {{ $json.opcion1 }} - {{ $json.opcion2 }}\\n💰 {{ $json.dato_extra }}\\n\\nUn especialista de *Conecta Inversiones & Negocios* te va a contactar en las próximas horas. 🤝\\n\\n¡Gracias por elegirnos! 🏢\"\n}",
+          "options": {}
+        },
+        "id": "8e087556-df73-4670-add4-f07abccb1fde",
+        "name": "Enviar Despedida",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -368,
+          21504
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+            "mode": "list",
+            "cachedResultName": "LEADS_CONECTA"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=1480993681",
+            "mode": "list",
+            "cachedResultName": "leads_conecta"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "telefono",
+                "lookupValue": "={{ $json.telefono }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "dcaee71f-a6a8-483c-b189-5bd7d74c2188",
+        "name": "Leer Leads Existentes",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -368,
+          22128
+        ],
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const datosActuales = $('Leer Datos Completos').first().json;\nconst leadsExistentes = $input.all().map(i => i.json);\n\nconst telefono = String(datosActuales.telefono || '').trim();\nconst interes = String(datosActuales.opcion1 || '').trim().toLowerCase();\nconst especifico = String(datosActuales.opcion2 || '').trim().toLowerCase();\n\n// Verificar si ya existe un lead con el mismo telefono + interes + especifico\nconst duplicado = leadsExistentes.find(lead => {\n  const leadTel = String(lead.telefono || '').trim();\n  const leadInt = String(lead.interes || '').trim().toLowerCase();\n  const leadEsp = String(lead.especifico || '').trim().toLowerCase();\n  return leadTel === telefono && leadInt === interes && leadEsp === especifico;\n});\n\nreturn [{ json: { \n  ...datosActuales,\n  esNuevo: !duplicado,\n  duplicadoEncontrado: duplicado ? true : false\n}}];"
+        },
+        "id": "f2403b56-c60b-4a4a-b9b5-bd388c995253",
+        "name": "Verificar Duplicado",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -96,
+          22128
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "ln1",
+                "leftValue": "={{ $json.esNuevo }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "17cf778b-4664-4340-96e4-3c0028a199a8",
+        "name": "Es Lead Nuevo?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          96,
+          22128
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+            "mode": "list",
+            "cachedResultName": "LEADS_CONECTA"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1480993681,
+            "mode": "list",
+            "cachedResultName": "leads_conecta",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w/edit#gid=1480993681"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "fecha": "={{ $now.format('dd/MM/yyyy HH:mm') }}",
+              "nombre": "={{ $json.nombre }}",
+              "telefono": "={{ $json.telefono }}",
+              "ciudad": "={{ $json.ciudad }}",
+              "interes": "={{ $json.opcion1 }}",
+              "especifico": "={{ $json.opcion2 }}",
+              "presupuesto": "={{ $json.dato_extra }}",
+              "estado": "Nuevo"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "fecha",
+                "displayName": "fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "nombre",
+                "displayName": "nombre",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "ciudad",
+                "displayName": "ciudad",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "interes",
+                "displayName": "interes",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "especifico",
+                "displayName": "especifico",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "presupuesto",
+                "displayName": "presupuesto",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "estado",
+                "displayName": "estado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "0fa9d184-f51a-4b84-a977-2b285e4f0591",
+        "name": "Registrar Lead Sheets",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -368,
+          21696
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "authentication": "appToken",
+          "operation": "create"
+        },
+        "id": "8fa9583b-885b-41c4-8393-c4ec801d8268",
+        "name": "Crear Contacto HubSpot",
+        "type": "n8n-nodes-base.hubspot",
+        "typeVersion": 2,
+        "position": [
+          -384,
+          21872
+        ],
+        "credentials": {
+          "hubspotAppToken": {
+            "id": "PkTUVbFow7oYPyQf",
+            "name": "HubSpot App Token account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "pc1",
+                "leftValue": "={{ $json.paso }}",
+                "rightValue": "completado",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "9d399a4e-676b-42b1-ad3d-c3950aabe8dd",
+        "name": "Paso=completado?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -816,
+          20992
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "qr1",
+                "leftValue": "={{ $json.mensaje }}",
+                "rightValue": "1",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "b40c6f0a-27e3-4083-9c5c-c57a46e71273",
+        "name": "Quiere Reiniciar?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -576,
+          21248
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Hola {{ $json.nombre }}! 👋\\n\\nYa tenemos tu consulta registrada. 📋\\n\\n*Tu último interés:*\\n💼 {{ $json.opcion1 }} - {{ $json.opcion2 }}\\n\\n¿Querés realizar otra consulta?\\n\\n1️⃣ Sí, quiero explorar otro servicio\\n2️⃣ No, gracias\\n\\nRespondé con el *número* 😊\"\n}",
+          "options": {}
+        },
+        "id": "cc4c0da2-9582-4a32-8e40-d72099bda68c",
+        "name": "Mensaje Usuario Completado",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -592,
+          20752
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1zOy4PIZRNVccH5Rr9dwyKM4-GnQOdK0iuycxeZnj-2w",
+            "mode": "list",
+            "cachedResultName": "LEADS_CONECTA"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "bot_estado"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "paso": "menu"
+            },
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ]
+          },
+          "options": {
+            "cellFormat": "USER_ENTERED"
+          }
+        },
+        "id": "fca30a2e-06f6-49cb-8b38-edcc1564da40",
+        "name": "Reiniciar Estado",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -368,
+          20896
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Perfecto! 😊\\n\\nSi necesitás algo más, escribinos cuando quieras.\\n\\n¡Que tengas un excelente día! 🙌\"\n}",
+          "options": {}
+        },
+        "id": "1ded62c5-24dc-406b-8a37-3b210ef3911d",
+        "name": "Despedida No Reinicia",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -352,
+          21184
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"¡Perfecto! 😊\\n\\n¿En qué más podemos ayudarte?\\n\\n1️⃣ Quiero *invertir* en un negocio\\n2️⃣ Quiero *vender* mi negocio\\n3️⃣ *Consultoría* empresarial\\n4️⃣ Hablar con un *asesor*\\n\\nRespondé con el *número* de la opción 😊\"\n}",
+          "options": {}
+        },
+        "id": "28870617-e5f2-4e19-a5f7-37e55e7a1863",
+        "name": "Enviar Menu Sin Saludo",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -144,
+          20896
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "qd1",
+                "leftValue": "={{ $json.mensaje }}",
+                "rightValue": "2",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "45a357eb-3e01-45dd-8c14-dfc8b38e8f87",
+        "name": "Quiere Despedirse?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -368,
+          21040
+        ]
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "4973a60b-fbc7-4499-9fce-b76c25785570",
+          "options": {}
+        },
+        "id": "eb492e45-ae75-4513-8ccc-514a8dcb0c08",
+        "name": "Webhook Evolution API",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1.1,
+        "position": [
+          -3456,
+          20704
+        ],
+        "webhookId": "4973a60b-fbc7-4499-9fce-b76c25785570"
+      }
+    ],
+    "connections": {
+      "Filtro Webhook": {
+        "main": [
+          [
+            {
+              "node": "Extraer Datos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraer Datos": {
+        "main": [
+          [
+            {
+              "node": "No es mensaje mio",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "No es mensaje mio": {
+        "main": [
+          [
+            {
+              "node": "Leer Bot Estado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Leer Bot Estado": {
+        "main": [
+          [
+            {
+              "node": "Buscar Telefono",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Telefono": {
+        "main": [
+          [
+            {
+              "node": "Ya Existe?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Ya Existe?": {
+        "main": [
+          [
+            {
+              "node": "Paso=menu?",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Guardar Nuevo Estado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar Nuevo Estado": {
+        "main": [
+          [
+            {
+              "node": "Enviar Menu Principal",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Paso=menu?": {
+        "main": [
+          [
+            {
+              "node": "Msg=1?",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Paso=sub?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Paso=sub?": {
+        "main": [
+          [
+            {
+              "node": "Resolver Submenu",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Paso=nombre?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Paso=nombre?": {
+        "main": [
+          [
+            {
+              "node": "Guardar Nombre",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Paso=ciudad?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Paso=ciudad?": {
+        "main": [
+          [
+            {
+              "node": "Guardar Ciudad",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Paso=dato_final?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Paso=dato_final?": {
+        "main": [
+          [
+            {
+              "node": "Guardar Dato Final",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Paso=completado?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Msg=1?": {
+        "main": [
+          [
+            {
+              "node": "Update Invertir",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Msg=2?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Msg=2?": {
+        "main": [
+          [
+            {
+              "node": "Update Vender",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Msg=3?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Msg=3?": {
+        "main": [
+          [
+            {
+              "node": "Update Consultoria",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Msg=4?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Msg=4?": {
+        "main": [
+          [
+            {
+              "node": "Update Asesor",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Entendi Menu",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Invertir": {
+        "main": [
+          [
+            {
+              "node": "Enviar Sub Invertir",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Vender": {
+        "main": [
+          [
+            {
+              "node": "Enviar Sub Vender",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Consultoria": {
+        "main": [
+          [
+            {
+              "node": "Enviar Sub Consultoria",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Asesor": {
+        "main": [
+          [
+            {
+              "node": "Pedir Nombre Asesor",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Resolver Submenu": {
+        "main": [
+          [
+            {
+              "node": "Update Submenu",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Submenu": {
+        "main": [
+          [
+            {
+              "node": "Ya Tiene Nombre?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar Nombre": {
+        "main": [
+          [
+            {
+              "node": "Pedir Ciudad",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar Ciudad": {
+        "main": [
+          [
+            {
+              "node": "Pedir Dato Final",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar Dato Final": {
+        "main": [
+          [
+            {
+              "node": "Leer Datos Completos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Leer Datos Completos": {
+        "main": [
+          [
+            {
+              "node": "Enviar Despedida",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Leer Leads Existentes",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Crear Contacto HubSpot",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Paso=completado?": {
+        "main": [
+          [
+            {
+              "node": "Quiere Reiniciar?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Quiere Reiniciar?": {
+        "main": [
+          [
+            {
+              "node": "Reiniciar Estado",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Quiere Despedirse?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Quiere Despedirse?": {
+        "main": [
+          [
+            {
+              "node": "Despedida No Reinicia",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Mensaje Usuario Completado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Reiniciar Estado": {
+        "main": [
+          [
+            {
+              "node": "Enviar Menu Sin Saludo",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Leer Leads Existentes": {
+        "main": [
+          [
+            {
+              "node": "Verificar Duplicado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Verificar Duplicado": {
+        "main": [
+          [
+            {
+              "node": "Es Lead Nuevo?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Es Lead Nuevo?": {
+        "main": [
+          [
+            {
+              "node": "Registrar Lead Sheets",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Ya Tiene Nombre?": {
+        "main": [
+          [
+            {
+              "node": "Saltar a Dato Final",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Pedir Nombre",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Saltar a Dato Final": {
+        "main": [
+          [
+            {
+              "node": "Pedir Presupuesto Directo",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook Evolution API": {
+        "main": [
+          [
+            {
+              "node": "Filtro Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": "Version 5a56619e",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-11T14:07:38.539Z",
+      "createdAt": "2026-02-11T14:07:38.539Z",
+      "id": "KkNXsOfE4zkBXK95",
+      "name": "CRM"
+    },
+    {
+      "updatedAt": "2026-02-09T19:43:32.624Z",
+      "createdAt": "2026-02-09T19:43:32.624Z",
+      "id": "kgXDYqTTwLLNKd1y",
+      "name": "📱 WhatsApp"
+    }
+  ]
+}
