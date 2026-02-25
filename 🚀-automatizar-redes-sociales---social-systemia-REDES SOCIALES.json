@@ -1,0 +1,338 @@
+{
+  "updatedAt": "2026-02-24T19:19:08.252Z",
+  "createdAt": "2026-02-24T01:03:00.283Z",
+  "id": "c2fCrzUBBhVIJ5x5",
+  "name": "🚀 Automatizar Redes Sociales - social-systemia",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "id": "104c7230-90c9-44fd-8c37-5a7ef8e3de0c",
+      "name": "Trigger Programado",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        1552,
+        704
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "477c840b-7f66-46d7-9fc0-fec3c7dc57f3",
+      "name": "Ejecutar manualmente",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        1536,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🤖 Flujo Agéntico (Nivel Enterprise)\\n\\nArriba estamos construyendo el futuro.\\n1. **Airtable:** Trae todas las reglas de tu marca (Tono, Colores, Público).\\n2. **Agente Generador (Easypanel):** Este único nodo va a reemplazar a los 30 nodos de abajo. Se encargará de pensar la estrategia, redactarla y postearla.\\n\\n*Nota: Aún no lo conectamos al Trigger para no romper el flujo de abajo mientras hacemos pruebas.*",
+        "height": 586,
+        "width": 400,
+        "color": 4
+      },
+      "id": "d980172d-f3bd-48d6-a0f6-b0a45fb20743",
+      "name": "Sticky Note Agentico",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1072,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://social-systemia:8000/social/publicar-completo",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { 'datos_marca': $json } }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "ad2f99ca-c204-47fc-b9e8-a465ba5414c9",
+      "name": "Publicar en Redes (Easypanel)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2096,
+        480
+      ],
+      "maxTries": 3,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appejn9ep8JMLJmPG",
+          "mode": "list",
+          "cachedResultName": "Clientes (Brand Books AI)",
+          "cachedResultUrl": "https://airtable.com/appejn9ep8JMLJmPG"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblgFvYebZcJaYM07",
+          "mode": "list",
+          "cachedResultName": "Branding-Marca",
+          "cachedResultUrl": "https://airtable.com/appejn9ep8JMLJmPG/tblgFvYebZcJaYM07"
+        },
+        "filterByFormula": "{ID Cliente} = 'SystemIA'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1808,
+        480
+      ],
+      "id": "d50403b4-004f-45d4-80db-c510358f7e8b",
+      "name": "Traer Brand Book (Airtable-Micaela)",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "3amPYJ6MWYf0VZtD",
+          "name": "Airtable Personal Access BRANDING-MARCA"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Ejecutar manualmente": {
+      "main": [
+        [
+          {
+            "node": "Traer Brand Book (Airtable-Micaela)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Programado": {
+      "main": [
+        [
+          {
+            "node": "Traer Brand Book (Airtable-Micaela)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Traer Brand Book (Airtable-Micaela)": {
+      "main": [
+        [
+          {
+            "node": "Publicar en Redes (Easypanel)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "saveManualExecutions": true,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {
+    "node:Trigger Programado": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "20a900e1-d074-498a-a1d9-1c2e1dca4f46",
+  "activeVersionId": "20a900e1-d074-498a-a1d9-1c2e1dca4f46",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-24T01:03:00.283Z",
+      "createdAt": "2026-02-24T01:03:00.283Z",
+      "role": "workflow:owner",
+      "workflowId": "c2fCrzUBBhVIJ5x5",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-24T07:42:31.596Z",
+    "createdAt": "2026-02-24T07:42:29.993Z",
+    "versionId": "20a900e1-d074-498a-a1d9-1c2e1dca4f46",
+    "workflowId": "c2fCrzUBBhVIJ5x5",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 10
+              }
+            ]
+          }
+        },
+        "id": "104c7230-90c9-44fd-8c37-5a7ef8e3de0c",
+        "name": "Trigger Programado",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          1552,
+          704
+        ]
+      },
+      {
+        "parameters": {},
+        "id": "477c840b-7f66-46d7-9fc0-fec3c7dc57f3",
+        "name": "Ejecutar manualmente",
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          1536,
+          480
+        ]
+      },
+      {
+        "parameters": {
+          "content": "## 🤖 Flujo Agéntico (Nivel Enterprise)\\n\\nArriba estamos construyendo el futuro.\\n1. **Airtable:** Trae todas las reglas de tu marca (Tono, Colores, Público).\\n2. **Agente Generador (Easypanel):** Este único nodo va a reemplazar a los 30 nodos de abajo. Se encargará de pensar la estrategia, redactarla y postearla.\\n\\n*Nota: Aún no lo conectamos al Trigger para no romper el flujo de abajo mientras hacemos pruebas.*",
+          "height": 586,
+          "width": 400,
+          "color": 4
+        },
+        "id": "d980172d-f3bd-48d6-a0f6-b0a45fb20743",
+        "name": "Sticky Note Agentico",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          1072,
+          336
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://social-systemia:8000/social/publicar-completo",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { 'datos_marca': $json } }}",
+          "options": {
+            "timeout": 300000
+          }
+        },
+        "id": "ad2f99ca-c204-47fc-b9e8-a465ba5414c9",
+        "name": "Publicar en Redes (Easypanel)",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          2096,
+          480
+        ],
+        "maxTries": 3,
+        "retryOnFail": true,
+        "waitBetweenTries": 5000
+      },
+      {
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "value": "appejn9ep8JMLJmPG",
+            "mode": "list",
+            "cachedResultName": "Clientes (Brand Books AI)",
+            "cachedResultUrl": "https://airtable.com/appejn9ep8JMLJmPG"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tblgFvYebZcJaYM07",
+            "mode": "list",
+            "cachedResultName": "Branding-Marca",
+            "cachedResultUrl": "https://airtable.com/appejn9ep8JMLJmPG/tblgFvYebZcJaYM07"
+          },
+          "filterByFormula": "{ID Cliente} = 'SystemIA'",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          1808,
+          480
+        ],
+        "id": "d50403b4-004f-45d4-80db-c510358f7e8b",
+        "name": "Traer Brand Book (Airtable-Micaela)",
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "3amPYJ6MWYf0VZtD",
+            "name": "Airtable Personal Access BRANDING-MARCA"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Ejecutar manualmente": {
+        "main": [
+          [
+            {
+              "node": "Traer Brand Book (Airtable-Micaela)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Trigger Programado": {
+        "main": [
+          [
+            {
+              "node": "Traer Brand Book (Airtable-Micaela)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Traer Brand Book (Airtable-Micaela)": {
+        "main": [
+          [
+            {
+              "node": "Publicar en Redes (Easypanel)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": "Version 20a900e1",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-11T14:07:49.525Z",
+      "createdAt": "2026-02-11T14:07:49.525Z",
+      "id": "zAFB8YtBNH3F83PJ",
+      "name": "REDES SOCIALES"
+    }
+  ]
+}
