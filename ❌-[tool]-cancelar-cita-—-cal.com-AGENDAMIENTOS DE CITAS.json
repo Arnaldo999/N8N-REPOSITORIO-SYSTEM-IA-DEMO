@@ -1,0 +1,232 @@
+{
+  "updatedAt": "2026-02-24T19:49:27.722Z",
+  "createdAt": "2026-02-24T12:36:44.897Z",
+  "id": "SCBuiTqmk12s81cK",
+  "name": "❌ [Tool] Cancelar Cita — Cal.com",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-cancel",
+      "name": "Execute Workflow Trigger",
+      "position": [
+        240,
+        304
+      ],
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://api.cal.com/v2/bookings/{{ $json.bookingId }}/cancel",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"cancellationReason\": \"{{ $json.motivo || 'Cancelado por el paciente' }}\"\n}",
+        "options": {}
+      },
+      "id": "http-cancel",
+      "name": "CANCEL Booking Cal.com",
+      "position": [
+        464,
+        304
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "iwHFpfPGDViqragO",
+          "name": "Header Auth Cal.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "format-cancel",
+      "name": "Formatear Cancelación",
+      "position": [
+        688,
+        304
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "content": "## ❌ Cancelar Cita\n\n**Input esperado:**\n- `bookingId` → ID numérico de la cita\n- `motivo` → razón de cancelación (opcional)\n\n**Output:**\n- Confirmación de cancelación",
+        "height": 180,
+        "width": 220
+      },
+      "id": "sticky-cancel",
+      "name": "Sticky Note",
+      "position": [
+        272,
+        80
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "CANCEL Booking Cal.com": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Formatear Cancelación",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "CANCEL Booking Cal.com",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "ccdcdb49-8f7a-4319-8fcb-a910215bed8a",
+  "activeVersionId": "ccdcdb49-8f7a-4319-8fcb-a910215bed8a",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-24T12:36:44.897Z",
+      "createdAt": "2026-02-24T12:36:44.897Z",
+      "role": "workflow:owner",
+      "workflowId": "SCBuiTqmk12s81cK",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-24T19:49:29.739Z",
+    "createdAt": "2026-02-24T19:49:27.724Z",
+    "versionId": "ccdcdb49-8f7a-4319-8fcb-a910215bed8a",
+    "workflowId": "SCBuiTqmk12s81cK",
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "trigger-cancel",
+        "name": "Execute Workflow Trigger",
+        "position": [
+          240,
+          304
+        ],
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "method": "DELETE",
+          "url": "=https://api.cal.com/v2/bookings/{{ $json.bookingId }}/cancel",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"cancellationReason\": \"{{ $json.motivo || 'Cancelado por el paciente' }}\"\n}",
+          "options": {}
+        },
+        "id": "http-cancel",
+        "name": "CANCEL Booking Cal.com",
+        "position": [
+          464,
+          304
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "iwHFpfPGDViqragO",
+            "name": "Header Auth Cal.com"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "format-cancel",
+        "name": "Formatear Cancelación",
+        "position": [
+          688,
+          304
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "parameters": {
+          "content": "## ❌ Cancelar Cita\n\n**Input esperado:**\n- `bookingId` → ID numérico de la cita\n- `motivo` → razón de cancelación (opcional)\n\n**Output:**\n- Confirmación de cancelación",
+          "height": 180,
+          "width": 220
+        },
+        "id": "sticky-cancel",
+        "name": "Sticky Note",
+        "position": [
+          272,
+          80
+        ],
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1
+      }
+    ],
+    "connections": {
+      "CANCEL Booking Cal.com": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Formatear Cancelación",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Execute Workflow Trigger": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "CANCEL Booking Cal.com",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": "Version ccdcdb49",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-11T14:08:04.189Z",
+      "createdAt": "2026-02-11T14:08:04.189Z",
+      "id": "ZZDS4bKCWZOINbx2",
+      "name": "AGENDAMIENTOS DE CITAS"
+    }
+  ]
+}
