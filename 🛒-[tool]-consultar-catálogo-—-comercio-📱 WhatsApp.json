@@ -1,0 +1,210 @@
+{
+  "updatedAt": "2026-02-25T20:23:36.599Z",
+  "createdAt": "2026-02-25T20:01:29.228Z",
+  "id": "5PMMoCllSTah4MAs",
+  "name": "🛒 [Tool] Consultar Catálogo — Comercio",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst filtro = ($('Execute Workflow Trigger').first().json?.filtro || '').toLowerCase().trim();\n\nif (!items || items.length === 0) {\n  return [{ json: { resultado: 'No hay productos disponibles en este momento.' } }];\n}\n\nlet productos = items.map(item => item.json);\n\n// Filtrar si se especificó un término\nif (filtro) {\n  productos = productos.filter(p => {\n    const nombre = (p.Nombre || '').toLowerCase();\n    const cat = (p['Categor\\u00eda'] || p['Categoria'] || '').toLowerCase();\n    return nombre.includes(filtro) || cat.includes(filtro);\n  });\n}\n\nif (productos.length === 0) {\n  return [{ json: { resultado: `No encontré productos relacionados con \"${filtro}\".` } }];\n}\n\nconst lineas = productos.map(p => {\n  const disponible = (p.Disponibilidad === true || p.Disponibilidad === 'SI' || p.Disponibilidad === 'S\\u00ed') ? '\\u2705' : '\\u274c';\n  let texto = `\\u2022 *${p.Nombre || 'Sin nombre'}*`;\n  if (p['Categor\\u00eda'] || p['Categoria']) texto += ` — ${p['Categor\\u00eda'] || p['Categoria']}`;\n  texto += `\\n  \\ud83d\\udcb0 $${p.Precio || 'Consultar'}`;\n  texto += ` | ${disponible} ${p.Disponibilidad ? 'Disponible' : 'Sin stock'}`;\n  if (p.Imagen) texto += `\\n  [IMG:${p.Imagen}]`;\n  return texto;\n});\n\nconst resultado = '\\ud83d\\udce6 *Productos disponibles:*\\n\\n' + lineas.join('\\n\\n');\nreturn [{ json: { resultado } }];"
+      },
+      "id": "formatear-catalogo",
+      "name": "Formatear Catálogo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "ZSDFGSDG"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        304,
+        304
+      ],
+      "id": "645f63b3-9243-4cbe-a989-8396e2abd490",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "resource": "base",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        544,
+        304
+      ],
+      "id": "b5b0e40d-3b4f-41cd-bbc8-29195056e839",
+      "name": "Get many bases",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Ow3FT0jedo30cI3m",
+          "name": "Airtable Whatsapp Comercios"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Get many bases": {
+      "main": [
+        [
+          {
+            "node": "Formatear Catálogo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get many bases",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "61d5f9e9-50b5-4dee-81c5-3980650eb752",
+  "activeVersionId": "65908996-37bc-4547-8bd8-52f3cdff377d",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-25T20:01:29.228Z",
+      "createdAt": "2026-02-25T20:01:29.228Z",
+      "role": "workflow:owner",
+      "workflowId": "5PMMoCllSTah4MAs",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-25T20:19:56.077Z",
+    "createdAt": "2026-02-25T20:19:53.080Z",
+    "versionId": "65908996-37bc-4547-8bd8-52f3cdff377d",
+    "workflowId": "5PMMoCllSTah4MAs",
+    "nodes": [
+      {
+        "parameters": {
+          "jsCode": "const items = $input.all();\nconst filtro = ($('Execute Workflow Trigger').first().json?.filtro || '').toLowerCase().trim();\n\nif (!items || items.length === 0) {\n  return [{ json: { resultado: 'No hay productos disponibles en este momento.' } }];\n}\n\nlet productos = items.map(item => item.json);\n\n// Filtrar si se especificó un término\nif (filtro) {\n  productos = productos.filter(p => {\n    const nombre = (p.Nombre || '').toLowerCase();\n    const cat = (p['Categor\\u00eda'] || p['Categoria'] || '').toLowerCase();\n    return nombre.includes(filtro) || cat.includes(filtro);\n  });\n}\n\nif (productos.length === 0) {\n  return [{ json: { resultado: `No encontré productos relacionados con \"${filtro}\".` } }];\n}\n\nconst lineas = productos.map(p => {\n  const disponible = (p.Disponibilidad === true || p.Disponibilidad === 'SI' || p.Disponibilidad === 'S\\u00ed') ? '\\u2705' : '\\u274c';\n  let texto = `\\u2022 *${p.Nombre || 'Sin nombre'}*`;\n  if (p['Categor\\u00eda'] || p['Categoria']) texto += ` — ${p['Categor\\u00eda'] || p['Categoria']}`;\n  texto += `\\n  \\ud83d\\udcb0 $${p.Precio || 'Consultar'}`;\n  texto += ` | ${disponible} ${p.Disponibilidad ? 'Disponible' : 'Sin stock'}`;\n  if (p.Imagen) texto += `\\n  [IMG:${p.Imagen}]`;\n  return texto;\n});\n\nconst resultado = '\\ud83d\\udce6 *Productos disponibles:*\\n\\n' + lineas.join('\\n\\n');\nreturn [{ json: { resultado } }];"
+        },
+        "id": "formatear-catalogo",
+        "name": "Formatear Catálogo",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          752,
+          304
+        ]
+      },
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "ZSDFGSDG"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          304,
+          304
+        ],
+        "id": "645f63b3-9243-4cbe-a989-8396e2abd490",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "resource": "base",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          544,
+          304
+        ],
+        "id": "b5b0e40d-3b4f-41cd-bbc8-29195056e839",
+        "name": "Get many bases",
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "3amPYJ6MWYf0VZtD",
+            "name": "Airtable Personal Access BRANDING-MARCA"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Get many bases": {
+        "main": [
+          [
+            {
+              "node": "Formatear Catálogo",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Get many bases",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": "Version 65908996",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-09T19:43:32.624Z",
+      "createdAt": "2026-02-09T19:43:32.624Z",
+      "id": "kgXDYqTTwLLNKd1y",
+      "name": "📱 WhatsApp"
+    },
+    {
+      "updatedAt": "2026-02-25T20:17:45.537Z",
+      "createdAt": "2026-02-25T20:17:45.537Z",
+      "id": "vVVefTXMS65Sd4rz",
+      "name": "COMERCIOS"
+    }
+  ]
+}
