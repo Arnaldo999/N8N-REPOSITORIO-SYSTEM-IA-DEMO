@@ -1,0 +1,2502 @@
+{
+  "updatedAt": "2026-02-25T15:39:28.264Z",
+  "createdAt": "2026-02-11T13:04:51.286Z",
+  "id": "Xfr8rOIWMmKDLCP53TE9m",
+  "name": "Tienda de Ropa WhatsApp",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "tienda-ropa-webhook",
+        "options": {}
+      },
+      "id": "wh-01",
+      "name": "Webhook Evolution API",
+      "position": [
+        208,
+        400
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "webhookId": "tienda-ropa-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.body.event }}",
+              "operator": {
+                "operation": "equals",
+                "type": "string"
+              },
+              "rightValue": "messages.upsert"
+            },
+            {
+              "id": "c2",
+              "leftValue": "={{ ($json.body?.data?.message?.conversation || $json.body?.data?.message?.imageMessage) ? 'ok' : '' }}",
+              "operator": {
+                "operation": "notEmpty",
+                "singleValue": true,
+                "type": "string"
+              },
+              "rightValue": ""
+            },
+            {
+              "id": "c3",
+              "leftValue": "={{ $json.body.data.key.remoteJid }}",
+              "operator": {
+                "operation": "endsWith",
+                "type": "string"
+              },
+              "rightValue": "@s.whatsapp.net"
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "id": "fl-01",
+      "name": "Filtro Webhook",
+      "position": [
+        512,
+        400
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "telefono",
+              "type": "string",
+              "value": "={{ ($json.body?.data?.key?.remoteJid || '').replace('@s.whatsapp.net','') }}"
+            },
+            {
+              "id": "a2",
+              "name": "mensaje",
+              "type": "string",
+              "value": "={{ ($json.body?.data?.message?.conversation || '').trim() }}"
+            },
+            {
+              "id": "a3",
+              "name": "nombre_wa",
+              "type": "string",
+              "value": "={{ $json.body?.data?.pushName || 'Cliente' }}"
+            },
+            {
+              "id": "a4",
+              "name": "es_mio",
+              "type": "string",
+              "value": "={{ String($json.body?.data?.key?.fromMe ?? false) }}"
+            },
+            {
+              "id": "a5",
+              "name": "tiene_imagen",
+              "type": "string",
+              "value": "={{ ($json.body?.data?.message?.imageMessage || $json.body?.data?.message?.viewOnceMessageV2?.message?.imageMessage) ? 'true' : 'false' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ex-01",
+      "name": "Extraer Datos",
+      "position": [
+        800,
+        400
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "or",
+          "conditions": [
+            {
+              "id": "f1",
+              "leftValue": "={{ $json.es_mio }}",
+              "operator": {
+                "operation": "equals",
+                "type": "string"
+              },
+              "rightValue": "false"
+            },
+            {
+              "id": "f2",
+              "leftValue": "={{ $json.mensaje.toLowerCase().trim() }}",
+              "operator": {
+                "operation": "equals",
+                "type": "string"
+              },
+              "rightValue": "pago confirmado"
+            }
+          ],
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          }
+        },
+        "options": {}
+      },
+      "id": "sc-01",
+      "name": "Solo Clientes",
+      "position": [
+        1104,
+        400
+      ],
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "cachedResultName": "Tienda de Ropa",
+          "mode": "list",
+          "value": "app6LRnI1AgMk1aTk"
+        },
+        "table": {
+          "__rl": true,
+          "cachedResultName": "Productos",
+          "mode": "list",
+          "value": "tbl78kL0iBakRjjde"
+        },
+        "filterByFormula": "{activo} = TRUE()",
+        "options": {}
+      },
+      "id": "at-01",
+      "name": "Leer Productos",
+      "position": [
+        1408,
+        400
+      ],
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "UjQbCz6cOqJ9NlJ5",
+          "name": "Airtable Access Token Automatizacion whatsapp - tienda de ropas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo",
+          "mode": "list",
+          "cachedResultName": "DEMO-Automatizacion Whatsapp - tienda de ropas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "bot_ia_estado",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit#gid=0"
+        },
+        "options": {}
+      },
+      "alwaysOutputData": true,
+      "id": "gs-01",
+      "name": "Leer Bot Estado",
+      "position": [
+        1712,
+        400
+      ],
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const tel = $('Extraer Datos').first().json.telefono;\nconst msg = $('Extraer Datos').first().json.mensaje;\nconst nwa = $('Extraer Datos').first().json.nombre_wa;\nconst img = $('Extraer Datos').first().json.tiene_imagen === 'true';\nconst esMio = $('Extraer Datos').first().json.es_mio === 'true';\n\nlet ps = [];\ntry { ps = $('Leer Productos').all().map(i => i.json); } catch(e) {}\nconst gr = {};\nps.forEach(p => {\n  const c = p.categoria||p.Categoria||p.fields?.categoria||p.fields?.Categoria||'General';\n  const n = p.Nombre||p.nombre||p.fields?.Nombre||'';\n  const pr = Number(p.Precio||p.precio||p.fields?.Precio||0);\n  const d = p.Descripcion||p.descripcion||p.fields?.Descripcion||'';\n  if (!n) return;\n  if (!gr[c]) gr[c] = [];\n  gr[c].push({n,pr,d});\n});\nlet cat = '';\nObject.entries(gr).forEach(([c,its],i) => {\n  cat += `${i+1}. ${c}\\n`;\n  its.forEach((p,j) => { cat += `   ${j+1}. ${p.n}: $${p.pr.toLocaleString('es-AR')}${p.d?' - '+p.d:''}\\n`; });\n});\nlet rows = [];\ntry { rows = $('Leer Bot Estado').all().map(i => i.json); } catch(e) {}\nconst cv = rows.find(r => String(r.telefono||'').trim() === String(tel).trim()) || null;\nconst estado = cv?.estado || 'nuevo';\nconst fd = new Date(); fd.setDate(fd.getDate()+5);\nconst fe = fd.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'});\n\n// Detectar si es el dueño confirmando el pago\nconst esPagoConfirmado = esMio && msg.toLowerCase().trim() === 'pago confirmado';\n\nlet contenidoMsg = msg || '...';\nif (img) contenidoMsg = '[IMAGEN/COMPROBANTE DE PAGO ENVIADO POR CLIENTE]';\nif (esPagoConfirmado) contenidoMsg = '[EL DUEÑO DE LA TIENDA CONFIRMÓ EL PAGO - ACTIVAR ESTADO COMPLETADO]';\n\nconst chatInput = `Estado: ${estado} | WA: ${nwa} | Imagen: ${img?'SI':'No'} | Pago confirmado por dueño: ${esPagoConfirmado?'SÍ ← CLAVE':'No'}\\nDatos: nombre=${cv?.nombre||''}, dni=${cv?.dni||''}, ciudad=${cv?.ciudad||''}, zona=${cv?.zona||''}, producto=${cv?.producto||''}, precio=$${cv?.precio_producto||0}\\n\\nCATALOGO:\\n${cat||'(vacio)'}\\nEntrega estimada: ${fe}\\n\\nMensaje: \"${contenidoMsg}\"\\u200b`;\nreturn [{json:{chatInput, telefono:tel, conv_existe:cv!==null, cv:cv||{}, img, esPagoConfirmado}}];"
+      },
+      "id": "pc-01",
+      "name": "Preparar Contexto",
+      "position": [
+        2000,
+        400
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "# ROL\nSos Sofi, asistente virtual de *Style Shop* 👗✨, tienda de ropa online argentina. Cálida, empática y cercana. Hablás en español rioplatense usando \"vos\".\n\n# TAREAS\nGuiar al cliente paso a paso por el proceso de compra. NUNCA adelantes pasos. NUNCA saltes estados.\n\n# ESPECIFICACIONES\n\n## Estado: menu\nACCIÓN: Saludar con calidez + mostrar categorías numeradas\nPROHIBIDO: mencionar productos, precios, envío o pagos\nESTADO_NUEVO: menu\n\n## Estado: submenu\nACCIÓN: Mostrar productos de la categoría con número, nombre, descripción y precio. \"0 para volver\"\nPROHIBIDO: pedir datos personales\nESTADO_NUEVO: submenu\n\n## Estado: pedido\nACCIÓN: Nombrar producto elegido + precio. Preguntar SOLAMENTE: \"¿Confirmás *[producto]* por $[precio]? Respondé *sí* o *0*\"\nPROHIBIDO: pedir nombre, DNI, ciudad. PROHIBIDO mencionar envío o CVU\nESTADO_NUEVO: pedido\n\n## Estado: confirmado\nACCIÓN: Celebrar + pedir EN UN MENSAJE: nombre completo, DNI y ciudad/provincia\nESTADO_NUEVO: confirmado\n\n## Estado: datos\nACCIÓN: Calcular envío (CABA $3.500 | GBA cercano $5.000 | GBA lejano $7.000 | Interior BsAs $8.500 | Otras prov $12.000). Mostrar resumen + total. Enviar CVU 0000003100057357654001 | Alias STYLE.SHOP.DEMO. Pedir foto del comprobante\nESTADO_NUEVO: datos\n\n## Estado: esperando_comprobante\nACCIÓN:\n- Si el cliente envía imagen → Responder: \"¡Recibimos tu comprobante! 📸✅ Nuestro equipo va a verificar el pago. Te avisamos en breve por este mismo chat. ¡Gracias por tu paciencia! 🙏💕\"\n- Si no hay imagen → Recordar amablemente enviar la foto\nIMPORTANTE: en este estado el bot SOLO responde al comprobante. Después el dueño habla directo con el cliente.\nESTADO_NUEVO: esperando_comprobante (queda en este estado hasta que el dueño confirme)\n\n## Estado: esperando_comprobante + \"Pago confirmado por dueño: SÍ\"\nACCIÓN: El dueño verificó el pago. Enviar mensaje de DESPEDIDA al cliente:\n- Agradecer efusivamente\n- Resumen completo: producto, precio, envío, total\n- Fecha estimada de entrega\n- \"Recibís tu número de seguimiento por este chat 📦\"\n- \"¡Fue un placer atenderte! 🥰 Cualquier cosa, acá estamos 💕\"\nESTADO_NUEVO: completado\n\n# REGLAS ABSOLUTAS\n1. Orden: menu → submenu → pedido → confirmado → datos → esperando_comprobante → completado\n2. JAMÁS pidas datos antes de \"confirmado\"\n3. JAMÁS muestres CVU antes de \"datos\"\n4. \"0\" = volver a menu\n5. Mensaje incomprensible = repetir pregunta actual\n\n# SALIDA (solo JSON, nada más)\n{\"mensaje\":\"texto WA\",\"estado_nuevo\":\"menu|submenu|pedido|confirmado|datos|esperando_comprobante|completado\",\"datos_extraidos\":{\"nombre\":\"\",\"dni\":\"\",\"ciudad\":\"\",\"zona\":\"caba|gba1|gba2|interior_bs|interior_pais\",\"producto_elegido\":\"\",\"precio_producto\":0,\"costo_envio\":0}}"
+        }
+      },
+      "id": "ai-01",
+      "name": "🤖 AI Agente",
+      "position": [
+        2304,
+        400
+      ],
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "llm-01",
+      "name": "OpenAI GPT-4o mini",
+      "position": [
+        2208,
+        624
+      ],
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "NcfqiDHUS55FBxv4",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const out = $input.first().json.output || '{}';\nconst ctx = $('Preparar Contexto').first().json;\nconst cv = ctx.cv || {};\nconst estadoAnterior = (cv.estado || 'nuevo').toLowerCase().trim();\nconst msgUsuario = ($('Extraer Datos').first().json.mensaje || '').toLowerCase().trim();\n\nlet ai = {mensaje:'Error. Repetí tu mensaje.',estado_nuevo:'menu',datos_extraidos:{}};\ntry {\n  const clean = out.replace(/```json\\n?|```\\n?/g,'').trim();\n  ai = JSON.parse(clean);\n} catch(e) {\n  ai.mensaje = out || ai.mensaje;\n}\n\nconst d = ai.datos_extraidos || {};\nconst zonas = {caba:3500,gba1:5000,gba2:7000,interior_bs:8500,interior_pais:12000};\n\n// === GUARDARRIEL ===\n\n// Regla 1: Producto recién elegido → forzar pedido (solo confirmación)\nconst prodAnterior = (cv.producto || '').trim();\nconst prodNuevo = (d.producto_elegido || '').trim();\nconst acabaDeElegir = !prodAnterior && prodNuevo;\n\nif (acabaDeElegir || estadoAnterior === 'submenu' || (estadoAnterior === 'menu' && ai.estado_nuevo === 'pedido')) {\n  if (ai.estado_nuevo !== 'menu' && ai.estado_nuevo !== 'submenu') {\n    ai.estado_nuevo = 'pedido';\n    const msg = (ai.mensaje || '').toLowerCase();\n    if (msg.includes('dni') || msg.includes('nombre completo') || msg.includes('ciudad') || msg.includes('provincia')) {\n      const precio = d.precio_producto || 0;\n      ai.mensaje = `Has elegido *${prodNuevo || d.producto_elegido}* por $${precio.toLocaleString('es-AR')} 🌟\\n\\n¡Excelente elección! Vas a quedar espectacular 🔥\\n\\n¿Confirmás que querés este producto?\\n\\nRespondé *sí* para continuar o *0* para ver otros productos.`;\n    }\n  }\n}\n\n// Regla 2: En pedido, validar confirmación\nif (estadoAnterior === 'pedido') {\n  if (['si','sí','dale','ok','confirmo','sip','sep','claro','quiero'].includes(msgUsuario)) {\n    ai.estado_nuevo = 'confirmado';\n  } else if (msgUsuario === '0') {\n    ai.estado_nuevo = 'menu';\n  }\n}\n\n// Regla 3: Dueño escribe \"Pago Confirmado\" → forzar completado\nif (ctx.esPagoConfirmado && (estadoAnterior === 'esperando_comprobante' || estadoAnterior === 'datos')) {\n  ai.estado_nuevo = 'completado';\n}\n\n// Regla 4: Cliente envia imagen en esperando_comprobante → queda en esperando_comprobante\nif (ctx.img && estadoAnterior === 'esperando_comprobante') {\n  ai.estado_nuevo = 'esperando_comprobante';\n}\n\nconst zona = d.zona||cv.zona||'';\nconst envio = d.costo_envio||zonas[zona]||Number(cv.costo_envio)||0;\nconst precio = d.precio_producto||Number(cv.precio_producto)||0;\n\n// Buscar imagen cuando entra a pedido\nlet imagen_url = '';\nconst prodFinal = (d.producto_elegido||cv.producto||'').toLowerCase().trim();\nif (prodFinal && ai.estado_nuevo === 'pedido') {\n  try {\n    const prods = $('Leer Productos').all().map(i => i.json);\n    const match = prods.find(p => {\n      const nom = (p.nombre||p.Nombre||p.fields?.nombre||'').toLowerCase().trim();\n      return nom && (prodFinal.includes(nom) || nom.includes(prodFinal));\n    });\n    if (match) imagen_url = match.imagen_url || match.fields?.imagen_url || '';\n  } catch(e) {}\n}\n\nreturn [{json:{\n  telefono:ctx.telefono,\n  mensaje_respuesta:ai.mensaje,\n  estado_nuevo:ai.estado_nuevo||'menu',\n  nombre:d.nombre||cv.nombre||'',\n  dni:d.dni||cv.dni||'',\n  ciudad:d.ciudad||cv.ciudad||'',\n  zona,\n  producto:d.producto_elegido||cv.producto||'',\n  precio_producto:precio,\n  costo_envio:envio,\n  total:precio+envio,\n  conv_existe:ctx.conv_existe,\n  imagen_url,\n  timestamp:new Date().toISOString()\n}}];"
+      },
+      "id": "pr-01",
+      "name": "Procesar Respuesta IA",
+      "position": [
+        2608,
+        400
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "e1",
+              "leftValue": "={{ $json.conv_existe }}",
+              "operator": {
+                "operation": "equals",
+                "type": "boolean"
+              },
+              "rightValue": true
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          }
+        },
+        "options": {}
+      },
+      "id": "cv-01",
+      "name": "Conv Existe?",
+      "position": [
+        2912,
+        208
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo",
+          "mode": "list",
+          "cachedResultName": "DEMO-Automatizacion Whatsapp - tienda de ropas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "bot_ia_estado",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "displayName": "telefono",
+              "id": "telefono",
+              "type": "string"
+            },
+            {
+              "displayName": "estado",
+              "id": "estado",
+              "type": "string"
+            },
+            {
+              "displayName": "nombre",
+              "id": "nombre",
+              "type": "string"
+            },
+            {
+              "displayName": "dni",
+              "id": "dni",
+              "type": "string"
+            },
+            {
+              "displayName": "ciudad",
+              "id": "ciudad",
+              "type": "string"
+            },
+            {
+              "displayName": "zona",
+              "id": "zona",
+              "type": "string"
+            },
+            {
+              "displayName": "producto",
+              "id": "producto",
+              "type": "string"
+            },
+            {
+              "displayName": "precio_producto",
+              "id": "precio_producto",
+              "type": "number"
+            },
+            {
+              "displayName": "costo_envio",
+              "id": "costo_envio",
+              "type": "number"
+            },
+            {
+              "displayName": "timestamp",
+              "id": "timestamp",
+              "type": "string"
+            }
+          ],
+          "value": {
+            "ciudad": "={{ $json.ciudad }}",
+            "costo_envio": "={{ $json.costo_envio }}",
+            "dni": "={{ $json.dni }}",
+            "estado": "={{ $json.estado_nuevo }}",
+            "nombre": "={{ $json.nombre }}",
+            "precio_producto": "={{ $json.precio_producto }}",
+            "producto": "={{ $json.producto }}",
+            "telefono": "={{ $json.telefono }}",
+            "timestamp": "={{ $json.timestamp }}",
+            "zona": "={{ $json.zona }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "up-01",
+      "name": "Actualizar Estado",
+      "position": [
+        3200,
+        112
+      ],
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo",
+          "mode": "list",
+          "cachedResultName": "DEMO-Automatizacion Whatsapp - tienda de ropas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "bot_ia_estado",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "ciudad": "={{ $json.ciudad }}",
+            "costo_envio": "={{ $json.costo_envio }}",
+            "dni": "={{ $json.dni }}",
+            "estado": "={{ $json.estado_nuevo }}",
+            "nombre": "={{ $json.nombre }}",
+            "producto": "={{ $json.producto }}",
+            "telefono": "={{ $json.telefono }}",
+            "timestamp": "={{ $json.timestamp }}",
+            "zona": "={{ $json.zona }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "dni",
+              "displayName": "dni",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ciudad",
+              "displayName": "ciudad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "zona",
+              "displayName": "zona",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "producto",
+              "displayName": "producto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "precio_procucto",
+              "displayName": "precio_procucto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "costo_envio",
+              "displayName": "costo_envio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "historial",
+              "displayName": "historial",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "cr-01",
+      "name": "Crear Estado",
+      "position": [
+        3200,
+        304
+      ],
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { number: $('Procesar Respuesta IA').first().json.telefono, text: $('Procesar Respuesta IA').first().json.mensaje_respuesta } }}",
+        "options": {}
+      },
+      "id": "wa-01",
+      "maxTries": 3,
+      "name": "Enviar Respuesta WA",
+      "position": [
+        2992,
+        512
+      ],
+      "retryOnFail": true,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "d1",
+              "leftValue": "={{ $('Procesar Respuesta IA').first().json.estado_nuevo }}",
+              "operator": {
+                "operation": "equals",
+                "type": "string"
+              },
+              "rightValue": "completado"
+            }
+          ],
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          }
+        },
+        "options": {}
+      },
+      "id": "ec-01",
+      "name": "Es Completado?",
+      "position": [
+        3200,
+        512
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { number: '5493765384843', text: '🛍️ *NUEVO PEDIDO*\\n\\n👤 ' + $('Procesar Respuesta IA').first().json.nombre + '\\n🪪 ' + $('Procesar Respuesta IA').first().json.dni + '\\n📱 ' + $('Procesar Respuesta IA').first().json.telefono + '\\n\\n👕 ' + $('Procesar Respuesta IA').first().json.producto + '\\n💰 $' + $('Procesar Respuesta IA').first().json.precio_producto + '\\n📦 Envío: $' + $('Procesar Respuesta IA').first().json.costo_envio + '\\n✅ Total: $' + $('Procesar Respuesta IA').first().json.total + '\\n📍 ' + $('Procesar Respuesta IA').first().json.ciudad } }}",
+        "options": {}
+      },
+      "id": "nd-01",
+      "maxTries": 3,
+      "name": "Notificar al Dueno",
+      "position": [
+        3504,
+        400
+      ],
+      "retryOnFail": true,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo",
+          "mode": "list",
+          "cachedResultName": "DEMO-Automatizacion Whatsapp - tienda de ropas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1467105671,
+          "mode": "list",
+          "cachedResultName": "pedidos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit#gid=1467105671"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "displayName": "fecha",
+              "id": "fecha",
+              "type": "string"
+            },
+            {
+              "displayName": "nombre",
+              "id": "nombre",
+              "type": "string"
+            },
+            {
+              "displayName": "dni",
+              "id": "dni",
+              "type": "string"
+            },
+            {
+              "displayName": "telefono",
+              "id": "telefono",
+              "type": "string"
+            },
+            {
+              "displayName": "ciudad",
+              "id": "ciudad",
+              "type": "string"
+            },
+            {
+              "displayName": "producto",
+              "id": "producto",
+              "type": "string"
+            },
+            {
+              "displayName": "precio_producto",
+              "id": "precio_producto",
+              "type": "number"
+            },
+            {
+              "displayName": "costo_envio",
+              "id": "costo_envio",
+              "type": "number"
+            },
+            {
+              "displayName": "total",
+              "id": "total",
+              "type": "number"
+            },
+            {
+              "displayName": "estado",
+              "id": "estado",
+              "type": "string"
+            },
+            {
+              "displayName": "timestamp",
+              "id": "timestamp",
+              "type": "string"
+            }
+          ],
+          "value": {
+            "ciudad": "={{ $('Procesar Respuesta IA').first().json.ciudad }}",
+            "costo_envio": "={{ $('Procesar Respuesta IA').first().json.costo_envio }}",
+            "dni": "={{ $('Procesar Respuesta IA').first().json.dni }}",
+            "estado": "Confirmado",
+            "fecha": "={{ new Date().toLocaleDateString('es-AR', {timeZone: 'America/Argentina/Buenos_Aires'}) }}",
+            "nombre": "={{ $('Procesar Respuesta IA').first().json.nombre }}",
+            "precio_producto": "={{ $('Procesar Respuesta IA').first().json.precio_producto }}",
+            "producto": "={{ $('Procesar Respuesta IA').first().json.producto }}",
+            "telefono": "={{ $('Procesar Respuesta IA').first().json.telefono }}",
+            "timestamp": "={{ new Date().toISOString() }}",
+            "total": "={{ $('Procesar Respuesta IA').first().json.total }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "gp-01",
+      "name": "Guardar Pedido",
+      "position": [
+        3808,
+        400
+      ],
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# 🤖 AI Agente — Style Shop\n\n## Flujo:\nWebhook → Filtro → Datos → Airtable → Sheets\n→ **AI Agente (GPT-4o mini)** → Procesar\n→ Guardar estado + Enviar WA\n→ Si completado → Notificar + Guardar pedido\n\n## Setup:\n1. Crear hoja `bot_ia_estado` en Google Sheets\n   Columnas: telefono | estado | nombre | dni | ciudad | zona | producto | precio_producto | costo_envio | timestamp\n2. El nodo OpenAI usa la credencial existente\n3. Notificaciones van al número del dueño",
+        "height": 340,
+        "width": 380
+      },
+      "id": "sn-01",
+      "name": "📋 SETUP",
+      "position": [
+        208,
+        112
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Preparar Contexto').first().json.telefono }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2384,
+        624
+      ],
+      "id": "9001c242-2a7a-40c5-ad06-74018eecda56",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/chat/sendPresence/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { number: $('Procesar Respuesta IA').first().json.telefono + '@s.whatsapp.net', delay: 3000, presence: 'composing' } }}",
+        "options": {}
+      },
+      "id": "tp-01",
+      "name": "Escribiendo...",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2800,
+        512
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendMedia/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { number: $('Procesar Respuesta IA').first().json.telefono, mediatype: 'image', mimetype: 'image/jpeg', media: $('Procesar Respuesta IA').first().json.imagen_url, fileName: 'producto.jpg' } }}",
+        "options": {}
+      },
+      "id": "img-01",
+      "name": "Enviar Imagen Producto",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3104,
+        704
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "im1",
+              "leftValue": "={{ $json.imagen_url }}",
+              "operator": {
+                "operation": "notEmpty",
+                "singleValue": true,
+                "type": "string"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          }
+        },
+        "options": {}
+      },
+      "id": "img-if-01",
+      "name": "Tiene Imagen?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2912,
+        704
+      ]
+    }
+  ],
+  "connections": {
+    "Conv Existe?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Actualizar Estado",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Crear Estado",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Enviar Respuesta WA": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Es Completado?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Es Completado?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Notificar al Dueno",
+            "type": "main"
+          }
+        ],
+        []
+      ]
+    },
+    "Extraer Datos": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Solo Clientes",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Filtro Webhook": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Extraer Datos",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Leer Bot Estado": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Preparar Contexto",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Leer Productos": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Leer Bot Estado",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Notificar al Dueno": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Guardar Pedido",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "OpenAI GPT-4o mini": {
+      "ai_languageModel": [
+        [
+          {
+            "index": 0,
+            "node": "🤖 AI Agente",
+            "type": "ai_languageModel"
+          }
+        ]
+      ]
+    },
+    "Preparar Contexto": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "🤖 AI Agente",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Procesar Respuesta IA": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Conv Existe?",
+            "type": "main"
+          },
+          {
+            "node": "Escribiendo...",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Tiene Imagen?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Solo Clientes": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Leer Productos",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Webhook Evolution API": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Filtro Webhook",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "🤖 AI Agente": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Procesar Respuesta IA",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "🤖 AI Agente",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escribiendo...": {
+      "main": [
+        [
+          {
+            "node": "Enviar Respuesta WA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tiene Imagen?": {
+      "main": [
+        [
+          {
+            "node": "Enviar Imagen Producto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook Evolution API": [
+      {
+        "json": {
+          "headers": {
+            "host": "sytem-ia-pruebas-n8n.6g0gdj.easypanel.host",
+            "user-agent": "axios/1.12.0",
+            "content-length": "1751",
+            "accept": "application/json,text/html,application/xhtml+xml,application/xml,text/*;q=0.9, image/*;q=0.8, */*;q=0.7",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "x-forwarded-for": "172.18.0.1",
+            "x-forwarded-host": "sytem-ia-pruebas-n8n.6g0gdj.easypanel.host",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "1f91de2270d1",
+            "x-real-ip": "172.18.0.1"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event": "messages.upsert",
+            "instance": "System IA Demo",
+            "data": {
+              "key": {
+                "remoteJid": "5493765384843@s.whatsapp.net",
+                "remoteJidAlt": "5493765384843@s.whatsapp.net",
+                "fromMe": false,
+                "id": "3EB0E706F28B3588F6A40E",
+                "participant": "",
+                "addressingMode": "lid"
+              },
+              "pushName": "@rn@ldo",
+              "status": "DELIVERY_ACK",
+              "message": {
+                "messageContextInfo": {
+                  "threadId": [],
+                  "deviceListMetadata": {
+                    "senderKeyIndexes": [],
+                    "recipientKeyIndexes": [],
+                    "senderKeyHash": {
+                      "0": 28,
+                      "1": 138,
+                      "2": 116,
+                      "3": 73,
+                      "4": 91,
+                      "5": 190,
+                      "6": 224,
+                      "7": 173,
+                      "8": 146,
+                      "9": 44
+                    },
+                    "senderTimestamp": {
+                      "low": 1770630605,
+                      "high": 0,
+                      "unsigned": true
+                    },
+                    "senderAccountType": 0,
+                    "receiverAccountType": 0,
+                    "recipientKeyHash": {
+                      "0": 19,
+                      "1": 117,
+                      "2": 245,
+                      "3": 43,
+                      "4": 173,
+                      "5": 152,
+                      "6": 18,
+                      "7": 172,
+                      "8": 55,
+                      "9": 35
+                    },
+                    "recipientTimestamp": {
+                      "low": 1770630620,
+                      "high": 0,
+                      "unsigned": true
+                    }
+                  },
+                  "deviceListMetadataVersion": 2,
+                  "messageSecret": {
+                    "0": 74,
+                    "1": 172,
+                    "2": 24,
+                    "3": 203,
+                    "4": 1,
+                    "5": 55,
+                    "6": 232,
+                    "7": 145,
+                    "8": 186,
+                    "9": 126,
+                    "10": 207,
+                    "11": 205,
+                    "12": 80,
+                    "13": 185,
+                    "14": 235,
+                    "15": 51,
+                    "16": 59,
+                    "17": 114,
+                    "18": 144,
+                    "19": 19,
+                    "20": 253,
+                    "21": 60,
+                    "22": 122,
+                    "23": 165,
+                    "24": 222,
+                    "25": 114,
+                    "26": 203,
+                    "27": 145,
+                    "28": 235,
+                    "29": 234,
+                    "30": 245,
+                    "31": 197
+                  }
+                },
+                "conversation": "4"
+              },
+              "contextInfo": {
+                "mentionedJid": [],
+                "groupMentions": [],
+                "statusAttributions": [],
+                "ephemeralSettingTimestamp": {
+                  "low": 1770732878,
+                  "high": 0,
+                  "unsigned": false
+                },
+                "disappearingMode": {
+                  "initiator": 0,
+                  "trigger": 1,
+                  "initiatedByMe": false
+                }
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1770905682,
+              "instanceId": "741b0765-9650-4dd2-8e71-9b3c71576d10",
+              "source": "web"
+            },
+            "destination": "https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/maestro-demos-router",
+            "date_time": "2026-02-12T11:14:43.022Z",
+            "sender": "5493764815689@s.whatsapp.net",
+            "server_url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host",
+            "apikey": "6F963ECD7C29-4E52-B7D2-690E104CF985"
+          },
+          "webhookUrl": "https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/tienda-ropa-webhook",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "d4e705c8-e335-43f8-b995-d738517dce0f",
+  "activeVersionId": "d4e705c8-e335-43f8-b995-d738517dce0f",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-11T13:04:51.286Z",
+      "createdAt": "2026-02-11T13:04:51.286Z",
+      "role": "workflow:owner",
+      "workflowId": "Xfr8rOIWMmKDLCP53TE9m",
+      "projectId": "A5erh6pqAqSjR28k"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-23T22:31:24.528Z",
+    "createdAt": "2026-02-23T22:31:24.528Z",
+    "versionId": "d4e705c8-e335-43f8-b995-d738517dce0f",
+    "workflowId": "Xfr8rOIWMmKDLCP53TE9m",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "tienda-ropa-webhook",
+          "options": {}
+        },
+        "id": "wh-01",
+        "name": "Webhook Evolution API",
+        "position": [
+          208,
+          400
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1.1,
+        "webhookId": "tienda-ropa-webhook"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "c1",
+                "leftValue": "={{ $json.body.event }}",
+                "operator": {
+                  "operation": "equals",
+                  "type": "string"
+                },
+                "rightValue": "messages.upsert"
+              },
+              {
+                "id": "c2",
+                "leftValue": "={{ ($json.body?.data?.message?.conversation || $json.body?.data?.message?.imageMessage) ? 'ok' : '' }}",
+                "operator": {
+                  "operation": "notEmpty",
+                  "singleValue": true,
+                  "type": "string"
+                },
+                "rightValue": ""
+              },
+              {
+                "id": "c3",
+                "leftValue": "={{ $json.body.data.key.remoteJid }}",
+                "operator": {
+                  "operation": "endsWith",
+                  "type": "string"
+                },
+                "rightValue": "@s.whatsapp.net"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {}
+        },
+        "id": "fl-01",
+        "name": "Filtro Webhook",
+        "position": [
+          512,
+          400
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a1",
+                "name": "telefono",
+                "type": "string",
+                "value": "={{ ($json.body?.data?.key?.remoteJid || '').replace('@s.whatsapp.net','') }}"
+              },
+              {
+                "id": "a2",
+                "name": "mensaje",
+                "type": "string",
+                "value": "={{ ($json.body?.data?.message?.conversation || '').trim() }}"
+              },
+              {
+                "id": "a3",
+                "name": "nombre_wa",
+                "type": "string",
+                "value": "={{ $json.body?.data?.pushName || 'Cliente' }}"
+              },
+              {
+                "id": "a4",
+                "name": "es_mio",
+                "type": "string",
+                "value": "={{ String($json.body?.data?.key?.fromMe ?? false) }}"
+              },
+              {
+                "id": "a5",
+                "name": "tiene_imagen",
+                "type": "string",
+                "value": "={{ ($json.body?.data?.message?.imageMessage || $json.body?.data?.message?.viewOnceMessageV2?.message?.imageMessage) ? 'true' : 'false' }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "ex-01",
+        "name": "Extraer Datos",
+        "position": [
+          800,
+          400
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "combinator": "or",
+            "conditions": [
+              {
+                "id": "f1",
+                "leftValue": "={{ $json.es_mio }}",
+                "operator": {
+                  "operation": "equals",
+                  "type": "string"
+                },
+                "rightValue": "false"
+              },
+              {
+                "id": "f2",
+                "leftValue": "={{ $json.mensaje.toLowerCase().trim() }}",
+                "operator": {
+                  "operation": "equals",
+                  "type": "string"
+                },
+                "rightValue": "pago confirmado"
+              }
+            ],
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            }
+          },
+          "options": {}
+        },
+        "id": "sc-01",
+        "name": "Solo Clientes",
+        "position": [
+          1104,
+          400
+        ],
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "cachedResultName": "Tienda de Ropa",
+            "mode": "list",
+            "value": "app6LRnI1AgMk1aTk"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "Productos",
+            "mode": "list",
+            "value": "tbl78kL0iBakRjjde"
+          },
+          "filterByFormula": "{activo} = TRUE()",
+          "options": {}
+        },
+        "id": "at-01",
+        "name": "Leer Productos",
+        "position": [
+          1408,
+          400
+        ],
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "UjQbCz6cOqJ9NlJ5",
+            "name": "Airtable Access Token Automatizacion whatsapp - tienda de ropas"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo",
+            "mode": "list",
+            "cachedResultName": "DEMO-Automatizacion Whatsapp - tienda de ropas",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "bot_ia_estado",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit#gid=0"
+          },
+          "options": {}
+        },
+        "alwaysOutputData": true,
+        "id": "gs-01",
+        "name": "Leer Bot Estado",
+        "position": [
+          1712,
+          400
+        ],
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const tel = $('Extraer Datos').first().json.telefono;\nconst msg = $('Extraer Datos').first().json.mensaje;\nconst nwa = $('Extraer Datos').first().json.nombre_wa;\nconst img = $('Extraer Datos').first().json.tiene_imagen === 'true';\nconst esMio = $('Extraer Datos').first().json.es_mio === 'true';\n\nlet ps = [];\ntry { ps = $('Leer Productos').all().map(i => i.json); } catch(e) {}\nconst gr = {};\nps.forEach(p => {\n  const c = p.categoria||p.Categoria||p.fields?.categoria||p.fields?.Categoria||'General';\n  const n = p.Nombre||p.nombre||p.fields?.Nombre||'';\n  const pr = Number(p.Precio||p.precio||p.fields?.Precio||0);\n  const d = p.Descripcion||p.descripcion||p.fields?.Descripcion||'';\n  if (!n) return;\n  if (!gr[c]) gr[c] = [];\n  gr[c].push({n,pr,d});\n});\nlet cat = '';\nObject.entries(gr).forEach(([c,its],i) => {\n  cat += `${i+1}. ${c}\\n`;\n  its.forEach((p,j) => { cat += `   ${j+1}. ${p.n}: $${p.pr.toLocaleString('es-AR')}${p.d?' - '+p.d:''}\\n`; });\n});\nlet rows = [];\ntry { rows = $('Leer Bot Estado').all().map(i => i.json); } catch(e) {}\nconst cv = rows.find(r => String(r.telefono||'').trim() === String(tel).trim()) || null;\nconst estado = cv?.estado || 'nuevo';\nconst fd = new Date(); fd.setDate(fd.getDate()+5);\nconst fe = fd.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'});\n\n// Detectar si es el dueño confirmando el pago\nconst esPagoConfirmado = esMio && msg.toLowerCase().trim() === 'pago confirmado';\n\nlet contenidoMsg = msg || '...';\nif (img) contenidoMsg = '[IMAGEN/COMPROBANTE DE PAGO ENVIADO POR CLIENTE]';\nif (esPagoConfirmado) contenidoMsg = '[EL DUEÑO DE LA TIENDA CONFIRMÓ EL PAGO - ACTIVAR ESTADO COMPLETADO]';\n\nconst chatInput = `Estado: ${estado} | WA: ${nwa} | Imagen: ${img?'SI':'No'} | Pago confirmado por dueño: ${esPagoConfirmado?'SÍ ← CLAVE':'No'}\\nDatos: nombre=${cv?.nombre||''}, dni=${cv?.dni||''}, ciudad=${cv?.ciudad||''}, zona=${cv?.zona||''}, producto=${cv?.producto||''}, precio=$${cv?.precio_producto||0}\\n\\nCATALOGO:\\n${cat||'(vacio)'}\\nEntrega estimada: ${fe}\\n\\nMensaje: \"${contenidoMsg}\"\\u200b`;\nreturn [{json:{chatInput, telefono:tel, conv_existe:cv!==null, cv:cv||{}, img, esPagoConfirmado}}];"
+        },
+        "id": "pc-01",
+        "name": "Preparar Contexto",
+        "position": [
+          2000,
+          400
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "options": {
+            "systemMessage": "# ROL\nSos Sofi, asistente virtual de *Style Shop* 👗✨, tienda de ropa online argentina. Cálida, empática y cercana. Hablás en español rioplatense usando \"vos\".\n\n# TAREAS\nGuiar al cliente paso a paso por el proceso de compra. NUNCA adelantes pasos. NUNCA saltes estados.\n\n# ESPECIFICACIONES\n\n## Estado: menu\nACCIÓN: Saludar con calidez + mostrar categorías numeradas\nPROHIBIDO: mencionar productos, precios, envío o pagos\nESTADO_NUEVO: menu\n\n## Estado: submenu\nACCIÓN: Mostrar productos de la categoría con número, nombre, descripción y precio. \"0 para volver\"\nPROHIBIDO: pedir datos personales\nESTADO_NUEVO: submenu\n\n## Estado: pedido\nACCIÓN: Nombrar producto elegido + precio. Preguntar SOLAMENTE: \"¿Confirmás *[producto]* por $[precio]? Respondé *sí* o *0*\"\nPROHIBIDO: pedir nombre, DNI, ciudad. PROHIBIDO mencionar envío o CVU\nESTADO_NUEVO: pedido\n\n## Estado: confirmado\nACCIÓN: Celebrar + pedir EN UN MENSAJE: nombre completo, DNI y ciudad/provincia\nESTADO_NUEVO: confirmado\n\n## Estado: datos\nACCIÓN: Calcular envío (CABA $3.500 | GBA cercano $5.000 | GBA lejano $7.000 | Interior BsAs $8.500 | Otras prov $12.000). Mostrar resumen + total. Enviar CVU 0000003100057357654001 | Alias STYLE.SHOP.DEMO. Pedir foto del comprobante\nESTADO_NUEVO: datos\n\n## Estado: esperando_comprobante\nACCIÓN:\n- Si el cliente envía imagen → Responder: \"¡Recibimos tu comprobante! 📸✅ Nuestro equipo va a verificar el pago. Te avisamos en breve por este mismo chat. ¡Gracias por tu paciencia! 🙏💕\"\n- Si no hay imagen → Recordar amablemente enviar la foto\nIMPORTANTE: en este estado el bot SOLO responde al comprobante. Después el dueño habla directo con el cliente.\nESTADO_NUEVO: esperando_comprobante (queda en este estado hasta que el dueño confirme)\n\n## Estado: esperando_comprobante + \"Pago confirmado por dueño: SÍ\"\nACCIÓN: El dueño verificó el pago. Enviar mensaje de DESPEDIDA al cliente:\n- Agradecer efusivamente\n- Resumen completo: producto, precio, envío, total\n- Fecha estimada de entrega\n- \"Recibís tu número de seguimiento por este chat 📦\"\n- \"¡Fue un placer atenderte! 🥰 Cualquier cosa, acá estamos 💕\"\nESTADO_NUEVO: completado\n\n# REGLAS ABSOLUTAS\n1. Orden: menu → submenu → pedido → confirmado → datos → esperando_comprobante → completado\n2. JAMÁS pidas datos antes de \"confirmado\"\n3. JAMÁS muestres CVU antes de \"datos\"\n4. \"0\" = volver a menu\n5. Mensaje incomprensible = repetir pregunta actual\n\n# SALIDA (solo JSON, nada más)\n{\"mensaje\":\"texto WA\",\"estado_nuevo\":\"menu|submenu|pedido|confirmado|datos|esperando_comprobante|completado\",\"datos_extraidos\":{\"nombre\":\"\",\"dni\":\"\",\"ciudad\":\"\",\"zona\":\"caba|gba1|gba2|interior_bs|interior_pais\",\"producto_elegido\":\"\",\"precio_producto\":0,\"costo_envio\":0}}"
+          },
+          "promptType": "define",
+          "text": "={{ $json.chatInput }}"
+        },
+        "id": "ai-01",
+        "name": "🤖 AI Agente",
+        "position": [
+          2304,
+          400
+        ],
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7
+      },
+      {
+        "parameters": {
+          "model": "gpt-4o-mini",
+          "options": {
+            "temperature": 0.3
+          }
+        },
+        "id": "llm-01",
+        "name": "OpenAI GPT-4o mini",
+        "position": [
+          2208,
+          624
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1,
+        "credentials": {
+          "openAiApi": {
+            "id": "NcfqiDHUS55FBxv4",
+            "name": "OpenAi account"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const out = $input.first().json.output || '{}';\nconst ctx = $('Preparar Contexto').first().json;\nconst cv = ctx.cv || {};\nconst estadoAnterior = (cv.estado || 'nuevo').toLowerCase().trim();\nconst msgUsuario = ($('Extraer Datos').first().json.mensaje || '').toLowerCase().trim();\n\nlet ai = {mensaje:'Error. Repetí tu mensaje.',estado_nuevo:'menu',datos_extraidos:{}};\ntry {\n  const clean = out.replace(/```json\\n?|```\\n?/g,'').trim();\n  ai = JSON.parse(clean);\n} catch(e) {\n  ai.mensaje = out || ai.mensaje;\n}\n\nconst d = ai.datos_extraidos || {};\nconst zonas = {caba:3500,gba1:5000,gba2:7000,interior_bs:8500,interior_pais:12000};\n\n// === GUARDARRIEL ===\n\n// Regla 1: Producto recién elegido → forzar pedido (solo confirmación)\nconst prodAnterior = (cv.producto || '').trim();\nconst prodNuevo = (d.producto_elegido || '').trim();\nconst acabaDeElegir = !prodAnterior && prodNuevo;\n\nif (acabaDeElegir || estadoAnterior === 'submenu' || (estadoAnterior === 'menu' && ai.estado_nuevo === 'pedido')) {\n  if (ai.estado_nuevo !== 'menu' && ai.estado_nuevo !== 'submenu') {\n    ai.estado_nuevo = 'pedido';\n    const msg = (ai.mensaje || '').toLowerCase();\n    if (msg.includes('dni') || msg.includes('nombre completo') || msg.includes('ciudad') || msg.includes('provincia')) {\n      const precio = d.precio_producto || 0;\n      ai.mensaje = `Has elegido *${prodNuevo || d.producto_elegido}* por $${precio.toLocaleString('es-AR')} 🌟\\n\\n¡Excelente elección! Vas a quedar espectacular 🔥\\n\\n¿Confirmás que querés este producto?\\n\\nRespondé *sí* para continuar o *0* para ver otros productos.`;\n    }\n  }\n}\n\n// Regla 2: En pedido, validar confirmación\nif (estadoAnterior === 'pedido') {\n  if (['si','sí','dale','ok','confirmo','sip','sep','claro','quiero'].includes(msgUsuario)) {\n    ai.estado_nuevo = 'confirmado';\n  } else if (msgUsuario === '0') {\n    ai.estado_nuevo = 'menu';\n  }\n}\n\n// Regla 3: Dueño escribe \"Pago Confirmado\" → forzar completado\nif (ctx.esPagoConfirmado && (estadoAnterior === 'esperando_comprobante' || estadoAnterior === 'datos')) {\n  ai.estado_nuevo = 'completado';\n}\n\n// Regla 4: Cliente envia imagen en esperando_comprobante → queda en esperando_comprobante\nif (ctx.img && estadoAnterior === 'esperando_comprobante') {\n  ai.estado_nuevo = 'esperando_comprobante';\n}\n\nconst zona = d.zona||cv.zona||'';\nconst envio = d.costo_envio||zonas[zona]||Number(cv.costo_envio)||0;\nconst precio = d.precio_producto||Number(cv.precio_producto)||0;\n\n// Buscar imagen cuando entra a pedido\nlet imagen_url = '';\nconst prodFinal = (d.producto_elegido||cv.producto||'').toLowerCase().trim();\nif (prodFinal && ai.estado_nuevo === 'pedido') {\n  try {\n    const prods = $('Leer Productos').all().map(i => i.json);\n    const match = prods.find(p => {\n      const nom = (p.nombre||p.Nombre||p.fields?.nombre||'').toLowerCase().trim();\n      return nom && (prodFinal.includes(nom) || nom.includes(prodFinal));\n    });\n    if (match) imagen_url = match.imagen_url || match.fields?.imagen_url || '';\n  } catch(e) {}\n}\n\nreturn [{json:{\n  telefono:ctx.telefono,\n  mensaje_respuesta:ai.mensaje,\n  estado_nuevo:ai.estado_nuevo||'menu',\n  nombre:d.nombre||cv.nombre||'',\n  dni:d.dni||cv.dni||'',\n  ciudad:d.ciudad||cv.ciudad||'',\n  zona,\n  producto:d.producto_elegido||cv.producto||'',\n  precio_producto:precio,\n  costo_envio:envio,\n  total:precio+envio,\n  conv_existe:ctx.conv_existe,\n  imagen_url,\n  timestamp:new Date().toISOString()\n}}];"
+        },
+        "id": "pr-01",
+        "name": "Procesar Respuesta IA",
+        "position": [
+          2608,
+          400
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "e1",
+                "leftValue": "={{ $json.conv_existe }}",
+                "operator": {
+                  "operation": "equals",
+                  "type": "boolean"
+                },
+                "rightValue": true
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            }
+          },
+          "options": {}
+        },
+        "id": "cv-01",
+        "name": "Conv Existe?",
+        "position": [
+          2912,
+          208
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo",
+            "mode": "list",
+            "cachedResultName": "DEMO-Automatizacion Whatsapp - tienda de ropas",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "bot_ia_estado",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "displayName": "telefono",
+                "id": "telefono",
+                "type": "string"
+              },
+              {
+                "displayName": "estado",
+                "id": "estado",
+                "type": "string"
+              },
+              {
+                "displayName": "nombre",
+                "id": "nombre",
+                "type": "string"
+              },
+              {
+                "displayName": "dni",
+                "id": "dni",
+                "type": "string"
+              },
+              {
+                "displayName": "ciudad",
+                "id": "ciudad",
+                "type": "string"
+              },
+              {
+                "displayName": "zona",
+                "id": "zona",
+                "type": "string"
+              },
+              {
+                "displayName": "producto",
+                "id": "producto",
+                "type": "string"
+              },
+              {
+                "displayName": "precio_producto",
+                "id": "precio_producto",
+                "type": "number"
+              },
+              {
+                "displayName": "costo_envio",
+                "id": "costo_envio",
+                "type": "number"
+              },
+              {
+                "displayName": "timestamp",
+                "id": "timestamp",
+                "type": "string"
+              }
+            ],
+            "value": {
+              "ciudad": "={{ $json.ciudad }}",
+              "costo_envio": "={{ $json.costo_envio }}",
+              "dni": "={{ $json.dni }}",
+              "estado": "={{ $json.estado_nuevo }}",
+              "nombre": "={{ $json.nombre }}",
+              "precio_producto": "={{ $json.precio_producto }}",
+              "producto": "={{ $json.producto }}",
+              "telefono": "={{ $json.telefono }}",
+              "timestamp": "={{ $json.timestamp }}",
+              "zona": "={{ $json.zona }}"
+            }
+          },
+          "options": {}
+        },
+        "id": "up-01",
+        "name": "Actualizar Estado",
+        "position": [
+          3200,
+          112
+        ],
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo",
+            "mode": "list",
+            "cachedResultName": "DEMO-Automatizacion Whatsapp - tienda de ropas",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "bot_ia_estado",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "autoMapInputData",
+            "value": {
+              "ciudad": "={{ $json.ciudad }}",
+              "costo_envio": "={{ $json.costo_envio }}",
+              "dni": "={{ $json.dni }}",
+              "estado": "={{ $json.estado_nuevo }}",
+              "nombre": "={{ $json.nombre }}",
+              "producto": "={{ $json.producto }}",
+              "telefono": "={{ $json.telefono }}",
+              "timestamp": "={{ $json.timestamp }}",
+              "zona": "={{ $json.zona }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "estado",
+                "displayName": "estado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "nombre",
+                "displayName": "nombre",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "dni",
+                "displayName": "dni",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "ciudad",
+                "displayName": "ciudad",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "zona",
+                "displayName": "zona",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "producto",
+                "displayName": "producto",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "precio_procucto",
+                "displayName": "precio_procucto",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "costo_envio",
+                "displayName": "costo_envio",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "historial",
+                "displayName": "historial",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "timestamp",
+                "displayName": "timestamp",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "cr-01",
+        "name": "Crear Estado",
+        "position": [
+          3200,
+          304
+        ],
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "={{ { number: $('Procesar Respuesta IA').first().json.telefono, text: $('Procesar Respuesta IA').first().json.mensaje_respuesta } }}",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo"
+        },
+        "id": "wa-01",
+        "maxTries": 3,
+        "name": "Enviar Respuesta WA",
+        "position": [
+          2992,
+          512
+        ],
+        "retryOnFail": true,
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "waitBetweenTries": 3000,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "d1",
+                "leftValue": "={{ $('Procesar Respuesta IA').first().json.estado_nuevo }}",
+                "operator": {
+                  "operation": "equals",
+                  "type": "string"
+                },
+                "rightValue": "completado"
+              }
+            ],
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            }
+          },
+          "options": {}
+        },
+        "id": "ec-01",
+        "name": "Es Completado?",
+        "position": [
+          3200,
+          512
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { number: '5493765384843', text: '🛍️ *NUEVO PEDIDO*\\n\\n👤 ' + $('Procesar Respuesta IA').first().json.nombre + '\\n🪪 ' + $('Procesar Respuesta IA').first().json.dni + '\\n📱 ' + $('Procesar Respuesta IA').first().json.telefono + '\\n\\n👕 ' + $('Procesar Respuesta IA').first().json.producto + '\\n💰 $' + $('Procesar Respuesta IA').first().json.precio_producto + '\\n📦 Envío: $' + $('Procesar Respuesta IA').first().json.costo_envio + '\\n✅ Total: $' + $('Procesar Respuesta IA').first().json.total + '\\n📍 ' + $('Procesar Respuesta IA').first().json.ciudad } }}",
+          "options": {}
+        },
+        "id": "nd-01",
+        "maxTries": 3,
+        "name": "Notificar al Dueno",
+        "position": [
+          3504,
+          400
+        ],
+        "retryOnFail": true,
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "waitBetweenTries": 3000,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo",
+            "mode": "list",
+            "cachedResultName": "DEMO-Automatizacion Whatsapp - tienda de ropas",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1467105671,
+            "mode": "list",
+            "cachedResultName": "pedidos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit#gid=1467105671"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "matchingColumns": [],
+            "schema": [
+              {
+                "displayName": "fecha",
+                "id": "fecha",
+                "type": "string"
+              },
+              {
+                "displayName": "nombre",
+                "id": "nombre",
+                "type": "string"
+              },
+              {
+                "displayName": "dni",
+                "id": "dni",
+                "type": "string"
+              },
+              {
+                "displayName": "telefono",
+                "id": "telefono",
+                "type": "string"
+              },
+              {
+                "displayName": "ciudad",
+                "id": "ciudad",
+                "type": "string"
+              },
+              {
+                "displayName": "producto",
+                "id": "producto",
+                "type": "string"
+              },
+              {
+                "displayName": "precio_producto",
+                "id": "precio_producto",
+                "type": "number"
+              },
+              {
+                "displayName": "costo_envio",
+                "id": "costo_envio",
+                "type": "number"
+              },
+              {
+                "displayName": "total",
+                "id": "total",
+                "type": "number"
+              },
+              {
+                "displayName": "estado",
+                "id": "estado",
+                "type": "string"
+              },
+              {
+                "displayName": "timestamp",
+                "id": "timestamp",
+                "type": "string"
+              }
+            ],
+            "value": {
+              "ciudad": "={{ $('Procesar Respuesta IA').first().json.ciudad }}",
+              "costo_envio": "={{ $('Procesar Respuesta IA').first().json.costo_envio }}",
+              "dni": "={{ $('Procesar Respuesta IA').first().json.dni }}",
+              "estado": "Confirmado",
+              "fecha": "={{ new Date().toLocaleDateString('es-AR', {timeZone: 'America/Argentina/Buenos_Aires'}) }}",
+              "nombre": "={{ $('Procesar Respuesta IA').first().json.nombre }}",
+              "precio_producto": "={{ $('Procesar Respuesta IA').first().json.precio_producto }}",
+              "producto": "={{ $('Procesar Respuesta IA').first().json.producto }}",
+              "telefono": "={{ $('Procesar Respuesta IA').first().json.telefono }}",
+              "timestamp": "={{ new Date().toISOString() }}",
+              "total": "={{ $('Procesar Respuesta IA').first().json.total }}"
+            }
+          },
+          "options": {}
+        },
+        "id": "gp-01",
+        "name": "Guardar Pedido",
+        "position": [
+          3808,
+          400
+        ],
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GMCKCQGZj49ZyiKE",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "# 🤖 AI Agente — Style Shop\n\n## Flujo:\nWebhook → Filtro → Datos → Airtable → Sheets\n→ **AI Agente (GPT-4o mini)** → Procesar\n→ Guardar estado + Enviar WA\n→ Si completado → Notificar + Guardar pedido\n\n## Setup:\n1. Crear hoja `bot_ia_estado` en Google Sheets\n   Columnas: telefono | estado | nombre | dni | ciudad | zona | producto | precio_producto | costo_envio | timestamp\n2. El nodo OpenAI usa la credencial existente\n3. Notificaciones van al número del dueño",
+          "height": 340,
+          "width": 380
+        },
+        "id": "sn-01",
+        "name": "📋 SETUP",
+        "position": [
+          208,
+          112
+        ],
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Preparar Contexto').first().json.telefono }}",
+          "contextWindowLength": 10
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          2384,
+          624
+        ],
+        "id": "9001c242-2a7a-40c5-ad06-74018eecda56",
+        "name": "Simple Memory"
+      },
+      {
+        "parameters": {
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "={{ { number: $('Procesar Respuesta IA').first().json.telefono + '@s.whatsapp.net', delay: 3000, presence: 'composing' } }}",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/chat/sendPresence/System%20IA%20Demo"
+        },
+        "id": "tp-01",
+        "name": "Escribiendo...",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2800,
+          512
+        ],
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "={{ { number: $('Procesar Respuesta IA').first().json.telefono, mediatype: 'image', mimetype: 'image/jpeg', media: $('Procesar Respuesta IA').first().json.imagen_url, fileName: 'producto.jpg' } }}",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendMedia/System%20IA%20Demo"
+        },
+        "id": "img-01",
+        "name": "Enviar Imagen Producto",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3104,
+          704
+        ],
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 3000,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Cg8i23WdofXdKu0X",
+            "name": "Header Auth Evolution"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "im1",
+                "leftValue": "={{ $json.imagen_url }}",
+                "operator": {
+                  "operation": "notEmpty",
+                  "singleValue": true,
+                  "type": "string"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            }
+          },
+          "options": {}
+        },
+        "id": "img-if-01",
+        "name": "Tiene Imagen?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          2912,
+          704
+        ]
+      }
+    ],
+    "connections": {
+      "Conv Existe?": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Actualizar Estado",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Crear Estado",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Enviar Respuesta WA": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Es Completado?",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Es Completado?": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Notificar al Dueno",
+              "type": "main"
+            }
+          ],
+          []
+        ]
+      },
+      "Extraer Datos": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Solo Clientes",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Filtro Webhook": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Extraer Datos",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Leer Bot Estado": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Preparar Contexto",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Leer Productos": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Leer Bot Estado",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Notificar al Dueno": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Guardar Pedido",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "OpenAI GPT-4o mini": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "🤖 AI Agente",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "Preparar Contexto": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "🤖 AI Agente",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Procesar Respuesta IA": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Conv Existe?",
+              "type": "main"
+            },
+            {
+              "node": "Escribiendo...",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Tiene Imagen?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Solo Clientes": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Leer Productos",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Webhook Evolution API": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Filtro Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "🤖 AI Agente": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Procesar Respuesta IA",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "🤖 AI Agente",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Escribiendo...": {
+        "main": [
+          [
+            {
+              "node": "Enviar Respuesta WA",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tiene Imagen?": {
+        "main": [
+          [
+            {
+              "node": "Enviar Imagen Producto",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-09T19:43:32.620Z",
+      "createdAt": "2026-02-09T19:43:32.620Z",
+      "id": "dCGM1dWLrqkY4L79",
+      "name": "🎯 Demos"
+    },
+    {
+      "updatedAt": "2026-02-09T19:43:32.624Z",
+      "createdAt": "2026-02-09T19:43:32.624Z",
+      "id": "kgXDYqTTwLLNKd1y",
+      "name": "📱 WhatsApp"
+    }
+  ]
+}
