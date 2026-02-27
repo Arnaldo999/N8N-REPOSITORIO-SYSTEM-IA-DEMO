@@ -1,0 +1,175 @@
+{
+  "updatedAt": "2026-02-26T23:23:26.172Z",
+  "createdAt": "2026-02-26T23:23:26.172Z",
+  "id": "1SY5kSKtSc8MoOdW",
+  "name": "🚀 Automatizar Redes Sociales (Arnaldo)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "node-trigger",
+      "name": "Trigger Programado",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        1552,
+        704
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "node-manual",
+      "name": "Ejecutar manualmente",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        1536,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appejn9ep8JMLJmPG",
+          "mode": "list",
+          "cachedResultName": "Clientes (Brand Books AI)",
+          "cachedResultUrl": "https://airtable.com/appejn9ep8JMLJmPG"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblgFvYebZcJaYM07",
+          "mode": "list",
+          "cachedResultName": "Branding-Marca",
+          "cachedResultUrl": "https://airtable.com/appejn9ep8JMLJmPG/tblgFvYebZcJaYM07"
+        },
+        "filterByFormula": "{ID Cliente} = 'Arnaldo_Ayala'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1808,
+        480
+      ],
+      "id": "ffe526a1-571b-4656-9b0c-a24204f6617a",
+      "name": "Traer Brand Book (Airtable)",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "3amPYJ6MWYf0VZtD",
+          "name": "Airtable Personal Access BRANDING-MARCA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 🤖 Flujo Agéntico (Nivel Enterprise)\\n\\nArriba estamos construyendo el futuro.\\n1. **Airtable:** Trae todas las reglas de tu marca (Tono, Colores, Público).\\n2. **Agente Generador (Easypanel):** Este único nodo va a reemplazar a los 30 nodos de abajo. Se encargará de pensar la estrategia, redactarla y postearla.\\n\\n*Nota: Aún no lo conectamos al Trigger para no romper el flujo de abajo mientras hacemos pruebas.*",
+        "height": 586,
+        "width": 400,
+        "color": 4
+      },
+      "id": "sticky-agentico",
+      "name": "Sticky Note Agentico",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1072,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-agente.6g0gdj.easypanel.host/social/publicar-completo",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { 'datos_marca': $json } }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "publicar-completo",
+      "name": "Publicar en Redes (Easypanel)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2096,
+        480
+      ],
+      "maxTries": 3,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    }
+  ],
+  "connections": {
+    "Ejecutar manualmente": {
+      "main": [
+        [
+          {
+            "node": "Traer Brand Book (Airtable)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Programado": {
+      "main": [
+        [
+          {
+            "node": "Traer Brand Book (Airtable)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Traer Brand Book (Airtable)": {
+      "main": [
+        [
+          {
+            "node": "Publicar en Redes (Easypanel)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "a2c45195-17e8-4c75-8d44-8cfab0164f27",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-26T23:23:26.174Z",
+      "createdAt": "2026-02-26T23:23:26.174Z",
+      "role": "workflow:owner",
+      "workflowId": "1SY5kSKtSc8MoOdW",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "id": "sin-tag",
+      "name": "sin-tag"
+    }
+  ]
+}
