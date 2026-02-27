@@ -1,0 +1,149 @@
+{
+  "updatedAt": "2026-02-26T23:23:22.638Z",
+  "createdAt": "2026-02-26T23:23:22.638Z",
+  "id": "RSANQlogdkjC9W4U",
+  "name": "📅 [Tool] Agendar Cita — Cal.com",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-book",
+      "name": "Execute Workflow Trigger",
+      "position": [
+        240,
+        304
+      ],
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst data = item.json;\n\n// Soporte para ambos formatos: {query: {...}} y campos planos\nconst query = (data.query && typeof data.query === 'object') ? data.query : data;\nconst especialistaRaw = (query.especialista || data.especialista || '').toLowerCase();\n\n// Normalizar acentos\nconst normalizar = (s) => s.normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');\nconst especialista = normalizar(especialistaRaw);\n\nconst ESPECIALISTAS = {\n  garcia: 4857668,\n  lopez: 4857681,\n  martinez: 4857683,\n};\n\nlet eventTypeId = null;\nfor (const [key, id] of Object.entries(ESPECIALISTAS)) {\n  if (especialista.includes(key)) {\n    eventTypeId = id;\n    break;\n  }\n}\n\nif (!eventTypeId) {\n  return [{ json: { error: `Especialista no reconocido: ${especialistaRaw}`, confirmado: false } }];\n}\n\nreturn [{\n  json: {\n    eventTypeId,\n    startTime: query.startTime || data.startTime || '',\n    nombre: query.nombre || data.nombre || '',\n    email: query.email || data.email || '',\n    especialista: especialistaRaw\n  }\n}];"
+      },
+      "id": "code-resolver-book",
+      "name": "Resolver Datos Cita",
+      "position": [
+        464,
+        304
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "POST",
+        "url": "https://api.cal.com/v2/bookings",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"eventTypeId\": {{ $json.eventTypeId }},\n  \"start\": \"{{ $json.startTime }}\",\n  \"attendee\": {\n    \"name\": \"{{ $json.nombre }}\",\n    \"email\": \"{{ $json.email }}\",\n    \"timeZone\": \"America/Argentina/Buenos_Aires\",\n    \"language\": \"es\"\n  }\n}",
+        "options": {}
+      },
+      "id": "http-book",
+      "name": "POST Booking Cal.com",
+      "position": [
+        720,
+        304
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "iwHFpfPGDViqragO",
+          "name": "Header Auth Cal.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst data = item.json;\n\nif (data.error) {\n  return [{ json: data }];\n}\n\n// Cal.com v2 booking response\nconst booking = data.data || data;\nreturn [{\n  json: {\n    confirmado: true,\n    bookingId: booking.id || booking.uid || '',\n    titulo: booking.title || '',\n    inicio: booking.start || '',\n    fin: booking.end || '',\n    estado: booking.status || 'accepted',\n    paciente: booking.attendees?.[0]?.name || '',\n    email: booking.attendees?.[0]?.email || ''\n  }\n}];"
+      },
+      "id": "format-booking",
+      "name": "Formatear Confirmación",
+      "position": [
+        960,
+        304
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "content": "## 📅 Agendar Cita\n\n**Input esperado (del agente):**\n- `query.nombre` → nombre del paciente\n- `query.email` → email del paciente  \n- `query.especialista` → garcia / lopez / martinez\n- `query.startTime` → ISO 8601 (ej: 2026-02-25T10:00:00Z)\n\nO campos planos: `nombre`, `email`, etc.\n\n**Output:**\n- `confirmado`: true/false\n- `bookingId`, `inicio`, `fin`, `estado`",
+        "height": 240,
+        "width": 240
+      },
+      "id": "sticky-book",
+      "name": "Sticky Note",
+      "position": [
+        240,
+        64
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Resolver Datos Cita",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Resolver Datos Cita": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "POST Booking Cal.com",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "POST Booking Cal.com": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Formatear Confirmación",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "c8a820bd-0d8f-41bc-8813-fa20416d9f73",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-26T23:23:22.639Z",
+      "createdAt": "2026-02-26T23:23:22.639Z",
+      "role": "workflow:owner",
+      "workflowId": "RSANQlogdkjC9W4U",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "id": "sin-tag",
+      "name": "sin-tag"
+    }
+  ]
+}
