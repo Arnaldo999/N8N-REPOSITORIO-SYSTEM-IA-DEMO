@@ -1,0 +1,1476 @@
+{
+  "updatedAt": "2026-02-26T23:23:17.563Z",
+  "createdAt": "2026-02-26T23:23:17.563Z",
+  "id": "BxdteIrpcXQufyIG",
+  "name": "🎛️ MAESTRO - Router de Demos",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "maestro-demos-router",
+        "options": {}
+      },
+      "id": "ddd15410-1779-436e-9ef9-c7e15abb5eed",
+      "name": "Webhook Evolution API",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        8912,
+        12624
+      ],
+      "webhookId": "maestro-demos-router"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.body.event }}",
+              "rightValue": "messages.upsert",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "c2",
+              "leftValue": "={{ $json.body.data.message.conversation }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "c3",
+              "leftValue": "={{ $json.body.data.key.remoteJid }}",
+              "rightValue": "@s.whatsapp.net",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e31fe049-b25c-42a2-9d75-95177cbfb4b1",
+      "name": "Filtro Webhook",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        9120,
+        12624
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "telefono",
+              "value": "={{ ($json.body?.data?.key?.remoteJid || '').replace('@s.whatsapp.net','') }}",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "mensaje",
+              "value": "={{ ($json.body?.data?.message?.conversation || '').trim().toLowerCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "mensaje_original",
+              "value": "={{ ($json.body?.data?.message?.conversation || '').trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "a4",
+              "name": "nombre_wa",
+              "value": "={{ $json.body?.data?.pushName || 'Sin nombre' }}",
+              "type": "string"
+            },
+            {
+              "id": "a5",
+              "name": "es_mio",
+              "value": "={{ String($json.body?.data?.key?.fromMe ?? false) }}",
+              "type": "string"
+            },
+            {
+              "id": "a6",
+              "name": "body_original",
+              "value": "={{ JSON.stringify($json) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dfab8d5d-06f6-4151-99ea-8c12f0e3b99d",
+      "name": "Extraer Datos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        9344,
+        12624
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "f1",
+              "leftValue": "={{ $json.es_mio }}",
+              "rightValue": "false",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0fff12c6-4f30-4a29-b9f7-96816b5ba40d",
+      "name": "No es mensaje mio",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        9568,
+        12624
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE",
+          "mode": "list",
+          "cachedResultName": "sesiones_demo",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "6ee44ddf-3e76-472d-a793-62617b48d5ec",
+      "name": "Leer Sesiones Demo",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        9792,
+        12624
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const telefono = $('Extraer Datos').first().json.telefono;\nconst mensaje = $('Extraer Datos').first().json.mensaje;\nconst mensaje_original = $('Extraer Datos').first().json.mensaje_original;\nconst nombre_wa = $('Extraer Datos').first().json.nombre_wa;\nconst body_original = $('Extraer Datos').first().json.body_original;\n\nlet filas = [];\ntry { filas = $input.all().map(i => i.json); } catch(e) { filas = []; }\n\nconst telLimpio = String(telefono).trim();\nconst encontrado = filas.find(f => String(f.telefono || '').trim() === telLimpio);\n\nif (encontrado && encontrado.demo_activa) {\n  return [{ \n    json: { \n      existe: true, \n      telefono: telLimpio, \n      mensaje,\n      mensaje_original,\n      nombre_wa,\n      body_original,\n      demo_activa: String(encontrado.demo_activa || '').trim().toLowerCase(),\n      paso: String(encontrado.paso || '').trim().toLowerCase(),\n      datos_extra: encontrado.datos_extra || ''\n    } \n  }];\n} else {\n  return [{ \n    json: { \n      existe: false, \n      telefono: telLimpio, \n      mensaje,\n      mensaje_original,\n      nombre_wa,\n      body_original,\n      demo_activa: '',\n      paso: 'nuevo',\n      datos_extra: ''\n    } \n  }];\n}"
+      },
+      "id": "6f01b8f3-d95a-4a4d-84ec-f8d916faa714",
+      "name": "Buscar Sesion",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        10000,
+        12624
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "e1",
+              "leftValue": "={{ $json.existe }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5dd2150e-3559-4f42-a7a6-3dd7ea35a02b",
+      "name": "Tiene Demo Activa?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        10224,
+        12624
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE",
+          "mode": "list",
+          "cachedResultName": "sesiones_demo",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "nombre_wa": "={{ $json.nombre_wa }}",
+            "demo_activa": "menu",
+            "paso": "seleccion",
+            "datos_extra": "",
+            "timestamp": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "type": "string"
+            },
+            {
+              "id": "nombre_wa",
+              "displayName": "nombre_wa",
+              "type": "string"
+            },
+            {
+              "id": "demo_activa",
+              "displayName": "demo_activa",
+              "type": "string"
+            },
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "type": "string"
+            },
+            {
+              "id": "datos_extra",
+              "displayName": "datos_extra",
+              "type": "string"
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2db51789-2c25-4914-b3dd-a825f5b9ff55",
+      "name": "Guardar Nueva Sesion",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        10448,
+        12800
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $('Extraer Datos').first().json.telefono }}\",\n  \"text\": \"¡Hola {{ $('Extraer Datos').first().json.nombre_wa }}! 👋\\n\\n🚀 Bienvenido a *System IA* - Soluciones de Automatización\\n\\n¿Qué demo te gustaría probar hoy?\\n\\n1️⃣ 📱 *WhatsApp → CRM/Sheets*\\nCaptura leads automáticamente desde WhatsApp\\n\\n2️⃣ 📸 *Automatización Redes Sociales*\\nPublicación automática en Instagram con IA\\n\\n3️⃣ 👕 *Tienda de Ropa*\\nCalculadora de envíos y pagos con QR\\n\\n0️⃣ 💬 *Hablar con un asesor*\\n\\nRespondé con el *número* de la opción 😊\"\n}",
+        "options": {}
+      },
+      "id": "c3af8b91-e33e-481e-9c8f-e4f0d7650fd5",
+      "name": "Enviar Menu Demos",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        10672,
+        12800
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "menu-check",
+              "leftValue": "={{ $json.demo_activa }}",
+              "rightValue": "menu",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "48520c0e-5f12-44be-b74e-eab1f62d21a5",
+      "name": "Esta en Menu?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        10448,
+        12464
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "msg-1",
+              "leftValue": "={{ $json.mensaje }}",
+              "rightValue": "1",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b68cd798-0cab-4a95-b184-ba0feeaf62cd",
+      "name": "Eligio 1?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        10672,
+        12256
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "msg-2",
+              "leftValue": "={{ $json.mensaje }}",
+              "rightValue": "2",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7c33c015-24b7-41a8-af87-f1820ff87cdf",
+      "name": "Eligio 2?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        10880,
+        12384
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "msg-0",
+              "leftValue": "={{ $json.mensaje }}",
+              "rightValue": "0",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3100e274-7625-485c-a7d6-08f2522a2f58",
+      "name": "Eligio 0?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        11104,
+        12496
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE",
+          "mode": "list",
+          "cachedResultName": "sesiones_demo",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "demo_activa": "whatsapp_crm",
+            "paso": "inicio"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "type": "string"
+            },
+            {
+              "id": "demo_activa",
+              "displayName": "demo_activa",
+              "type": "string"
+            },
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "270ed8ad-8c55-4cc3-baf9-b69ec5d24f00",
+      "name": "Activar Demo WhatsApp",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        10880,
+        12112
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE",
+          "mode": "list",
+          "cachedResultName": "sesiones_demo",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "demo_activa": "redes_sociales",
+            "paso": "inicio"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "type": "string"
+            },
+            {
+              "id": "demo_activa",
+              "displayName": "demo_activa",
+              "type": "string"
+            },
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c56bface-7510-4b73-9d54-c9c6996cb0e3",
+      "name": "Activar Demo Redes",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        11104,
+        12240
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"✅ ¡Excelente elección!\\n\\n📱 *Demo: WhatsApp → CRM/Sheets*\\n\\nAhora estás en la demo de captura de leads.\\nEscribí cualquier mensaje para comenzar...\\n\\n💡 *Tip:* Escribí *menu* en cualquier momento para volver al menú principal.\"\n}",
+        "options": {}
+      },
+      "id": "24add5e5-077c-4fca-9dea-ada822e1f954",
+      "name": "Confirmar Demo 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        11104,
+        12112
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"✅ ¡Excelente elección!\\n\\n📸 *Demo: Automatización de Redes Sociales*\\n\\n🚧 *Demo en construcción*\\nPronto podrás probarla.\\n\\n👉 Escribí *menu* para volver al menú principal.\"\n}",
+        "options": {}
+      },
+      "id": "17029938-7333-4672-a0ba-2d651cf2cd89",
+      "name": "Confirmar Demo 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        11328,
+        12240
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"💬 ¡Perfecto!\\n\\nUn asesor de *System IA* se pondrá en contacto contigo a la brevedad.\\n\\nMientras tanto, podés escribirnos cualquier consulta. 🙌\"\n}",
+        "options": {}
+      },
+      "id": "f68ab67b-478e-4e68-bbb9-08efa8fb9afb",
+      "name": "Responder Asesor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        11328,
+        12352
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"🤔 No entendí tu respuesta.\\n\\nPor favor, respondé con:\\n• *1* para WhatsApp → CRM\\n• *2* para Redes Sociales\\n• *0* para hablar con un asesor\"\n}",
+        "options": {}
+      },
+      "id": "e1924923-1e5b-4711-8503-2bd46bcfc2a4",
+      "name": "Opcion Invalida",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        11328,
+        12624
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "menu-cmd",
+              "leftValue": "={{ $json.mensaje }}",
+              "rightValue": "menu",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f8651f65-24cc-4296-b061-f86b9f9d1b3b",
+      "name": "Escribio Menu?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        10672,
+        12624
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE",
+          "mode": "list",
+          "cachedResultName": "sesiones_demo",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "demo_activa": "menu",
+            "paso": "seleccion"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "type": "string"
+            },
+            {
+              "id": "demo_activa",
+              "displayName": "demo_activa",
+              "type": "string"
+            },
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f615a041-70da-4984-814b-de01cec2e6a0",
+      "name": "Volver a Menu",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        10880,
+        12592
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"🔄 ¡Perfecto! Volvemos al menú principal.\\n\\n¿Qué demo te gustaría probar?\\n\\n1️⃣ 📱 *WhatsApp → CRM/Sheets*\\n2️⃣ 📸 *Automatización Redes Sociales*\\n3️⃣ 👕 *Tienda de Ropa*\\nCalculadora de envíos y pagos con QR\\n\\n0️⃣ 💬 *Hablar con un asesor*\\n\\nRespondé con el *número* 😊\"\n}",
+        "options": {}
+      },
+      "id": "2818492f-e69d-452e-b8c9-90bf19bcef40",
+      "name": "Enviar Menu (Volver)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        11104,
+        12624
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "demo1-check",
+              "leftValue": "={{ $json.demo_activa }}",
+              "rightValue": "whatsapp_crm",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "6ce12b8a-f37c-4aa4-9290-1ba9bb1e63d9",
+      "name": "Es Demo WhatsApp?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        10880,
+        12720
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/4973a60b-fbc7-4499-9fce-b76c25785570",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.parse($('Extraer Datos').first().json.body_original).body }}",
+        "options": {}
+      },
+      "id": "b5b14ebd-0c45-4fdd-b8c1-b2023c52069f",
+      "name": "Reenviar a Conecta",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        11104,
+        12720
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"🔔 Estás en la demo de *Redes Sociales*.\\n\\n🚧 Esta demo está en construcción.\\n\\n👉 Escribí *menu* para volver al menú principal.\"\n}",
+        "options": {}
+      },
+      "id": "15ac4100-18be-4737-907d-534336632493",
+      "name": "Demo Redes (Construccion)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        11104,
+        12880
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# 🎛️ WORKFLOW MAESTRO - Router de Demos\n\n## 📋 Descripción\nEste workflow recibe TODOS los mensajes de WhatsApp y los distribuye a la demo correcta.\n\n## 🔗 Conexiones\n- **Webhook**: `maestro-demos-router`\n- **Sheet**: `sesiones_demo`\n\n## 🎯 Flujo\n1. Usuario escribe → Recibe menú de demos\n2. Elige 1, 2 o 0\n3. Si elige 1 → Reenvía a Conecta\n4. Si elige 2 → Demo en construcción\n5. Escribir *menu* → Vuelve al menú\n\n## 📱 Demos\n- **1** → WhatsApp → CRM (REENVÍA a Conecta)\n- **2** → Redes Sociales (en construcción)\n- **0** → Asesor",
+        "height": 420,
+        "width": 340
+      },
+      "id": "8dd14c4e-22e0-48cd-a506-f4f199c89b22",
+      "name": "📋 Documentación",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        8512,
+        12400
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "msg-3",
+              "leftValue": "={{ $json.mensaje }}",
+              "rightValue": "3",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "17d178fa-5669-46bf-a644-9c38f5e592dc",
+      "name": "Eligio 3?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        10880,
+        12528
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE",
+          "mode": "list",
+          "cachedResultName": "sesiones_demo"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "demo_activa": "tienda_ropa",
+            "paso": "inicio"
+          },
+          "matchingColumns": [
+            "telefono"
+          ]
+        },
+        "options": {}
+      },
+      "id": "1d998b93-9d6a-4e79-8022-0068d1366291",
+      "name": "Activar Demo Tienda",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        11104,
+        12384
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"✅ ¡Excelente elección!\\n\\n👕 *Demo: Tienda de Ropa*\\n\\nEsta demo incluye:\\n📦 Cálculo de envíos en tiempo real\\n💰 Pagos con QR\\n\\nEscribí *Hola* para comenzar...\"\n}",
+        "options": {}
+      },
+      "id": "3c270347-8bc2-4d80-8f77-4f73fdaafc09",
+      "name": "Confirmar Demo 3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        11328,
+        12384
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "demo3-check",
+              "leftValue": "={{ $json.demo_activa }}",
+              "rightValue": "tienda_ropa",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b8d26cac-b6f3-454d-a0b0-4b8b67e05b2f",
+      "name": "Es Demo Tienda?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        10880,
+        12880
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/tienda-ropa-webhook",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.parse($('Extraer Datos').first().json.body_original).body }}",
+        "options": {}
+      },
+      "id": "15f51a6c-59e7-4dfd-b510-a81af9b03162",
+      "name": "Reenviar a Tienda",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        11104,
+        12880
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Evolution API": {
+      "main": [
+        [
+          {
+            "node": "Filtro Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtro Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extraer Datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Datos": {
+      "main": [
+        [
+          {
+            "node": "No es mensaje mio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No es mensaje mio": {
+      "main": [
+        [
+          {
+            "node": "Leer Sesiones Demo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Sesiones Demo": {
+      "main": [
+        [
+          {
+            "node": "Buscar Sesion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Sesion": {
+      "main": [
+        [
+          {
+            "node": "Tiene Demo Activa?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tiene Demo Activa?": {
+      "main": [
+        [
+          {
+            "node": "Esta en Menu?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Guardar Nueva Sesion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Nueva Sesion": {
+      "main": [
+        [
+          {
+            "node": "Enviar Menu Demos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esta en Menu?": {
+      "main": [
+        [
+          {
+            "node": "Eligio 1?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Escribio Menu?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Eligio 1?": {
+      "main": [
+        [
+          {
+            "node": "Activar Demo WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Eligio 2?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Eligio 2?": {
+      "main": [
+        [
+          {
+            "node": "Activar Demo Redes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Eligio 3?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Eligio 0?": {
+      "main": [
+        [
+          {
+            "node": "Responder Asesor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Opcion Invalida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Activar Demo WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Confirmar Demo 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Activar Demo Redes": {
+      "main": [
+        [
+          {
+            "node": "Confirmar Demo 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escribio Menu?": {
+      "main": [
+        [
+          {
+            "node": "Volver a Menu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Es Demo WhatsApp?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Volver a Menu": {
+      "main": [
+        [
+          {
+            "node": "Enviar Menu (Volver)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es Demo WhatsApp?": {
+      "main": [
+        [
+          {
+            "node": "Reenviar a Conecta",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Es Demo Tienda?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Eligio 3?": {
+      "main": [
+        [
+          {
+            "node": "Activar Demo Tienda",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Eligio 0?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Activar Demo Tienda": {
+      "main": [
+        [
+          {
+            "node": "Confirmar Demo 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es Demo Tienda?": {
+      "main": [
+        [
+          {
+            "node": "Reenviar a Tienda",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Demo Redes (Construccion)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "1decf93c-d3a3-48fd-b897-4be06792468d",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-26T23:23:17.597Z",
+      "createdAt": "2026-02-26T23:23:17.597Z",
+      "role": "workflow:owner",
+      "workflowId": "BxdteIrpcXQufyIG",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "id": "sin-tag",
+      "name": "sin-tag"
+    }
+  ]
+}
