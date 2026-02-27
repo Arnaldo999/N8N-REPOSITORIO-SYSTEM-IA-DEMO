@@ -1,8 +1,9 @@
 {
-  "updatedAt": "2026-02-13T20:01:39.029Z",
-  "createdAt": "2026-02-12T16:48:41.765Z",
-  "id": "dH8DMkkkpEKQ0ESo",
+  "updatedAt": "2026-02-27T17:04:58.608Z",
+  "createdAt": "2026-02-26T23:23:16.113Z",
+  "id": "KdQvpFCSl7oDmKoM",
   "name": "🍷 Restaurante - Flujo Principal",
+  "description": null,
   "active": true,
   "isArchived": false,
   "nodes": [
@@ -10,7 +11,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "webhook/automatizacion-restaurantes",
-        "responseMode": "responseNode",
+        "responseMode": "onReceived",
         "options": {}
       },
       "id": "05efc878-e7df-49c4-8935-7fabc2b9b3cf",
@@ -227,7 +228,7 @@
     },
     {
       "parameters": {
-        "model": "gpt-4o",
+        "model": "gpt-4o-mini",
         "options": {
           "temperature": 0.4
         }
@@ -242,32 +243,11 @@
       ],
       "credentials": {
         "openAiApi": {
-          "id": "NcfqiDHUS55FBxv4",
+          "id": "BrD15coHeXdGWac2",
           "name": "OpenAi account"
         }
-      }
-    },
-    {
-      "parameters": {
-        "sessionIdType": "customKey",
-        "sessionKey": "={{ $('Agregar Fecha').item.json.telefono }}",
-        "tableName": "bar_montevideo_memory",
-        "contextWindowLength": 15
       },
-      "id": "e3d066fb-e2ea-4456-a191-7f2e741a1830",
-      "name": "Postgres Chat Memory",
-      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
-      "typeVersion": 1.3,
-      "position": [
-        -3136,
-        5920
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "H4xplj00DDJLj5Li",
-          "name": "Postgres account"
-        }
-      }
+      "continueOnFail": true
     },
     {
       "parameters": {
@@ -275,9 +255,8 @@
         "description": "Busca y envía la carta/menú del bar al usuario por WhatsApp. Categorías disponibles: principales, entradas, bebidas, postres, cafeteria. IMPORTANTE: Solo activar después de que el usuario confirme que quiere ver la carta.",
         "workflowId": {
           "__rl": true,
-          "value": "XZDEgwXlZkXjbeQJ",
-          "mode": "id",
-          "cachedResultUrl": "/workflow/XZDEgwXlZkXjbeQJ"
+          "value": "m7R8D2NWjQK6CyEq",
+          "mode": "id"
         },
         "fields": {
           "values": [
@@ -344,8 +323,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -379,8 +358,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -447,8 +426,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -496,8 +475,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -564,8 +543,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -613,34 +592,18 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={ \"status\": \"ok\" }",
-        "options": {}
-      },
-      "id": "6043fc3e-67c0-4e1b-aafe-d98255bf9d45",
-      "name": "Respond to Webhook",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        -448,
-        5696
-      ]
     },
     {
       "parameters": {
         "description": "Crea una nueva reserva. Solo usar DESPUÉS de confirmar TODOS los datos. Requiere: nombre, fecha (YYYY-MM-DD), hora (HH:MM), personas (número), especificaciones.",
         "workflowId": {
           "__rl": true,
-          "value": "qCKbJSnSR6Zmqi5i",
-          "mode": "id",
-          "cachedResultUrl": "/workflow/qCKbJSnSR6Zmqi5i"
+          "value": "4hXZIxYpcSwT8JqN",
+          "mode": "id"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
@@ -722,10 +685,8 @@
         "description": "Busca una reserva existente usando nombre, fecha y hora. Devuelve el ID único (recID) necesario para modificar o cancelar. SIEMPRE usar ANTES de modificar o cancelar una reserva.",
         "workflowId": {
           "__rl": true,
-          "value": "lmPXKUTf9lTHLlXW",
-          "mode": "list",
-          "cachedResultUrl": "/workflow/lmPXKUTf9lTHLlXW",
-          "cachedResultName": "Sub: Identificar Reserva"
+          "value": "2m1ffXRAIEdNzsVR",
+          "mode": "id"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
@@ -782,33 +743,50 @@
     },
     {
       "parameters": {
-        "description": "### Opción 3 o \"modificar reserva\":\nPreguntá:\n1. Nombre y apellido con el que hizo la reserva\n2. Fecha y hora original de la reserva\n\nUsá **identificar_reserva** para obtener el ID\n\nUna vez encontrada la reserva, respondé así:\n\"Encontré tu reserva! 📅\n\nEstos son los datos actuales:\n- Nombre: [nombre]\n- Fecha: [fecha]\n- Hora: [hora]\n- Personas: [personas]\n\nContame, qué te gustaría cambiar?\n1. Fecha y/o hora\n2. Cantidad de personas\n\nDecime el número o contame directamente los cambios que necesitás 😊\"\n\nCuando el usuario diga qué quiere cambiar, pedile los nuevos datos específicos (ej: \"Para qué día y hora querés mover la reserva?\")\nConfirmá los cambios antes de aplicarlos y usá **modificar_reserva**Modifica una reserva existente. Requiere el ID (recID) obtenido previamente con identificar_reserva. Solo incluir los campos que el usuario quiere cambiar.",
+        "description": "Modifica una reserva existente. Llamar cuando el usuario quiera cambiar fecha, hora o cantidad de personas. Primero preguntar el nombre, fecha y hora original de la reserva si no los tiene.",
         "workflowId": {
           "__rl": true,
-          "value": "4oFJ0Ek3v15kzE30",
-          "mode": "list",
-          "cachedResultUrl": "/workflow/4oFJ0Ek3v15kzE30",
-          "cachedResultName": "Sub: Modificar Reserva"
+          "value": "DoeT3kKjnK5t5bMQ",
+          "mode": "id"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
-            "id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('id', ``, 'string') }}",
-            "nueva_fecha": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nueva_fecha', ``, 'string') }}",
-            "nueva_hora": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nueva_hora', ``, 'string') }}",
-            "nuevas_personas": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nuevas_personas', ``, 'string') }}"
+            "nombre": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nombre', 'Nombre y apellido con que se hizo la reserva', 'string') }}",
+            "fecha": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fecha', 'Fecha original de la reserva en formato YYYY-MM-DD', 'string') }}",
+            "hora": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('hora', 'Hora original de la reserva en formato HH:MM', 'string') }}",
+            "nueva_fecha": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nueva_fecha', 'Nueva fecha en formato YYYY-MM-DD. Dejar vacio si no cambia.', 'string') }}",
+            "nueva_hora": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nueva_hora', 'Nueva hora en formato HH:MM. Dejar vacio si no cambia.', 'string') }}",
+            "nuevas_personas": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nuevas_personas', 'Nueva cantidad de personas. Dejar vacio si no cambia.', 'string') }}"
           },
           "matchingColumns": [],
           "schema": [
             {
-              "id": "id",
-              "displayName": "id",
-              "required": false,
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": true,
               "defaultMatch": false,
               "display": true,
               "canBeUsedToMatch": true,
-              "type": "string",
-              "removed": false
+              "type": "string"
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "hora",
+              "displayName": "hora",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
             },
             {
               "id": "nueva_fecha",
@@ -817,8 +795,7 @@
               "defaultMatch": false,
               "display": true,
               "canBeUsedToMatch": true,
-              "type": "string",
-              "removed": false
+              "type": "string"
             },
             {
               "id": "nueva_hora",
@@ -827,8 +804,7 @@
               "defaultMatch": false,
               "display": true,
               "canBeUsedToMatch": true,
-              "type": "string",
-              "removed": false
+              "type": "string"
             },
             {
               "id": "nuevas_personas",
@@ -837,8 +813,7 @@
               "defaultMatch": false,
               "display": true,
               "canBeUsedToMatch": true,
-              "type": "string",
-              "removed": false
+              "type": "string"
             }
           ],
           "attemptToConvertTypes": false,
@@ -856,27 +831,47 @@
     },
     {
       "parameters": {
-        "description": "Cancela y elimina una reserva existente. Requiere el ID (recID) obtenido con identificar_reserva. Solo usar DESPUÉS de que el usuario confirme la cancelación.",
+        "description": "Cancela y elimina una reserva existente. Llamar solo DESPUÉS de que el usuario confirme explícitamente la cancelación. Primero preguntar el nombre, fecha y hora de la reserva si no los tiene.",
         "workflowId": {
           "__rl": true,
-          "value": "WvJXguIezXCvpyg5",
-          "mode": "list",
-          "cachedResultUrl": "/workflow/WvJXguIezXCvpyg5",
-          "cachedResultName": "Sub: Cancelar Reserva"
+          "value": "5icnnibizPM24LXi",
+          "mode": "id"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
-            "id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('id', ``, 'string') }}"
+            "nombre": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nombre', `Nombre del cliente que hizo la reserva`, 'string') }}",
+            "fecha": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fecha', `Fecha de la reserva en formato YYYY-MM-DD`, 'string') }}",
+            "hora": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('hora', `Hora de la reserva, ejemplo: 20:00`, 'string') }}"
           },
           "matchingColumns": [
-            "id"
+            "nombre"
           ],
           "schema": [
             {
-              "id": "id",
-              "displayName": "id",
-              "required": false,
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "hora",
+              "displayName": "hora",
+              "required": true,
               "defaultMatch": false,
               "display": true,
               "canBeUsedToMatch": true,
@@ -896,6 +891,21 @@
       ],
       "id": "8adc769f-ed44-4c4d-a5f0-9ca96bdf8c77",
       "name": "Cancelar Reserva"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Extraer Datos').first().json.telefono }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -3152,
+        5920
+      ],
+      "id": "03628029-e342-437a-b789-d0c9c0758fde",
+      "name": "Simple Memory"
     }
   ],
   "connections": {
@@ -976,17 +986,6 @@
         ]
       ]
     },
-    "Postgres Chat Memory": {
-      "ai_memory": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_memory",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Buscar Menú": {
       "ai_tool": [
         [
@@ -1039,13 +1038,6 @@
             "type": "main",
             "index": 0
           }
-        ],
-        [
-          {
-            "node": "Respond to Webhook",
-            "type": "main",
-            "index": 0
-          }
         ]
       ]
     },
@@ -1090,13 +1082,6 @@
             "type": "main",
             "index": 0
           }
-        ],
-        [
-          {
-            "node": "Respond to Webhook",
-            "type": "main",
-            "index": 0
-          }
         ]
       ]
     },
@@ -1116,17 +1101,6 @@
         [
           {
             "node": "Enviar Parte 3",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Enviar Parte 3": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook",
             "type": "main",
             "index": 0
           }
@@ -1176,41 +1150,80 @@
           }
         ]
       ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate",
+    "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
+  "meta": null,
   "pinData": {},
-  "versionId": "a6138e1c-2557-485b-9bb8-b98b92acc4a7",
-  "activeVersionId": "a6138e1c-2557-485b-9bb8-b98b92acc4a7",
+  "versionId": "4a90e7ab-5284-46f8-80a7-c0eeea681118",
+  "activeVersionId": "4a90e7ab-5284-46f8-80a7-c0eeea681118",
+  "versionCounter": 40,
   "triggerCount": 1,
   "shared": [
     {
-      "updatedAt": "2026-02-12T16:48:41.765Z",
-      "createdAt": "2026-02-12T16:48:41.765Z",
+      "updatedAt": "2026-02-26T23:23:16.115Z",
+      "createdAt": "2026-02-26T23:23:16.115Z",
       "role": "workflow:owner",
-      "workflowId": "dH8DMkkkpEKQ0ESo",
-      "projectId": "A5erh6pqAqSjR28k"
+      "workflowId": "KdQvpFCSl7oDmKoM",
+      "projectId": "zU8ZqM5Dx6MPXDiw",
+      "project": {
+        "updatedAt": "2026-02-26T23:18:51.572Z",
+        "createdAt": "2026-02-26T23:17:24.956Z",
+        "id": "zU8ZqM5Dx6MPXDiw",
+        "name": "Micaela Colmenares <micaelacolmenares208@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "dd038300-f42f-4774-88a8-4badf245957b"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-02-27T13:26:50.137Z",
+      "createdAt": "2026-02-27T13:26:50.137Z",
+      "id": "RTrTC99Ox1gfMQRA",
+      "name": "Restaurant"
+    },
+    {
+      "updatedAt": "2026-02-27T13:26:22.913Z",
+      "createdAt": "2026-02-27T13:26:22.913Z",
+      "id": "dveKcFU9yNCIwJvk",
+      "name": "DEMO"
+    },
+    {
+      "updatedAt": "2026-02-26T23:58:08.513Z",
+      "createdAt": "2026-02-26T23:58:08.513Z",
+      "id": "h6NCtzLto5r41s9Q",
+      "name": "WHATSAPP"
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-13T20:05:51.727Z",
-    "createdAt": "2026-02-13T20:01:39.031Z",
-    "versionId": "a6138e1c-2557-485b-9bb8-b98b92acc4a7",
-    "workflowId": "dH8DMkkkpEKQ0ESo",
+    "updatedAt": "2026-02-27T17:04:58.614Z",
+    "createdAt": "2026-02-27T17:04:58.614Z",
+    "versionId": "4a90e7ab-5284-46f8-80a7-c0eeea681118",
+    "workflowId": "KdQvpFCSl7oDmKoM",
     "nodes": [
       {
         "parameters": {
           "httpMethod": "POST",
           "path": "webhook/automatizacion-restaurantes",
-          "responseMode": "responseNode",
+          "responseMode": "onReceived",
           "options": {}
         },
         "id": "05efc878-e7df-49c4-8935-7fabc2b9b3cf",
@@ -1427,7 +1440,7 @@
       },
       {
         "parameters": {
-          "model": "gpt-4o",
+          "model": "gpt-4o-mini",
           "options": {
             "temperature": 0.4
           }
@@ -1442,32 +1455,11 @@
         ],
         "credentials": {
           "openAiApi": {
-            "id": "NcfqiDHUS55FBxv4",
+            "id": "BrD15coHeXdGWac2",
             "name": "OpenAi account"
           }
-        }
-      },
-      {
-        "parameters": {
-          "sessionIdType": "customKey",
-          "sessionKey": "={{ $('Agregar Fecha').item.json.telefono }}",
-          "tableName": "bar_montevideo_memory",
-          "contextWindowLength": 15
         },
-        "id": "e3d066fb-e2ea-4456-a191-7f2e741a1830",
-        "name": "Postgres Chat Memory",
-        "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
-        "typeVersion": 1.3,
-        "position": [
-          -3136,
-          5920
-        ],
-        "credentials": {
-          "postgres": {
-            "id": "H4xplj00DDJLj5Li",
-            "name": "Postgres account"
-          }
-        }
+        "continueOnFail": true
       },
       {
         "parameters": {
@@ -1475,9 +1467,8 @@
           "description": "Busca y envía la carta/menú del bar al usuario por WhatsApp. Categorías disponibles: principales, entradas, bebidas, postres, cafeteria. IMPORTANTE: Solo activar después de que el usuario confirme que quiere ver la carta.",
           "workflowId": {
             "__rl": true,
-            "value": "XZDEgwXlZkXjbeQJ",
-            "mode": "id",
-            "cachedResultUrl": "/workflow/XZDEgwXlZkXjbeQJ"
+            "value": "m7R8D2NWjQK6CyEq",
+            "mode": "id"
           },
           "fields": {
             "values": [
@@ -1544,8 +1535,8 @@
         ],
         "credentials": {
           "httpHeaderAuth": {
-            "id": "Cg8i23WdofXdKu0X",
-            "name": "Header Auth Evolution"
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
           }
         }
       },
@@ -1579,8 +1570,8 @@
         ],
         "credentials": {
           "httpHeaderAuth": {
-            "id": "Cg8i23WdofXdKu0X",
-            "name": "Header Auth Evolution"
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
           }
         }
       },
@@ -1647,8 +1638,8 @@
         ],
         "credentials": {
           "httpHeaderAuth": {
-            "id": "Cg8i23WdofXdKu0X",
-            "name": "Header Auth Evolution"
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
           }
         }
       },
@@ -1696,8 +1687,8 @@
         ],
         "credentials": {
           "httpHeaderAuth": {
-            "id": "Cg8i23WdofXdKu0X",
-            "name": "Header Auth Evolution"
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
           }
         }
       },
@@ -1764,8 +1755,8 @@
         ],
         "credentials": {
           "httpHeaderAuth": {
-            "id": "Cg8i23WdofXdKu0X",
-            "name": "Header Auth Evolution"
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
           }
         }
       },
@@ -1813,34 +1804,18 @@
         ],
         "credentials": {
           "httpHeaderAuth": {
-            "id": "Cg8i23WdofXdKu0X",
-            "name": "Header Auth Evolution"
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
           }
         }
-      },
-      {
-        "parameters": {
-          "respondWith": "json",
-          "responseBody": "={ \"status\": \"ok\" }",
-          "options": {}
-        },
-        "id": "6043fc3e-67c0-4e1b-aafe-d98255bf9d45",
-        "name": "Respond to Webhook",
-        "type": "n8n-nodes-base.respondToWebhook",
-        "typeVersion": 1.1,
-        "position": [
-          -448,
-          5696
-        ]
       },
       {
         "parameters": {
           "description": "Crea una nueva reserva. Solo usar DESPUÉS de confirmar TODOS los datos. Requiere: nombre, fecha (YYYY-MM-DD), hora (HH:MM), personas (número), especificaciones.",
           "workflowId": {
             "__rl": true,
-            "value": "qCKbJSnSR6Zmqi5i",
-            "mode": "id",
-            "cachedResultUrl": "/workflow/qCKbJSnSR6Zmqi5i"
+            "value": "4hXZIxYpcSwT8JqN",
+            "mode": "id"
           },
           "workflowInputs": {
             "mappingMode": "defineBelow",
@@ -1922,10 +1897,8 @@
           "description": "Busca una reserva existente usando nombre, fecha y hora. Devuelve el ID único (recID) necesario para modificar o cancelar. SIEMPRE usar ANTES de modificar o cancelar una reserva.",
           "workflowId": {
             "__rl": true,
-            "value": "lmPXKUTf9lTHLlXW",
-            "mode": "list",
-            "cachedResultUrl": "/workflow/lmPXKUTf9lTHLlXW",
-            "cachedResultName": "Sub: Identificar Reserva"
+            "value": "2m1ffXRAIEdNzsVR",
+            "mode": "id"
           },
           "workflowInputs": {
             "mappingMode": "defineBelow",
@@ -1982,33 +1955,50 @@
       },
       {
         "parameters": {
-          "description": "### Opción 3 o \"modificar reserva\":\nPreguntá:\n1. Nombre y apellido con el que hizo la reserva\n2. Fecha y hora original de la reserva\n\nUsá **identificar_reserva** para obtener el ID\n\nUna vez encontrada la reserva, respondé así:\n\"Encontré tu reserva! 📅\n\nEstos son los datos actuales:\n- Nombre: [nombre]\n- Fecha: [fecha]\n- Hora: [hora]\n- Personas: [personas]\n\nContame, qué te gustaría cambiar?\n1. Fecha y/o hora\n2. Cantidad de personas\n\nDecime el número o contame directamente los cambios que necesitás 😊\"\n\nCuando el usuario diga qué quiere cambiar, pedile los nuevos datos específicos (ej: \"Para qué día y hora querés mover la reserva?\")\nConfirmá los cambios antes de aplicarlos y usá **modificar_reserva**Modifica una reserva existente. Requiere el ID (recID) obtenido previamente con identificar_reserva. Solo incluir los campos que el usuario quiere cambiar.",
+          "description": "Modifica una reserva existente. Llamar cuando el usuario quiera cambiar fecha, hora o cantidad de personas. Primero preguntar el nombre, fecha y hora original de la reserva si no los tiene.",
           "workflowId": {
             "__rl": true,
-            "value": "4oFJ0Ek3v15kzE30",
-            "mode": "list",
-            "cachedResultUrl": "/workflow/4oFJ0Ek3v15kzE30",
-            "cachedResultName": "Sub: Modificar Reserva"
+            "value": "DoeT3kKjnK5t5bMQ",
+            "mode": "id"
           },
           "workflowInputs": {
             "mappingMode": "defineBelow",
             "value": {
-              "id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('id', ``, 'string') }}",
-              "nueva_fecha": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nueva_fecha', ``, 'string') }}",
-              "nueva_hora": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nueva_hora', ``, 'string') }}",
-              "nuevas_personas": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nuevas_personas', ``, 'string') }}"
+              "nombre": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nombre', 'Nombre y apellido con que se hizo la reserva', 'string') }}",
+              "fecha": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fecha', 'Fecha original de la reserva en formato YYYY-MM-DD', 'string') }}",
+              "hora": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('hora', 'Hora original de la reserva en formato HH:MM', 'string') }}",
+              "nueva_fecha": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nueva_fecha', 'Nueva fecha en formato YYYY-MM-DD. Dejar vacio si no cambia.', 'string') }}",
+              "nueva_hora": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nueva_hora', 'Nueva hora en formato HH:MM. Dejar vacio si no cambia.', 'string') }}",
+              "nuevas_personas": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nuevas_personas', 'Nueva cantidad de personas. Dejar vacio si no cambia.', 'string') }}"
             },
             "matchingColumns": [],
             "schema": [
               {
-                "id": "id",
-                "displayName": "id",
-                "required": false,
+                "id": "nombre",
+                "displayName": "nombre",
+                "required": true,
                 "defaultMatch": false,
                 "display": true,
                 "canBeUsedToMatch": true,
-                "type": "string",
-                "removed": false
+                "type": "string"
+              },
+              {
+                "id": "fecha",
+                "displayName": "fecha",
+                "required": true,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string"
+              },
+              {
+                "id": "hora",
+                "displayName": "hora",
+                "required": true,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string"
               },
               {
                 "id": "nueva_fecha",
@@ -2017,8 +2007,7 @@
                 "defaultMatch": false,
                 "display": true,
                 "canBeUsedToMatch": true,
-                "type": "string",
-                "removed": false
+                "type": "string"
               },
               {
                 "id": "nueva_hora",
@@ -2027,8 +2016,7 @@
                 "defaultMatch": false,
                 "display": true,
                 "canBeUsedToMatch": true,
-                "type": "string",
-                "removed": false
+                "type": "string"
               },
               {
                 "id": "nuevas_personas",
@@ -2037,8 +2025,7 @@
                 "defaultMatch": false,
                 "display": true,
                 "canBeUsedToMatch": true,
-                "type": "string",
-                "removed": false
+                "type": "string"
               }
             ],
             "attemptToConvertTypes": false,
@@ -2056,27 +2043,47 @@
       },
       {
         "parameters": {
-          "description": "Cancela y elimina una reserva existente. Requiere el ID (recID) obtenido con identificar_reserva. Solo usar DESPUÉS de que el usuario confirme la cancelación.",
+          "description": "Cancela y elimina una reserva existente. Llamar solo DESPUÉS de que el usuario confirme explícitamente la cancelación. Primero preguntar el nombre, fecha y hora de la reserva si no los tiene.",
           "workflowId": {
             "__rl": true,
-            "value": "WvJXguIezXCvpyg5",
-            "mode": "list",
-            "cachedResultUrl": "/workflow/WvJXguIezXCvpyg5",
-            "cachedResultName": "Sub: Cancelar Reserva"
+            "value": "5icnnibizPM24LXi",
+            "mode": "id"
           },
           "workflowInputs": {
             "mappingMode": "defineBelow",
             "value": {
-              "id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('id', ``, 'string') }}"
+              "nombre": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nombre', `Nombre del cliente que hizo la reserva`, 'string') }}",
+              "fecha": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fecha', `Fecha de la reserva en formato YYYY-MM-DD`, 'string') }}",
+              "hora": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('hora', `Hora de la reserva, ejemplo: 20:00`, 'string') }}"
             },
             "matchingColumns": [
-              "id"
+              "nombre"
             ],
             "schema": [
               {
-                "id": "id",
-                "displayName": "id",
-                "required": false,
+                "id": "nombre",
+                "displayName": "nombre",
+                "required": true,
+                "defaultMatch": true,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "fecha",
+                "displayName": "fecha",
+                "required": true,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "hora",
+                "displayName": "hora",
+                "required": true,
                 "defaultMatch": false,
                 "display": true,
                 "canBeUsedToMatch": true,
@@ -2096,6 +2103,21 @@
         ],
         "id": "8adc769f-ed44-4c4d-a5f0-9ca96bdf8c77",
         "name": "Cancelar Reserva"
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Extraer Datos').first().json.telefono }}",
+          "contextWindowLength": 10
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          -3152,
+          5920
+        ],
+        "id": "03628029-e342-437a-b789-d0c9c0758fde",
+        "name": "Simple Memory"
       }
     ],
     "connections": {
@@ -2176,17 +2198,6 @@
           ]
         ]
       },
-      "Postgres Chat Memory": {
-        "ai_memory": [
-          [
-            {
-              "node": "AI Agent",
-              "type": "ai_memory",
-              "index": 0
-            }
-          ]
-        ]
-      },
       "Buscar Menú": {
         "ai_tool": [
           [
@@ -2239,13 +2250,6 @@
               "type": "main",
               "index": 0
             }
-          ],
-          [
-            {
-              "node": "Respond to Webhook",
-              "type": "main",
-              "index": 0
-            }
           ]
         ]
       },
@@ -2290,13 +2294,6 @@
               "type": "main",
               "index": 0
             }
-          ],
-          [
-            {
-              "node": "Respond to Webhook",
-              "type": "main",
-              "index": 0
-            }
           ]
         ]
       },
@@ -2316,17 +2313,6 @@
           [
             {
               "node": "Enviar Parte 3",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Enviar Parte 3": {
-        "main": [
-          [
-            {
-              "node": "Respond to Webhook",
               "type": "main",
               "index": 0
             }
@@ -2376,25 +2362,40 @@
             }
           ]
         ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "authors": "Micaela Colmenares",
-    "name": "Version a6138e1c",
-    "description": "",
-    "autosaved": true
-  },
-  "tags": [
-    {
-      "updatedAt": "2026-02-12T19:23:15.621Z",
-      "createdAt": "2026-02-12T19:23:15.621Z",
-      "id": "TZUE2YowDCU30mFT",
-      "name": "Restaurantes"
-    },
-    {
-      "updatedAt": "2026-02-09T19:43:32.620Z",
-      "createdAt": "2026-02-09T19:43:32.620Z",
-      "id": "dCGM1dWLrqkY4L79",
-      "name": "🎯 Demos"
-    }
-  ]
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-02-27T17:04:58.665Z",
+        "id": 136,
+        "workflowId": "KdQvpFCSl7oDmKoM",
+        "versionId": "4a90e7ab-5284-46f8-80a7-c0eeea681118",
+        "event": "activated",
+        "userId": "dd038300-f42f-4774-88a8-4badf245957b"
+      },
+      {
+        "createdAt": "2026-02-27T17:04:58.653Z",
+        "id": 135,
+        "workflowId": "KdQvpFCSl7oDmKoM",
+        "versionId": "4a90e7ab-5284-46f8-80a7-c0eeea681118",
+        "event": "deactivated",
+        "userId": "dd038300-f42f-4774-88a8-4badf245957b"
+      }
+    ]
+  }
 }

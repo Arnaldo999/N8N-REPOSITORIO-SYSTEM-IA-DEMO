@@ -1,8 +1,9 @@
 {
-  "updatedAt": "2026-02-13T01:50:48.436Z",
-  "createdAt": "2026-02-13T01:10:13.777Z",
-  "id": "XZDEgwXlZkXjbeQJ",
+  "updatedAt": "2026-02-27T15:30:54.972Z",
+  "createdAt": "2026-02-26T23:22:53.377Z",
+  "id": "m7R8D2NWjQK6CyEq",
   "name": "Sub: Buscar Menú",
+  "description": null,
   "active": true,
   "isArchived": false,
   "nodes": [
@@ -31,7 +32,7 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $json.categoria }}",
+                    "leftValue": "={{ $json.query || $json.categoria }}",
                     "rightValue": "principales",
                     "operator": {
                       "type": "string",
@@ -55,7 +56,7 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $json.categoria }}",
+                    "leftValue": "={{ $json.query || $json.categoria }}",
                     "rightValue": "entradas",
                     "operator": {
                       "type": "string",
@@ -79,7 +80,7 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $json.categoria }}",
+                    "leftValue": "={{ $json.query || $json.categoria }}",
                     "rightValue": "bebidas",
                     "operator": {
                       "type": "string",
@@ -103,7 +104,7 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $json.categoria }}",
+                    "leftValue": "={{ $json.query || $json.categoria }}",
                     "rightValue": "postres",
                     "operator": {
                       "type": "string",
@@ -127,7 +128,7 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $json.categoria }}",
+                    "leftValue": "={{ $json.query || $json.categoria }}",
                     "rightValue": "cafeteria",
                     "operator": {
                       "type": "string",
@@ -143,7 +144,9 @@
             }
           ]
         },
-        "options": {}
+        "options": {
+          "fallbackOutput": "extra"
+        }
       },
       "id": "3ca1cd7b-d02c-426f-be18-96dd0ec78ec4",
       "name": "Switch Categoría",
@@ -168,9 +171,10 @@
           "__rl": true,
           "value": "tbl6kh8MpfYGNzZuQ",
           "mode": "list",
-          "cachedResultName": "Menús",
+          "cachedResultName": "Menus",
           "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tbl6kh8MpfYGNzZuQ"
         },
+        "filterByFormula": "SEARCH('Principales', {Nombre})",
         "options": {}
       },
       "id": "eb3abcff-de69-45c8-8dd5-6233624e1978",
@@ -183,10 +187,11 @@
       ],
       "credentials": {
         "airtableTokenApi": {
-          "id": "cSn4DhEebpFAmHgW",
-          "name": "Airtable Access Token Restaurantes"
+          "id": "EnOMhwky63pMpQQH",
+          "name": "Airtable Whatsapp Restaurant"
         }
-      }
+      },
+      "continueOnFail": true
     },
     {
       "parameters": {
@@ -202,10 +207,10 @@
           "__rl": true,
           "value": "tbl6kh8MpfYGNzZuQ",
           "mode": "list",
-          "cachedResultName": "Menús",
+          "cachedResultName": "Menus",
           "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tbl6kh8MpfYGNzZuQ"
         },
-        "filterByFormula": "={Nombre} = 'Entradas y Minutas'",
+        "filterByFormula": "SEARCH('Entradas', {Nombre})",
         "options": {}
       },
       "id": "2ae0a57c-3274-4406-a80b-126c0b72a7e4",
@@ -218,10 +223,11 @@
       ],
       "credentials": {
         "airtableTokenApi": {
-          "id": "cSn4DhEebpFAmHgW",
-          "name": "Airtable Access Token Restaurantes"
+          "id": "EnOMhwky63pMpQQH",
+          "name": "Airtable Whatsapp Restaurant"
         }
-      }
+      },
+      "continueOnFail": true
     },
     {
       "parameters": {
@@ -237,10 +243,10 @@
           "__rl": true,
           "value": "tbl6kh8MpfYGNzZuQ",
           "mode": "list",
-          "cachedResultName": "Menús",
+          "cachedResultName": "Menus",
           "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tbl6kh8MpfYGNzZuQ"
         },
-        "filterByFormula": "={Nombre} = 'Bebidas'",
+        "filterByFormula": "SEARCH('Bebidas', {Nombre})",
         "options": {}
       },
       "id": "9e6bf83b-dc65-45c4-a017-1c3fb5dd1250",
@@ -253,10 +259,11 @@
       ],
       "credentials": {
         "airtableTokenApi": {
-          "id": "cSn4DhEebpFAmHgW",
-          "name": "Airtable Access Token Restaurantes"
+          "id": "EnOMhwky63pMpQQH",
+          "name": "Airtable Whatsapp Restaurant"
         }
-      }
+      },
+      "continueOnFail": true
     },
     {
       "parameters": {
@@ -272,10 +279,10 @@
           "__rl": true,
           "value": "tbl6kh8MpfYGNzZuQ",
           "mode": "list",
-          "cachedResultName": "Menús",
+          "cachedResultName": "Menus",
           "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tbl6kh8MpfYGNzZuQ"
         },
-        "filterByFormula": "={Nombre} = 'Postres y Helados'",
+        "filterByFormula": "SEARCH('Postres', {Nombre})",
         "options": {}
       },
       "id": "94440b31-8b8b-4ea5-a5a4-d9c700706c02",
@@ -288,10 +295,11 @@
       ],
       "credentials": {
         "airtableTokenApi": {
-          "id": "cSn4DhEebpFAmHgW",
-          "name": "Airtable Access Token Restaurantes"
+          "id": "EnOMhwky63pMpQQH",
+          "name": "Airtable Whatsapp Restaurant"
         }
-      }
+      },
+      "continueOnFail": true
     },
     {
       "parameters": {
@@ -307,10 +315,10 @@
           "__rl": true,
           "value": "tbl6kh8MpfYGNzZuQ",
           "mode": "list",
-          "cachedResultName": "Menús",
+          "cachedResultName": "Menus",
           "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tbl6kh8MpfYGNzZuQ"
         },
-        "filterByFormula": "={Nombre} = 'Cafetería'",
+        "filterByFormula": "SEARCH('cafeter', LOWER({Nombre}))",
         "options": {}
       },
       "id": "8d45c4f3-5359-4f42-8e09-5fc182cea47e",
@@ -323,10 +331,11 @@
       ],
       "credentials": {
         "airtableTokenApi": {
-          "id": "cSn4DhEebpFAmHgW",
-          "name": "Airtable Access Token Restaurantes"
+          "id": "EnOMhwky63pMpQQH",
+          "name": "Airtable Whatsapp Restaurant"
         }
-      }
+      },
+      "continueOnFail": true
     },
     {
       "parameters": {
@@ -358,8 +367,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -393,8 +402,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -428,8 +437,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -463,8 +472,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -498,8 +507,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -509,7 +518,7 @@
           "assignments": [
             {
               "id": "r1",
-              "name": "resultado",
+              "name": "response",
               "value": "Carta enviada correctamente al usuario por WhatsApp",
               "type": "string"
             }
@@ -588,6 +597,13 @@
         [
           {
             "node": "Airtable Cafetería",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respuesta Exitosa",
             "type": "main",
             "index": 0
           }
@@ -706,30 +722,62 @@
     }
   },
   "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate",
+    "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
   "staticData": null,
-  "meta": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
   "pinData": {},
-  "versionId": "62c1a7e1-746a-487f-89ad-1d88aa113db2",
-  "activeVersionId": "62c1a7e1-746a-487f-89ad-1d88aa113db2",
+  "versionId": "6c523fec-fff1-43e4-b0dd-5ea44d38ee83",
+  "activeVersionId": "6c523fec-fff1-43e4-b0dd-5ea44d38ee83",
+  "versionCounter": 62,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2026-02-13T01:10:13.777Z",
-      "createdAt": "2026-02-13T01:10:13.777Z",
+      "updatedAt": "2026-02-26T23:22:53.379Z",
+      "createdAt": "2026-02-26T23:22:53.379Z",
       "role": "workflow:owner",
-      "workflowId": "XZDEgwXlZkXjbeQJ",
-      "projectId": "A5erh6pqAqSjR28k"
+      "workflowId": "m7R8D2NWjQK6CyEq",
+      "projectId": "zU8ZqM5Dx6MPXDiw",
+      "project": {
+        "updatedAt": "2026-02-26T23:18:51.572Z",
+        "createdAt": "2026-02-26T23:17:24.956Z",
+        "id": "zU8ZqM5Dx6MPXDiw",
+        "name": "Micaela Colmenares <micaelacolmenares208@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "dd038300-f42f-4774-88a8-4badf245957b"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-02-27T13:26:50.137Z",
+      "createdAt": "2026-02-27T13:26:50.137Z",
+      "id": "RTrTC99Ox1gfMQRA",
+      "name": "Restaurant"
+    },
+    {
+      "updatedAt": "2026-02-27T13:26:22.913Z",
+      "createdAt": "2026-02-27T13:26:22.913Z",
+      "id": "dveKcFU9yNCIwJvk",
+      "name": "DEMO"
+    },
+    {
+      "updatedAt": "2026-02-26T23:58:08.513Z",
+      "createdAt": "2026-02-26T23:58:08.513Z",
+      "id": "h6NCtzLto5r41s9Q",
+      "name": "WHATSAPP"
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-13T01:50:53.861Z",
-    "createdAt": "2026-02-13T01:50:48.438Z",
-    "versionId": "62c1a7e1-746a-487f-89ad-1d88aa113db2",
-    "workflowId": "XZDEgwXlZkXjbeQJ",
+    "updatedAt": "2026-02-27T15:31:01.000Z",
+    "createdAt": "2026-02-27T15:30:54.974Z",
+    "versionId": "6c523fec-fff1-43e4-b0dd-5ea44d38ee83",
+    "workflowId": "m7R8D2NWjQK6CyEq",
     "nodes": [
       {
         "parameters": {},
@@ -756,7 +804,7 @@
                   },
                   "conditions": [
                     {
-                      "leftValue": "={{ $json.categoria }}",
+                      "leftValue": "={{ $json.query || $json.categoria }}",
                       "rightValue": "principales",
                       "operator": {
                         "type": "string",
@@ -780,7 +828,7 @@
                   },
                   "conditions": [
                     {
-                      "leftValue": "={{ $json.categoria }}",
+                      "leftValue": "={{ $json.query || $json.categoria }}",
                       "rightValue": "entradas",
                       "operator": {
                         "type": "string",
@@ -804,7 +852,7 @@
                   },
                   "conditions": [
                     {
-                      "leftValue": "={{ $json.categoria }}",
+                      "leftValue": "={{ $json.query || $json.categoria }}",
                       "rightValue": "bebidas",
                       "operator": {
                         "type": "string",
@@ -828,7 +876,7 @@
                   },
                   "conditions": [
                     {
-                      "leftValue": "={{ $json.categoria }}",
+                      "leftValue": "={{ $json.query || $json.categoria }}",
                       "rightValue": "postres",
                       "operator": {
                         "type": "string",
@@ -852,7 +900,7 @@
                   },
                   "conditions": [
                     {
-                      "leftValue": "={{ $json.categoria }}",
+                      "leftValue": "={{ $json.query || $json.categoria }}",
                       "rightValue": "cafeteria",
                       "operator": {
                         "type": "string",
@@ -868,7 +916,9 @@
               }
             ]
           },
-          "options": {}
+          "options": {
+            "fallbackOutput": "extra"
+          }
         },
         "id": "3ca1cd7b-d02c-426f-be18-96dd0ec78ec4",
         "name": "Switch Categoría",
@@ -893,9 +943,10 @@
             "__rl": true,
             "value": "tbl6kh8MpfYGNzZuQ",
             "mode": "list",
-            "cachedResultName": "Menús",
+            "cachedResultName": "Menus",
             "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tbl6kh8MpfYGNzZuQ"
           },
+          "filterByFormula": "SEARCH('Principales', {Nombre})",
           "options": {}
         },
         "id": "eb3abcff-de69-45c8-8dd5-6233624e1978",
@@ -908,10 +959,11 @@
         ],
         "credentials": {
           "airtableTokenApi": {
-            "id": "cSn4DhEebpFAmHgW",
-            "name": "Airtable Access Token Restaurantes"
+            "id": "EnOMhwky63pMpQQH",
+            "name": "Airtable Whatsapp Restaurant"
           }
-        }
+        },
+        "continueOnFail": true
       },
       {
         "parameters": {
@@ -927,10 +979,10 @@
             "__rl": true,
             "value": "tbl6kh8MpfYGNzZuQ",
             "mode": "list",
-            "cachedResultName": "Menús",
+            "cachedResultName": "Menus",
             "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tbl6kh8MpfYGNzZuQ"
           },
-          "filterByFormula": "={Nombre} = 'Entradas y Minutas'",
+          "filterByFormula": "SEARCH('Entradas', {Nombre})",
           "options": {}
         },
         "id": "2ae0a57c-3274-4406-a80b-126c0b72a7e4",
@@ -943,10 +995,11 @@
         ],
         "credentials": {
           "airtableTokenApi": {
-            "id": "cSn4DhEebpFAmHgW",
-            "name": "Airtable Access Token Restaurantes"
+            "id": "EnOMhwky63pMpQQH",
+            "name": "Airtable Whatsapp Restaurant"
           }
-        }
+        },
+        "continueOnFail": true
       },
       {
         "parameters": {
@@ -962,10 +1015,10 @@
             "__rl": true,
             "value": "tbl6kh8MpfYGNzZuQ",
             "mode": "list",
-            "cachedResultName": "Menús",
+            "cachedResultName": "Menus",
             "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tbl6kh8MpfYGNzZuQ"
           },
-          "filterByFormula": "={Nombre} = 'Bebidas'",
+          "filterByFormula": "SEARCH('Bebidas', {Nombre})",
           "options": {}
         },
         "id": "9e6bf83b-dc65-45c4-a017-1c3fb5dd1250",
@@ -978,10 +1031,11 @@
         ],
         "credentials": {
           "airtableTokenApi": {
-            "id": "cSn4DhEebpFAmHgW",
-            "name": "Airtable Access Token Restaurantes"
+            "id": "EnOMhwky63pMpQQH",
+            "name": "Airtable Whatsapp Restaurant"
           }
-        }
+        },
+        "continueOnFail": true
       },
       {
         "parameters": {
@@ -997,10 +1051,10 @@
             "__rl": true,
             "value": "tbl6kh8MpfYGNzZuQ",
             "mode": "list",
-            "cachedResultName": "Menús",
+            "cachedResultName": "Menus",
             "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tbl6kh8MpfYGNzZuQ"
           },
-          "filterByFormula": "={Nombre} = 'Postres y Helados'",
+          "filterByFormula": "SEARCH('Postres', {Nombre})",
           "options": {}
         },
         "id": "94440b31-8b8b-4ea5-a5a4-d9c700706c02",
@@ -1013,10 +1067,11 @@
         ],
         "credentials": {
           "airtableTokenApi": {
-            "id": "cSn4DhEebpFAmHgW",
-            "name": "Airtable Access Token Restaurantes"
+            "id": "EnOMhwky63pMpQQH",
+            "name": "Airtable Whatsapp Restaurant"
           }
-        }
+        },
+        "continueOnFail": true
       },
       {
         "parameters": {
@@ -1032,10 +1087,10 @@
             "__rl": true,
             "value": "tbl6kh8MpfYGNzZuQ",
             "mode": "list",
-            "cachedResultName": "Menús",
+            "cachedResultName": "Menus",
             "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tbl6kh8MpfYGNzZuQ"
           },
-          "filterByFormula": "={Nombre} = 'Cafetería'",
+          "filterByFormula": "SEARCH('cafeter', LOWER({Nombre}))",
           "options": {}
         },
         "id": "8d45c4f3-5359-4f42-8e09-5fc182cea47e",
@@ -1048,10 +1103,11 @@
         ],
         "credentials": {
           "airtableTokenApi": {
-            "id": "cSn4DhEebpFAmHgW",
-            "name": "Airtable Access Token Restaurantes"
+            "id": "EnOMhwky63pMpQQH",
+            "name": "Airtable Whatsapp Restaurant"
           }
-        }
+        },
+        "continueOnFail": true
       },
       {
         "parameters": {
@@ -1083,8 +1139,8 @@
         ],
         "credentials": {
           "httpHeaderAuth": {
-            "id": "Cg8i23WdofXdKu0X",
-            "name": "Header Auth Evolution"
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
           }
         }
       },
@@ -1118,8 +1174,8 @@
         ],
         "credentials": {
           "httpHeaderAuth": {
-            "id": "Cg8i23WdofXdKu0X",
-            "name": "Header Auth Evolution"
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
           }
         }
       },
@@ -1153,8 +1209,8 @@
         ],
         "credentials": {
           "httpHeaderAuth": {
-            "id": "Cg8i23WdofXdKu0X",
-            "name": "Header Auth Evolution"
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
           }
         }
       },
@@ -1188,8 +1244,8 @@
         ],
         "credentials": {
           "httpHeaderAuth": {
-            "id": "Cg8i23WdofXdKu0X",
-            "name": "Header Auth Evolution"
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
           }
         }
       },
@@ -1223,8 +1279,8 @@
         ],
         "credentials": {
           "httpHeaderAuth": {
-            "id": "Cg8i23WdofXdKu0X",
-            "name": "Header Auth Evolution"
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
           }
         }
       },
@@ -1234,7 +1290,7 @@
             "assignments": [
               {
                 "id": "r1",
-                "name": "resultado",
+                "name": "response",
                 "value": "Carta enviada correctamente al usuario por WhatsApp",
                 "type": "string"
               }
@@ -1313,6 +1369,13 @@
           [
             {
               "node": "Airtable Cafetería",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respuesta Exitosa",
               "type": "main",
               "index": 0
             }
@@ -1431,22 +1494,18 @@
       }
     },
     "authors": "Micaela Colmenares",
-    "name": "Version 62c1a7e1",
+    "name": "Version 6c523fec",
     "description": "",
-    "autosaved": true
-  },
-  "tags": [
-    {
-      "updatedAt": "2026-02-09T19:43:32.620Z",
-      "createdAt": "2026-02-09T19:43:32.620Z",
-      "id": "dCGM1dWLrqkY4L79",
-      "name": "🎯 Demos"
-    },
-    {
-      "updatedAt": "2026-02-12T19:23:15.621Z",
-      "createdAt": "2026-02-12T19:23:15.621Z",
-      "id": "TZUE2YowDCU30mFT",
-      "name": "Restaurantes"
-    }
-  ]
+    "autosaved": true,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-02-27T15:31:01.302Z",
+        "id": 120,
+        "workflowId": "m7R8D2NWjQK6CyEq",
+        "versionId": "6c523fec-fff1-43e4-b0dd-5ea44d38ee83",
+        "event": "activated",
+        "userId": "dd038300-f42f-4774-88a8-4badf245957b"
+      }
+    ]
+  }
 }

@@ -1,21 +1,22 @@
 {
-  "updatedAt": "2026-02-13T21:39:50.039Z",
-  "createdAt": "2026-02-13T01:12:47.850Z",
-  "id": "4oFJ0Ek3v15kzE30",
+  "updatedAt": "2026-02-27T17:16:40.585Z",
+  "createdAt": "2026-02-26T23:23:02.268Z",
+  "id": "DoeT3kKjnK5t5bMQ",
   "name": "Sub: Modificar Reserva",
+  "description": null,
   "active": true,
   "isArchived": false,
   "nodes": [
     {
       "parameters": {
-        "jsCode": "const input = $input.first().json;\nconst result = { id: input.id };\n\nif (input.nueva_fecha && input.nueva_fecha.trim() !== '') {\n  result['Fecha'] = input.nueva_fecha.trim();\n}\nif (input.nueva_hora && input.nueva_hora.trim() !== '') {\n  result['Hora'] = input.nueva_hora.trim();\n}\nif (input.nuevas_personas && String(input.nuevas_personas).trim() !== '') {\n  result['Personas'] = parseInt(input.nuevas_personas);\n}\n\nreturn [{ json: result }];"
+        "jsCode": "const trigger = $('When Executed by Another Workflow').first().json;\nconst record = $('Buscar Reserva').first().json;\n\nif (!record || !record.id) {\n  return [{ json: { error: true, response: 'No encontré una reserva con ese nombre, fecha y hora.' } }];\n}\n\nconst result = { id: record.id };\n\nif (trigger.nueva_fecha && trigger.nueva_fecha.trim() !== '' && trigger.nueva_fecha !== 'undefined') {\n  result['Fecha'] = trigger.nueva_fecha.trim();\n}\nif (trigger.nueva_hora && trigger.nueva_hora.trim() !== '' && trigger.nueva_hora !== 'undefined') {\n  result['Hora'] = trigger.nueva_hora.trim();\n}\nif (trigger.nuevas_personas && String(trigger.nuevas_personas).trim() !== '' && String(trigger.nuevas_personas) !== 'undefined') {\n  result['Personas'] = parseInt(trigger.nuevas_personas);\n}\n\nreturn [{ json: result }];"
       },
       "id": "0cbbce86-555e-4d60-8f7a-62614483eee1",
       "name": "Preparar Campos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        480,
+        720,
         2752
       ]
     },
@@ -163,15 +164,16 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
       "position": [
-        720,
+        960,
         2752
       ],
       "credentials": {
         "airtableTokenApi": {
-          "id": "cSn4DhEebpFAmHgW",
-          "name": "Airtable Access Token Restaurantes"
+          "id": "EnOMhwky63pMpQQH",
+          "name": "Airtable Whatsapp Restaurant"
         }
-      }
+      },
+      "continueOnFail": true
     },
     {
       "parameters": {
@@ -198,7 +200,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        960,
+        1200,
         2752
       ]
     },
@@ -223,7 +225,13 @@
         "workflowInputs": {
           "values": [
             {
-              "name": "id"
+              "name": "nombre"
+            },
+            {
+              "name": "fecha"
+            },
+            {
+              "name": "hora"
             },
             {
               "name": "nueva_fecha"
@@ -245,6 +253,43 @@
       ],
       "id": "73099b34-8a5b-476a-b975-1981e37908d4",
       "name": "When Executed by Another Workflow"
+    },
+    {
+      "id": "airtable-buscar-reserva",
+      "name": "Buscar Reserva",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        2752
+      ],
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appdA5rJOmtVvpDrx",
+          "mode": "list",
+          "cachedResultName": "Automatizacion-Restaurantes",
+          "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqD3q6cwnF6YFXJ",
+          "mode": "list",
+          "cachedResultName": "Reservas",
+          "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
+        },
+        "filterByFormula": "={{ \"LOWER({Nombre}) = LOWER('\" + $json.nombre + \"')\" }}",
+        "options": {
+          "maxRecords": 1
+        }
+      },
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "EnOMhwky63pMpQQH",
+          "name": "Airtable Whatsapp Restaurant"
+        }
+      }
     }
   ],
   "connections": {
@@ -274,6 +319,17 @@
       "main": [
         [
           {
+            "node": "Buscar Reserva",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Reserva": {
+      "main": [
+        [
+          {
             "node": "Preparar Campos",
             "type": "main",
             "index": 0
@@ -283,41 +339,71 @@
     }
   },
   "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate",
+    "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "0a7250df-5127-4cb7-ae7d-a08e1fd7e421",
-  "activeVersionId": "0a7250df-5127-4cb7-ae7d-a08e1fd7e421",
+  "versionId": "accf0194-f1a7-4aa0-a70c-d66e0fbb91e8",
+  "activeVersionId": "accf0194-f1a7-4aa0-a70c-d66e0fbb91e8",
+  "versionCounter": 20,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2026-02-13T01:12:47.850Z",
-      "createdAt": "2026-02-13T01:12:47.850Z",
+      "updatedAt": "2026-02-26T23:23:02.270Z",
+      "createdAt": "2026-02-26T23:23:02.270Z",
       "role": "workflow:owner",
-      "workflowId": "4oFJ0Ek3v15kzE30",
-      "projectId": "A5erh6pqAqSjR28k"
+      "workflowId": "DoeT3kKjnK5t5bMQ",
+      "projectId": "zU8ZqM5Dx6MPXDiw",
+      "project": {
+        "updatedAt": "2026-02-26T23:18:51.572Z",
+        "createdAt": "2026-02-26T23:17:24.956Z",
+        "id": "zU8ZqM5Dx6MPXDiw",
+        "name": "Micaela Colmenares <micaelacolmenares208@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "dd038300-f42f-4774-88a8-4badf245957b"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-02-27T13:26:50.137Z",
+      "createdAt": "2026-02-27T13:26:50.137Z",
+      "id": "RTrTC99Ox1gfMQRA",
+      "name": "Restaurant"
+    },
+    {
+      "updatedAt": "2026-02-27T13:26:22.913Z",
+      "createdAt": "2026-02-27T13:26:22.913Z",
+      "id": "dveKcFU9yNCIwJvk",
+      "name": "DEMO"
+    },
+    {
+      "updatedAt": "2026-02-26T23:58:08.513Z",
+      "createdAt": "2026-02-26T23:58:08.513Z",
+      "id": "h6NCtzLto5r41s9Q",
+      "name": "WHATSAPP"
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-13T21:39:51.361Z",
-    "createdAt": "2026-02-13T21:39:50.040Z",
-    "versionId": "0a7250df-5127-4cb7-ae7d-a08e1fd7e421",
-    "workflowId": "4oFJ0Ek3v15kzE30",
+    "updatedAt": "2026-02-27T17:16:40.587Z",
+    "createdAt": "2026-02-27T17:16:40.587Z",
+    "versionId": "accf0194-f1a7-4aa0-a70c-d66e0fbb91e8",
+    "workflowId": "DoeT3kKjnK5t5bMQ",
     "nodes": [
       {
         "parameters": {
-          "jsCode": "const input = $input.first().json;\nconst result = { id: input.id };\n\nif (input.nueva_fecha && input.nueva_fecha.trim() !== '') {\n  result['Fecha'] = input.nueva_fecha.trim();\n}\nif (input.nueva_hora && input.nueva_hora.trim() !== '') {\n  result['Hora'] = input.nueva_hora.trim();\n}\nif (input.nuevas_personas && String(input.nuevas_personas).trim() !== '') {\n  result['Personas'] = parseInt(input.nuevas_personas);\n}\n\nreturn [{ json: result }];"
+          "jsCode": "const trigger = $('When Executed by Another Workflow').first().json;\nconst record = $('Buscar Reserva').first().json;\n\nif (!record || !record.id) {\n  return [{ json: { error: true, response: 'No encontré una reserva con ese nombre, fecha y hora.' } }];\n}\n\nconst result = { id: record.id };\n\nif (trigger.nueva_fecha && trigger.nueva_fecha.trim() !== '' && trigger.nueva_fecha !== 'undefined') {\n  result['Fecha'] = trigger.nueva_fecha.trim();\n}\nif (trigger.nueva_hora && trigger.nueva_hora.trim() !== '' && trigger.nueva_hora !== 'undefined') {\n  result['Hora'] = trigger.nueva_hora.trim();\n}\nif (trigger.nuevas_personas && String(trigger.nuevas_personas).trim() !== '' && String(trigger.nuevas_personas) !== 'undefined') {\n  result['Personas'] = parseInt(trigger.nuevas_personas);\n}\n\nreturn [{ json: result }];"
         },
         "id": "0cbbce86-555e-4d60-8f7a-62614483eee1",
         "name": "Preparar Campos",
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          480,
+          720,
           2752
         ]
       },
@@ -465,15 +551,16 @@
         "type": "n8n-nodes-base.airtable",
         "typeVersion": 2.1,
         "position": [
-          720,
+          960,
           2752
         ],
         "credentials": {
           "airtableTokenApi": {
-            "id": "cSn4DhEebpFAmHgW",
-            "name": "Airtable Access Token Restaurantes"
+            "id": "EnOMhwky63pMpQQH",
+            "name": "Airtable Whatsapp Restaurant"
           }
-        }
+        },
+        "continueOnFail": true
       },
       {
         "parameters": {
@@ -500,7 +587,7 @@
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
         "position": [
-          960,
+          1200,
           2752
         ]
       },
@@ -525,7 +612,13 @@
           "workflowInputs": {
             "values": [
               {
-                "name": "id"
+                "name": "nombre"
+              },
+              {
+                "name": "fecha"
+              },
+              {
+                "name": "hora"
               },
               {
                 "name": "nueva_fecha"
@@ -547,6 +640,43 @@
         ],
         "id": "73099b34-8a5b-476a-b975-1981e37908d4",
         "name": "When Executed by Another Workflow"
+      },
+      {
+        "id": "airtable-buscar-reserva",
+        "name": "Buscar Reserva",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          480,
+          2752
+        ],
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "value": "appdA5rJOmtVvpDrx",
+            "mode": "list",
+            "cachedResultName": "Automatizacion-Restaurantes",
+            "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tblqD3q6cwnF6YFXJ",
+            "mode": "list",
+            "cachedResultName": "Reservas",
+            "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
+          },
+          "filterByFormula": "={{ \"LOWER({Nombre}) = LOWER('\" + $json.nombre + \"')\" }}",
+          "options": {
+            "maxRecords": 1
+          }
+        },
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "EnOMhwky63pMpQQH",
+            "name": "Airtable Whatsapp Restaurant"
+          }
+        }
       }
     ],
     "connections": {
@@ -576,6 +706,17 @@
         "main": [
           [
             {
+              "node": "Buscar Reserva",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Reserva": {
+        "main": [
+          [
+            {
               "node": "Preparar Campos",
               "type": "main",
               "index": 0
@@ -585,22 +726,26 @@
       }
     },
     "authors": "Micaela Colmenares",
-    "name": "Version 0a7250df",
-    "description": "",
-    "autosaved": true
-  },
-  "tags": [
-    {
-      "updatedAt": "2026-02-12T19:23:15.621Z",
-      "createdAt": "2026-02-12T19:23:15.621Z",
-      "id": "TZUE2YowDCU30mFT",
-      "name": "Restaurantes"
-    },
-    {
-      "updatedAt": "2026-02-09T19:43:32.620Z",
-      "createdAt": "2026-02-09T19:43:32.620Z",
-      "id": "dCGM1dWLrqkY4L79",
-      "name": "🎯 Demos"
-    }
-  ]
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-02-27T17:16:40.632Z",
+        "id": 140,
+        "workflowId": "DoeT3kKjnK5t5bMQ",
+        "versionId": "accf0194-f1a7-4aa0-a70c-d66e0fbb91e8",
+        "event": "activated",
+        "userId": "dd038300-f42f-4774-88a8-4badf245957b"
+      },
+      {
+        "createdAt": "2026-02-27T17:16:40.623Z",
+        "id": 139,
+        "workflowId": "DoeT3kKjnK5t5bMQ",
+        "versionId": "accf0194-f1a7-4aa0-a70c-d66e0fbb91e8",
+        "event": "deactivated",
+        "userId": "dd038300-f42f-4774-88a8-4badf245957b"
+      }
+    ]
+  }
 }

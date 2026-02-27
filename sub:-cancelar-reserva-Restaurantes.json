@@ -1,11 +1,23 @@
 {
-  "updatedAt": "2026-02-13T21:50:36.931Z",
-  "createdAt": "2026-02-13T01:13:20.395Z",
-  "id": "WvJXguIezXCvpyg5",
+  "updatedAt": "2026-02-27T17:16:41.844Z",
+  "createdAt": "2026-02-26T23:22:58.709Z",
+  "id": "5icnnibizPM24LXi",
   "name": "Sub: Cancelar Reserva",
+  "description": null,
   "active": true,
   "isArchived": false,
   "nodes": [
+    {
+      "parameters": {},
+      "id": "fbdf6040-994b-4b63-9893-602f1a5504c0",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        400
+      ]
+    },
     {
       "parameters": {
         "operation": "deleteRecord",
@@ -23,22 +35,23 @@
           "cachedResultName": "Reservas",
           "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
         },
-        "id": "={{ $json.id }}"
+        "id": "={{ $('Buscar Reserva').first().json.id }}"
       },
-      "id": "70a2d5b1-3a85-4722-8d16-226ed586c8ec",
+      "id": "47377917-c0b0-4e45-9a37-2bea2e02f634",
       "name": "Eliminar de Airtable",
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
       "position": [
-        640,
-        784
+        128,
+        400
       ],
       "credentials": {
         "airtableTokenApi": {
-          "id": "cSn4DhEebpFAmHgW",
-          "name": "Airtable Access Token Restaurantes"
+          "id": "EnOMhwky63pMpQQH",
+          "name": "Airtable Whatsapp Restaurant"
         }
-      }
+      },
+      "continueOnFail": false
     },
     {
       "parameters": {
@@ -60,13 +73,13 @@
         },
         "options": {}
       },
-      "id": "d239b390-71e4-4a1b-bc5b-c77b3475074d",
+      "id": "a830b27c-9490-4ba9-9409-a0c8b483209a",
       "name": "Respuesta Exitosa",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        880,
-        784
+        368,
+        400
       ]
     },
     {
@@ -75,33 +88,51 @@
         "width": 260,
         "color": 3
       },
-      "id": "7421298a-d508-4484-8951-8499217342a3",
+      "id": "c5d1468e-50a0-4a4e-ae3b-e0bec92cc73d",
       "name": "📋 Info",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        400,
-        576
+        -112,
+        192
       ]
     },
     {
+      "id": "airtable-buscar-reserva-cancel",
+      "name": "Buscar Reserva",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        8,
+        400
+      ],
       "parameters": {
-        "workflowInputs": {
-          "values": [
-            {
-              "name": "id"
-            }
-          ]
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appdA5rJOmtVvpDrx",
+          "mode": "list",
+          "cachedResultName": "Automatizacion-Restaurantes",
+          "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqD3q6cwnF6YFXJ",
+          "mode": "list",
+          "cachedResultName": "Reservas",
+          "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
+        },
+        "filterByFormula": "={{ \"LOWER({Nombre}) = LOWER('\" + $json.nombre + \"')\" }}",
+        "options": {
+          "maxRecords": 1
         }
       },
-      "type": "n8n-nodes-base.executeWorkflowTrigger",
-      "typeVersion": 1.1,
-      "position": [
-        416,
-        784
-      ],
-      "id": "55f2e9b2-d83d-40cc-ae24-e37e3a1726d4",
-      "name": "When Executed by Another Workflow"
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "EnOMhwky63pMpQQH",
+          "name": "Airtable Whatsapp Restaurant"
+        }
+      }
     }
   ],
   "connections": {
@@ -116,7 +147,18 @@
         ]
       ]
     },
-    "When Executed by Another Workflow": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Buscar Reserva",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Reserva": {
       "main": [
         [
           {
@@ -129,31 +171,72 @@
     }
   },
   "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate",
+    "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "d1d1fba2-a535-40de-88fd-b42a4cdd050e",
-  "activeVersionId": "d1d1fba2-a535-40de-88fd-b42a4cdd050e",
+  "versionId": "fbdd3ff6-217c-4f65-b2f0-c48679ee7206",
+  "activeVersionId": "fbdd3ff6-217c-4f65-b2f0-c48679ee7206",
+  "versionCounter": 18,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2026-02-13T01:13:20.395Z",
-      "createdAt": "2026-02-13T01:13:20.395Z",
+      "updatedAt": "2026-02-26T23:22:58.711Z",
+      "createdAt": "2026-02-26T23:22:58.711Z",
       "role": "workflow:owner",
-      "workflowId": "WvJXguIezXCvpyg5",
-      "projectId": "A5erh6pqAqSjR28k"
+      "workflowId": "5icnnibizPM24LXi",
+      "projectId": "zU8ZqM5Dx6MPXDiw",
+      "project": {
+        "updatedAt": "2026-02-26T23:18:51.572Z",
+        "createdAt": "2026-02-26T23:17:24.956Z",
+        "id": "zU8ZqM5Dx6MPXDiw",
+        "name": "Micaela Colmenares <micaelacolmenares208@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "dd038300-f42f-4774-88a8-4badf245957b"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-02-27T13:26:50.137Z",
+      "createdAt": "2026-02-27T13:26:50.137Z",
+      "id": "RTrTC99Ox1gfMQRA",
+      "name": "Restaurant"
+    },
+    {
+      "updatedAt": "2026-02-27T13:26:22.913Z",
+      "createdAt": "2026-02-27T13:26:22.913Z",
+      "id": "dveKcFU9yNCIwJvk",
+      "name": "DEMO"
+    },
+    {
+      "updatedAt": "2026-02-26T23:58:08.513Z",
+      "createdAt": "2026-02-26T23:58:08.513Z",
+      "id": "h6NCtzLto5r41s9Q",
+      "name": "WHATSAPP"
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-13T21:50:40.331Z",
-    "createdAt": "2026-02-13T21:50:36.932Z",
-    "versionId": "d1d1fba2-a535-40de-88fd-b42a4cdd050e",
-    "workflowId": "WvJXguIezXCvpyg5",
+    "updatedAt": "2026-02-27T17:16:41.845Z",
+    "createdAt": "2026-02-27T17:16:41.845Z",
+    "versionId": "fbdd3ff6-217c-4f65-b2f0-c48679ee7206",
+    "workflowId": "5icnnibizPM24LXi",
     "nodes": [
+      {
+        "parameters": {},
+        "id": "fbdf6040-994b-4b63-9893-602f1a5504c0",
+        "name": "Execute Workflow Trigger",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          -112,
+          400
+        ]
+      },
       {
         "parameters": {
           "operation": "deleteRecord",
@@ -171,22 +254,23 @@
             "cachedResultName": "Reservas",
             "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
           },
-          "id": "={{ $json.id }}"
+          "id": "={{ $('Buscar Reserva').first().json.id }}"
         },
-        "id": "70a2d5b1-3a85-4722-8d16-226ed586c8ec",
+        "id": "47377917-c0b0-4e45-9a37-2bea2e02f634",
         "name": "Eliminar de Airtable",
         "type": "n8n-nodes-base.airtable",
         "typeVersion": 2.1,
         "position": [
-          640,
-          784
+          128,
+          400
         ],
         "credentials": {
           "airtableTokenApi": {
-            "id": "cSn4DhEebpFAmHgW",
-            "name": "Airtable Access Token Restaurantes"
+            "id": "EnOMhwky63pMpQQH",
+            "name": "Airtable Whatsapp Restaurant"
           }
-        }
+        },
+        "continueOnFail": false
       },
       {
         "parameters": {
@@ -208,13 +292,13 @@
           },
           "options": {}
         },
-        "id": "d239b390-71e4-4a1b-bc5b-c77b3475074d",
+        "id": "a830b27c-9490-4ba9-9409-a0c8b483209a",
         "name": "Respuesta Exitosa",
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
         "position": [
-          880,
-          784
+          368,
+          400
         ]
       },
       {
@@ -223,33 +307,51 @@
           "width": 260,
           "color": 3
         },
-        "id": "7421298a-d508-4484-8951-8499217342a3",
+        "id": "c5d1468e-50a0-4a4e-ae3b-e0bec92cc73d",
         "name": "📋 Info",
         "type": "n8n-nodes-base.stickyNote",
         "typeVersion": 1,
         "position": [
-          400,
-          576
+          -112,
+          192
         ]
       },
       {
+        "id": "airtable-buscar-reserva-cancel",
+        "name": "Buscar Reserva",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          8,
+          400
+        ],
         "parameters": {
-          "workflowInputs": {
-            "values": [
-              {
-                "name": "id"
-              }
-            ]
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "value": "appdA5rJOmtVvpDrx",
+            "mode": "list",
+            "cachedResultName": "Automatizacion-Restaurantes",
+            "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tblqD3q6cwnF6YFXJ",
+            "mode": "list",
+            "cachedResultName": "Reservas",
+            "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
+          },
+          "filterByFormula": "={{ \"LOWER({Nombre}) = LOWER('\" + $json.nombre + \"')\" }}",
+          "options": {
+            "maxRecords": 1
           }
         },
-        "type": "n8n-nodes-base.executeWorkflowTrigger",
-        "typeVersion": 1.1,
-        "position": [
-          416,
-          784
-        ],
-        "id": "55f2e9b2-d83d-40cc-ae24-e37e3a1726d4",
-        "name": "When Executed by Another Workflow"
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "EnOMhwky63pMpQQH",
+            "name": "Airtable Whatsapp Restaurant"
+          }
+        }
       }
     ],
     "connections": {
@@ -264,7 +366,18 @@
           ]
         ]
       },
-      "When Executed by Another Workflow": {
+      "Execute Workflow Trigger": {
+        "main": [
+          [
+            {
+              "node": "Buscar Reserva",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Reserva": {
         "main": [
           [
             {
@@ -277,22 +390,26 @@
       }
     },
     "authors": "Micaela Colmenares",
-    "name": "Version d1d1fba2",
-    "description": "",
-    "autosaved": true
-  },
-  "tags": [
-    {
-      "updatedAt": "2026-02-12T19:23:15.621Z",
-      "createdAt": "2026-02-12T19:23:15.621Z",
-      "id": "TZUE2YowDCU30mFT",
-      "name": "Restaurantes"
-    },
-    {
-      "updatedAt": "2026-02-09T19:43:32.620Z",
-      "createdAt": "2026-02-09T19:43:32.620Z",
-      "id": "dCGM1dWLrqkY4L79",
-      "name": "🎯 Demos"
-    }
-  ]
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-02-27T17:16:41.876Z",
+        "id": 142,
+        "workflowId": "5icnnibizPM24LXi",
+        "versionId": "fbdd3ff6-217c-4f65-b2f0-c48679ee7206",
+        "event": "activated",
+        "userId": "dd038300-f42f-4774-88a8-4badf245957b"
+      },
+      {
+        "createdAt": "2026-02-27T17:16:41.866Z",
+        "id": 141,
+        "workflowId": "5icnnibizPM24LXi",
+        "versionId": "fbdd3ff6-217c-4f65-b2f0-c48679ee7206",
+        "event": "deactivated",
+        "userId": "dd038300-f42f-4774-88a8-4badf245957b"
+      }
+    ]
+  }
 }
