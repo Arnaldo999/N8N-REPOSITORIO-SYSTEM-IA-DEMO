@@ -1,0 +1,163 @@
+{
+  "updatedAt": "2026-02-26T23:23:23.797Z",
+  "createdAt": "2026-02-26T23:23:23.797Z",
+  "id": "iSDmRMjmAChQ7Guf",
+  "name": "🔍 [Tool] Consultar Disponibilidad — Cal.com",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-1",
+      "name": "Execute Workflow Trigger",
+      "position": [
+        240,
+        304
+      ],
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst data = item.json;\n\n// Soporte para ambos formatos: {query: {...}} y campos planos\nconst query = (data.query && typeof data.query === 'object') ? data.query : data;\nconst especialistaRaw = (query.especialista || data.especialista || '').toLowerCase();\nconst fecha = query.fecha || data.fecha || '';\n\n// Normalizar acentos (ó→o, é→e, etc.)\nconst normalizar = (s) => s.normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');\nconst especialista = normalizar(especialistaRaw);\n\n// Mapa de especialistas → eventTypeId de Cal.com\nconst ESPECIALISTAS = {\n  garcia: 4857668,\n  lopez: 4857681,\n  martinez: 4857683,\n};\n\nlet eventTypeId = null;\nfor (const [key, id] of Object.entries(ESPECIALISTAS)) {\n  if (especialista.includes(key)) {\n    eventTypeId = id;\n    break;\n  }\n}\n\nif (!eventTypeId) {\n  return [{ json: { error: `Especialista no reconocido: ${especialistaRaw}`, fecha, disponible: false } }];\n}\n\nreturn [{ json: { eventTypeId, fecha } }];"
+      },
+      "id": "code-resolver",
+      "name": "Resolver Especialista",
+      "position": [
+        464,
+        304
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "url": "https://api.cal.com/v2/slots/available",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "eventTypeId",
+              "value": "={{ $json.eventTypeId }}"
+            },
+            {
+              "name": "startTime",
+              "value": "={{ $json.fecha }}T00:00:00Z"
+            },
+            {
+              "name": "endTime",
+              "value": "={{ $json.fecha }}T23:59:59Z"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http-slots",
+      "name": "GET Slots Cal.com",
+      "position": [
+        720,
+        304
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "iwHFpfPGDViqragO",
+          "name": "Header Auth Cal.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst data = item.json;\n\n// Si hay error del nodo anterior (especialista no reconocido)\nif (data.error) {\n  return [{ json: data }];\n}\n\n// La respuesta de Cal.com v2 tiene: data.slots = { \"2025-10-09\": [{time: \"...\"}] }\nconst slots = data.data?.slots || {};\nconst fecha = Object.keys(slots)[0] || '';\nconst horarios = (slots[fecha] || []).map(s => s.time.substring(11, 16)); // HH:MM\n\nreturn [{\n  json: {\n    disponible: horarios.length > 0,\n    fecha,\n    horarios,\n    total: horarios.length\n  }\n}];"
+      },
+      "id": "format-slots",
+      "name": "Formatear Slots",
+      "position": [
+        960,
+        304
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "content": "## 🔍 Consultar Disponibilidad\n\n**Input esperado (del agente):**\n- `query.especialista` → garcia / lopez / martinez\n- `query.fecha` → YYYY-MM-DD\n\nO campos planos: `especialista`, `fecha`\n\n**Output:**\n- `disponible`: true/false\n- `horarios`: [\"09:00\", \"10:30\", ...]\n- `total`: número de slots",
+        "height": 220,
+        "width": 240
+      },
+      "id": "sticky-1",
+      "name": "Sticky Note",
+      "position": [
+        240,
+        80
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Resolver Especialista",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Resolver Especialista": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "GET Slots Cal.com",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "GET Slots Cal.com": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Formatear Slots",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "1866027d-c89f-42ed-a55e-f047dd7220dc",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-26T23:23:23.799Z",
+      "createdAt": "2026-02-26T23:23:23.799Z",
+      "role": "workflow:owner",
+      "workflowId": "iSDmRMjmAChQ7Guf",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "id": "sin-tag",
+      "name": "sin-tag"
+    }
+  ]
+}
