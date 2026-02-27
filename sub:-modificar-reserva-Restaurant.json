@@ -1,0 +1,613 @@
+{
+  "updatedAt": "2026-02-27T13:59:54.681Z",
+  "createdAt": "2026-02-26T23:23:02.268Z",
+  "id": "DoeT3kKjnK5t5bMQ",
+  "name": "Sub: Modificar Reserva",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst result = { id: input.id };\n\nif (input.nueva_fecha && input.nueva_fecha.trim() !== '') {\n  result['Fecha'] = input.nueva_fecha.trim();\n}\nif (input.nueva_hora && input.nueva_hora.trim() !== '') {\n  result['Hora'] = input.nueva_hora.trim();\n}\nif (input.nuevas_personas && String(input.nuevas_personas).trim() !== '') {\n  result['Personas'] = parseInt(input.nuevas_personas);\n}\n\nreturn [{ json: result }];"
+      },
+      "id": "0cbbce86-555e-4d60-8f7a-62614483eee1",
+      "name": "Preparar Campos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        2752
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appdA5rJOmtVvpDrx",
+          "mode": "list",
+          "cachedResultName": "Automatizacion-Restaurantes",
+          "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqD3q6cwnF6YFXJ",
+          "mode": "list",
+          "cachedResultName": "Reservas",
+          "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Hora",
+              "displayName": "Hora",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Personas",
+              "displayName": "Personas",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Todo",
+                  "value": "Todo"
+                },
+                {
+                  "name": "In progress",
+                  "value": "In progress"
+                },
+                {
+                  "name": "Done",
+                  "value": "Done"
+                },
+                {
+                  "name": "4",
+                  "value": "4"
+                },
+                {
+                  "name": "Confirmada",
+                  "value": "Confirmada"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Especificaciones",
+              "displayName": "Especificaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Attachments",
+              "displayName": "Attachments",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "c51465fd-cde3-41bd-8b2d-fc9131f2d3ed",
+      "name": "Actualizar en Airtable",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        2752
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "EnOMhwky63pMpQQH",
+          "name": "Airtable Whatsapp Restaurant"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "response",
+              "value": "Reserva modificada exitosamente",
+              "type": "string"
+            },
+            {
+              "id": "r2",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "043f6d7a-1161-482c-a864-832571674c9b",
+      "name": "Respuesta Exitosa",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        960,
+        2752
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ✏️ SUB: MODIFICAR RESERVA\n\n**Recibe:**\n- id (recID)\n- nueva_fecha (opcional)\n- nueva_hora (opcional)\n- nuevas_personas (opcional)\n\n**Actualiza** solo los campos con valor",
+        "height": 200,
+        "width": 280,
+        "color": 3
+      },
+      "id": "c3903d35-adc1-488f-82e1-d2edf6399b2e",
+      "name": "📋 Info",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        448,
+        2512
+      ]
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "id"
+            },
+            {
+              "name": "nueva_fecha"
+            },
+            {
+              "name": "nueva_hora"
+            },
+            {
+              "name": "nuevas_personas"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        272,
+        2752
+      ],
+      "id": "73099b34-8a5b-476a-b975-1981e37908d4",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "connections": {
+    "Preparar Campos": {
+      "main": [
+        [
+          {
+            "node": "Actualizar en Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar en Airtable": {
+      "main": [
+        [
+          {
+            "node": "Respuesta Exitosa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Preparar Campos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "29e39798-2061-4ba6-aa8e-089ad5d7721b",
+  "activeVersionId": "29e39798-2061-4ba6-aa8e-089ad5d7721b",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-26T23:23:02.270Z",
+      "createdAt": "2026-02-26T23:23:02.270Z",
+      "role": "workflow:owner",
+      "workflowId": "DoeT3kKjnK5t5bMQ",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-27T13:59:54.682Z",
+    "createdAt": "2026-02-27T13:59:54.682Z",
+    "versionId": "29e39798-2061-4ba6-aa8e-089ad5d7721b",
+    "workflowId": "DoeT3kKjnK5t5bMQ",
+    "nodes": [
+      {
+        "parameters": {
+          "jsCode": "const input = $input.first().json;\nconst result = { id: input.id };\n\nif (input.nueva_fecha && input.nueva_fecha.trim() !== '') {\n  result['Fecha'] = input.nueva_fecha.trim();\n}\nif (input.nueva_hora && input.nueva_hora.trim() !== '') {\n  result['Hora'] = input.nueva_hora.trim();\n}\nif (input.nuevas_personas && String(input.nuevas_personas).trim() !== '') {\n  result['Personas'] = parseInt(input.nuevas_personas);\n}\n\nreturn [{ json: result }];"
+        },
+        "id": "0cbbce86-555e-4d60-8f7a-62614483eee1",
+        "name": "Preparar Campos",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          480,
+          2752
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "base": {
+            "__rl": true,
+            "value": "appdA5rJOmtVvpDrx",
+            "mode": "list",
+            "cachedResultName": "Automatizacion-Restaurantes",
+            "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tblqD3q6cwnF6YFXJ",
+            "mode": "list",
+            "cachedResultName": "Reservas",
+            "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
+          },
+          "columns": {
+            "mappingMode": "autoMapInputData",
+            "value": {},
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": [
+              {
+                "id": "id",
+                "displayName": "id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": true,
+                "removed": false
+              },
+              {
+                "id": "Nombre",
+                "displayName": "Nombre",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Fecha",
+                "displayName": "Fecha",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "dateTime",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Hora",
+                "displayName": "Hora",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Personas",
+                "displayName": "Personas",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "number",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Estado",
+                "displayName": "Estado",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "options",
+                "options": [
+                  {
+                    "name": "Todo",
+                    "value": "Todo"
+                  },
+                  {
+                    "name": "In progress",
+                    "value": "In progress"
+                  },
+                  {
+                    "name": "Done",
+                    "value": "Done"
+                  },
+                  {
+                    "name": "4",
+                    "value": "4"
+                  },
+                  {
+                    "name": "Confirmada",
+                    "value": "Confirmada"
+                  }
+                ],
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Especificaciones",
+                "displayName": "Especificaciones",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "Attachments",
+                "displayName": "Attachments",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "array",
+                "readOnly": false,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "c51465fd-cde3-41bd-8b2d-fc9131f2d3ed",
+        "name": "Actualizar en Airtable",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          720,
+          2752
+        ],
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "EnOMhwky63pMpQQH",
+            "name": "Airtable Whatsapp Restaurant"
+          }
+        },
+        "continueOnFail": true
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "r1",
+                "name": "response",
+                "value": "Reserva modificada exitosamente",
+                "type": "string"
+              },
+              {
+                "id": "r2",
+                "name": "id",
+                "value": "={{ $json.id }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "043f6d7a-1161-482c-a864-832571674c9b",
+        "name": "Respuesta Exitosa",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          960,
+          2752
+        ]
+      },
+      {
+        "parameters": {
+          "content": "## ✏️ SUB: MODIFICAR RESERVA\n\n**Recibe:**\n- id (recID)\n- nueva_fecha (opcional)\n- nueva_hora (opcional)\n- nuevas_personas (opcional)\n\n**Actualiza** solo los campos con valor",
+          "height": 200,
+          "width": 280,
+          "color": 3
+        },
+        "id": "c3903d35-adc1-488f-82e1-d2edf6399b2e",
+        "name": "📋 Info",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          448,
+          2512
+        ]
+      },
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "id"
+              },
+              {
+                "name": "nueva_fecha"
+              },
+              {
+                "name": "nueva_hora"
+              },
+              {
+                "name": "nuevas_personas"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          272,
+          2752
+        ],
+        "id": "73099b34-8a5b-476a-b975-1981e37908d4",
+        "name": "When Executed by Another Workflow"
+      }
+    ],
+    "connections": {
+      "Preparar Campos": {
+        "main": [
+          [
+            {
+              "node": "Actualizar en Airtable",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Actualizar en Airtable": {
+        "main": [
+          [
+            {
+              "node": "Respuesta Exitosa",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Preparar Campos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-27T13:26:50.137Z",
+      "createdAt": "2026-02-27T13:26:50.137Z",
+      "id": "RTrTC99Ox1gfMQRA",
+      "name": "Restaurant"
+    },
+    {
+      "updatedAt": "2026-02-27T13:26:22.913Z",
+      "createdAt": "2026-02-27T13:26:22.913Z",
+      "id": "dveKcFU9yNCIwJvk",
+      "name": "DEMO"
+    },
+    {
+      "updatedAt": "2026-02-26T23:58:08.513Z",
+      "createdAt": "2026-02-26T23:58:08.513Z",
+      "id": "h6NCtzLto5r41s9Q",
+      "name": "WHATSAPP"
+    }
+  ]
+}
