@@ -1,0 +1,311 @@
+{
+  "updatedAt": "2026-02-26T23:22:45.299Z",
+  "createdAt": "2026-02-26T23:22:45.299Z",
+  "id": "4hXZIxYpcSwT8JqN",
+  "name": "Sub: Agendar Reserva",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appdA5rJOmtVvpDrx",
+          "mode": "list",
+          "cachedResultName": "Automatizacion-Restaurantes",
+          "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqD3q6cwnF6YFXJ",
+          "mode": "list",
+          "cachedResultName": "Reservas",
+          "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nombre": "={{ $json.nombre }}",
+            "Fecha": "={{ $json.fecha }}",
+            "Hora": "={{ $json.hora }}",
+            "Personas": "={{ $json.personas }}",
+            "Especificaciones": "={{ $json.especificaciones }}",
+            "Estado": "Confirmada"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Hora",
+              "displayName": "Hora",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Personas",
+              "displayName": "Personas",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Todo",
+                  "value": "Todo"
+                },
+                {
+                  "name": "In progress",
+                  "value": "In progress"
+                },
+                {
+                  "name": "Done",
+                  "value": "Done"
+                },
+                {
+                  "name": "4",
+                  "value": "4"
+                },
+                {
+                  "name": "Confirmada",
+                  "value": "Confirmada"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Especificaciones",
+              "displayName": "Especificaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Attachments",
+              "displayName": "Attachments",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": "={{ true }}"
+        }
+      },
+      "id": "267a7197-43a1-49b1-a178-5c0618fc6c69",
+      "name": "Crear Reserva en Airtable",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        448,
+        432
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "cSn4DhEebpFAmHgW",
+          "name": "Airtable Access Token Restaurantes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "response",
+              "value": "Reserva creada exitosamente",
+              "type": "string"
+            },
+            {
+              "id": "r2",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "r3",
+              "name": "nombre",
+              "value": "={{ $json.fields.Nombre }}",
+              "type": "string"
+            },
+            {
+              "id": "r4",
+              "name": "fecha",
+              "value": "={{ $json.fields.Fecha }}",
+              "type": "string"
+            },
+            {
+              "id": "r5",
+              "name": "hora",
+              "value": "={{ $json.fields.Hora }}",
+              "type": "string"
+            },
+            {
+              "id": "r6",
+              "name": "personas",
+              "value": "={{ $json.fields.Personas }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ed8bf987-796d-41c7-8f7e-ace5fb6274e8",
+      "name": "Respuesta Exitosa",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        688,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 📅 SUB: AGENDAR RESERVA\n\n**Recibe:**\n- nombre\n- fecha (YYYY-MM-DD)\n- hora (HH:MM)\n- personas\n- especificaciones\n\n**Crea** registro en Airtable\n**Devuelve** confirmación + ID",
+        "height": 220,
+        "width": 280,
+        "color": 4
+      },
+      "id": "227178e3-31dc-46fe-9a67-73623595fee2",
+      "name": "📋 Info",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        208,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "nombre"
+            },
+            {
+              "name": "fecha"
+            },
+            {
+              "name": "hora"
+            },
+            {
+              "name": "personas"
+            },
+            {
+              "name": "especificaciones"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        432
+      ],
+      "id": "1b416de5-bb9a-415c-b7e3-f8bb820de9c9",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "connections": {
+    "Crear Reserva en Airtable": {
+      "main": [
+        [
+          {
+            "node": "Respuesta Exitosa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Crear Reserva en Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "ebd5f884-4f81-4161-bc67-11756470c4fb",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-26T23:22:45.300Z",
+      "createdAt": "2026-02-26T23:22:45.300Z",
+      "role": "workflow:owner",
+      "workflowId": "4hXZIxYpcSwT8JqN",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "id": "sin-tag",
+      "name": "sin-tag"
+    }
+  ]
+}
