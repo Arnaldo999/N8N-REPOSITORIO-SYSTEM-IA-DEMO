@@ -1,0 +1,134 @@
+{
+  "updatedAt": "2026-02-26T23:23:18.888Z",
+  "createdAt": "2026-02-26T23:23:18.888Z",
+  "id": "peamZHi0gAe5DZIM",
+  "name": "👀 [Tool] Ver Mis Citas — Cal.com",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-view",
+      "name": "Execute Workflow Trigger",
+      "position": [
+        240,
+        304
+      ],
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "https://api.cal.com/v2/bookings",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "attendeeEmail",
+              "value": "={{ $json.email }}"
+            },
+            {
+              "name": "status",
+              "value": "upcoming"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http-get-bookings",
+      "name": "GET Citas del Paciente",
+      "position": [
+        464,
+        304
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "iwHFpfPGDViqragO",
+          "name": "Header Auth Cal.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "format-citas",
+      "name": "Formatear Citas",
+      "position": [
+        688,
+        304
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "content": "## 👀 Ver Mis Citas\n\n**Input esperado:**\n- `email` → email del paciente\n\n**Output:**\n- Lista de citas próximas con ID, fecha y estado",
+        "height": 180,
+        "width": 220
+      },
+      "id": "sticky-view",
+      "name": "Sticky Note",
+      "position": [
+        192,
+        128
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "GET Citas del Paciente",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "GET Citas del Paciente": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Formatear Citas",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "8d33cbe9-c5fd-48b6-a5c3-f7f8baf2f396",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-26T23:23:18.890Z",
+      "createdAt": "2026-02-26T23:23:18.890Z",
+      "role": "workflow:owner",
+      "workflowId": "peamZHi0gAe5DZIM",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "id": "sin-tag",
+      "name": "sin-tag"
+    }
+  ]
+}
