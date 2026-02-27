@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-27T13:59:54.016Z",
+  "updatedAt": "2026-02-27T17:16:41.844Z",
   "createdAt": "2026-02-26T23:22:58.709Z",
   "id": "5icnnibizPM24LXi",
   "name": "Sub: Cancelar Reserva",
@@ -34,7 +34,7 @@
           "cachedResultName": "Reservas",
           "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
         },
-        "id": "="
+        "id": "={{ $('Buscar Reserva').first().json.id }}"
       },
       "id": "47377917-c0b0-4e45-9a37-2bea2e02f634",
       "name": "Eliminar de Airtable",
@@ -50,7 +50,7 @@
           "name": "Airtable Whatsapp Restaurant"
         }
       },
-      "continueOnFail": true
+      "continueOnFail": false
     },
     {
       "parameters": {
@@ -95,25 +95,73 @@
         -112,
         192
       ]
+    },
+    {
+      "id": "airtable-buscar-reserva-cancel",
+      "name": "Buscar Reserva",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        8,
+        400
+      ],
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appdA5rJOmtVvpDrx",
+          "mode": "list",
+          "cachedResultName": "Automatizacion-Restaurantes",
+          "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqD3q6cwnF6YFXJ",
+          "mode": "list",
+          "cachedResultName": "Reservas",
+          "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
+        },
+        "filterByFormula": "={{ \"LOWER({Nombre}) = LOWER('\" + $json.nombre + \"')\" }}",
+        "options": {
+          "maxRecords": 1
+        }
+      },
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "EnOMhwky63pMpQQH",
+          "name": "Airtable Whatsapp Restaurant"
+        }
+      }
     }
   ],
   "connections": {
-    "Execute Workflow Trigger": {
+    "Eliminar de Airtable": {
       "main": [
         [
           {
-            "node": "Eliminar de Airtable",
+            "node": "Respuesta Exitosa",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Eliminar de Airtable": {
+    "Execute Workflow Trigger": {
       "main": [
         [
           {
-            "node": "Respuesta Exitosa",
+            "node": "Buscar Reserva",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Reserva": {
+      "main": [
+        [
+          {
+            "node": "Eliminar de Airtable",
             "type": "main",
             "index": 0
           }
@@ -128,8 +176,8 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "69580de7-05b1-410b-bedd-a12ef51ee685",
-  "activeVersionId": "69580de7-05b1-410b-bedd-a12ef51ee685",
+  "versionId": "fbdd3ff6-217c-4f65-b2f0-c48679ee7206",
+  "activeVersionId": "fbdd3ff6-217c-4f65-b2f0-c48679ee7206",
   "triggerCount": 0,
   "shared": [
     {
@@ -141,9 +189,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-27T13:59:54.018Z",
-    "createdAt": "2026-02-27T13:59:54.018Z",
-    "versionId": "69580de7-05b1-410b-bedd-a12ef51ee685",
+    "updatedAt": "2026-02-27T17:16:41.845Z",
+    "createdAt": "2026-02-27T17:16:41.845Z",
+    "versionId": "fbdd3ff6-217c-4f65-b2f0-c48679ee7206",
     "workflowId": "5icnnibizPM24LXi",
     "nodes": [
       {
@@ -174,7 +222,7 @@
             "cachedResultName": "Reservas",
             "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
           },
-          "id": "="
+          "id": "={{ $('Buscar Reserva').first().json.id }}"
         },
         "id": "47377917-c0b0-4e45-9a37-2bea2e02f634",
         "name": "Eliminar de Airtable",
@@ -190,7 +238,7 @@
             "name": "Airtable Whatsapp Restaurant"
           }
         },
-        "continueOnFail": true
+        "continueOnFail": false
       },
       {
         "parameters": {
@@ -235,25 +283,73 @@
           -112,
           192
         ]
+      },
+      {
+        "id": "airtable-buscar-reserva-cancel",
+        "name": "Buscar Reserva",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          8,
+          400
+        ],
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "value": "appdA5rJOmtVvpDrx",
+            "mode": "list",
+            "cachedResultName": "Automatizacion-Restaurantes",
+            "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tblqD3q6cwnF6YFXJ",
+            "mode": "list",
+            "cachedResultName": "Reservas",
+            "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
+          },
+          "filterByFormula": "={{ \"LOWER({Nombre}) = LOWER('\" + $json.nombre + \"')\" }}",
+          "options": {
+            "maxRecords": 1
+          }
+        },
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "EnOMhwky63pMpQQH",
+            "name": "Airtable Whatsapp Restaurant"
+          }
+        }
       }
     ],
     "connections": {
-      "Execute Workflow Trigger": {
+      "Eliminar de Airtable": {
         "main": [
           [
             {
-              "node": "Eliminar de Airtable",
+              "node": "Respuesta Exitosa",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Eliminar de Airtable": {
+      "Execute Workflow Trigger": {
         "main": [
           [
             {
-              "node": "Respuesta Exitosa",
+              "node": "Buscar Reserva",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Reserva": {
+        "main": [
+          [
+            {
+              "node": "Eliminar de Airtable",
               "type": "main",
               "index": 0
             }
