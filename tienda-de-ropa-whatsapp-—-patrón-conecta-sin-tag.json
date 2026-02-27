@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2026-02-26T23:23:07.481Z",
+  "updatedAt": "2026-02-27T13:13:34.139Z",
   "createdAt": "2026-02-26T23:23:07.481Z",
   "id": "oqdLS3ZzUoJet3O0",
   "name": "Tienda de Ropa WhatsApp — Patrón Conecta",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -187,8 +187,8 @@
       "alwaysOutputData": true,
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "GMCKCQGZj49ZyiKE",
-          "name": "Google Sheets account"
+          "id": "9AngrdYrRh5RyUES",
+          "name": "Formulario_Leads_System"
         }
       },
       "onError": "continueRegularOutput"
@@ -334,8 +334,8 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "GMCKCQGZj49ZyiKE",
-          "name": "Google Sheets account"
+          "id": "9AngrdYrRh5RyUES",
+          "name": "Formulario_Leads_System"
         }
       }
     },
@@ -372,7 +372,8 @@
           "id": "UjQbCz6cOqJ9NlJ5",
           "name": "Airtable Access Token Automatizacion whatsapp - tienda de ropas"
         }
-      }
+      },
+      "continueOnFail": true
     },
     {
       "parameters": {
@@ -417,8 +418,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -501,7 +502,8 @@
           "id": "UjQbCz6cOqJ9NlJ5",
           "name": "Airtable Access Token Automatizacion whatsapp - tienda de ropas"
         }
-      }
+      },
+      "continueOnFail": true
     },
     {
       "parameters": {
@@ -571,8 +573,8 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "GMCKCQGZj49ZyiKE",
-          "name": "Google Sheets account"
+          "id": "9AngrdYrRh5RyUES",
+          "name": "Formulario_Leads_System"
         }
       }
     },
@@ -609,7 +611,8 @@
           "id": "UjQbCz6cOqJ9NlJ5",
           "name": "Airtable Access Token Automatizacion whatsapp - tienda de ropas"
         }
-      }
+      },
+      "continueOnFail": true
     },
     {
       "parameters": {
@@ -654,8 +657,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -689,8 +692,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -773,7 +776,8 @@
           "id": "UjQbCz6cOqJ9NlJ5",
           "name": "Airtable Access Token Automatizacion whatsapp - tienda de ropas"
         }
-      }
+      },
+      "continueOnFail": true
     },
     {
       "parameters": {
@@ -849,8 +853,8 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "GMCKCQGZj49ZyiKE",
-          "name": "Google Sheets account"
+          "id": "9AngrdYrRh5RyUES",
+          "name": "Formulario_Leads_System"
         }
       }
     },
@@ -884,8 +888,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -977,8 +981,8 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "GMCKCQGZj49ZyiKE",
-          "name": "Google Sheets account"
+          "id": "9AngrdYrRh5RyUES",
+          "name": "Formulario_Leads_System"
         }
       }
     },
@@ -1012,8 +1016,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -1151,8 +1155,8 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "GMCKCQGZj49ZyiKE",
-          "name": "Google Sheets account"
+          "id": "9AngrdYrRh5RyUES",
+          "name": "Formulario_Leads_System"
         }
       }
     },
@@ -1186,8 +1190,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -1287,8 +1291,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -1322,8 +1326,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -1376,8 +1380,8 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "GMCKCQGZj49ZyiKE",
-          "name": "Google Sheets account"
+          "id": "9AngrdYrRh5RyUES",
+          "name": "Formulario_Leads_System"
         }
       }
     },
@@ -1411,8 +1415,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -1479,8 +1483,8 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "Cg8i23WdofXdKu0X",
-          "name": "Header Auth Evolution"
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
         }
       }
     },
@@ -1533,8 +1537,8 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "GMCKCQGZj49ZyiKE",
-          "name": "Google Sheets account"
+          "id": "9AngrdYrRh5RyUES",
+          "name": "Formulario_Leads_System"
         }
       }
     },
@@ -1997,9 +2001,9 @@
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "d4b58acc-1528-4ea1-8ccb-e94fcfce2451",
-  "activeVersionId": null,
-  "triggerCount": 0,
+  "versionId": "4bd63301-4a75-4afd-a094-9df23f91105a",
+  "activeVersionId": "4bd63301-4a75-4afd-a094-9df23f91105a",
+  "triggerCount": 1,
   "shared": [
     {
       "updatedAt": "2026-02-26T23:23:07.483Z",
@@ -2009,7 +2013,2005 @@
       "projectId": "zU8ZqM5Dx6MPXDiw"
     }
   ],
-  "activeVersion": null,
+  "activeVersion": {
+    "updatedAt": "2026-02-27T13:13:34.141Z",
+    "createdAt": "2026-02-27T13:13:34.141Z",
+    "versionId": "4bd63301-4a75-4afd-a094-9df23f91105a",
+    "workflowId": "oqdLS3ZzUoJet3O0",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "tienda-ropa-webhook",
+          "options": {}
+        },
+        "id": "b20c2d54-900a-48bb-be59-21f635c9d16d",
+        "name": "Webhook Evolution API",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1.1,
+        "position": [
+          1568,
+          4352
+        ],
+        "webhookId": "tienda-ropa-webhook"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c1",
+                "leftValue": "={{ $json.body.event }}",
+                "rightValue": "messages.upsert",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "c2",
+                "leftValue": "={{ $json.body.data.message.conversation }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              },
+              {
+                "id": "c3",
+                "leftValue": "={{ $json.body.data.key.remoteJid }}",
+                "rightValue": "@s.whatsapp.net",
+                "operator": {
+                  "type": "string",
+                  "operation": "endsWith"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "615d3a70-db74-4ce6-9aea-a83319187a78",
+        "name": "Filtro Webhook",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          1792,
+          4352
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a1",
+                "name": "telefono",
+                "value": "={{ ($json.body?.data?.key?.remoteJid || '').replace('@s.whatsapp.net','') }}",
+                "type": "string"
+              },
+              {
+                "id": "a2",
+                "name": "mensaje",
+                "value": "={{ ($json.body?.data?.message?.conversation || '').trim().toLowerCase() }}",
+                "type": "string"
+              },
+              {
+                "id": "a3",
+                "name": "mensaje_original",
+                "value": "={{ ($json.body?.data?.message?.conversation || '').trim() }}",
+                "type": "string"
+              },
+              {
+                "id": "a4",
+                "name": "nombre_wa",
+                "value": "={{ $json.body?.data?.pushName || 'Sin nombre' }}",
+                "type": "string"
+              },
+              {
+                "id": "a5",
+                "name": "es_mio",
+                "value": "={{ String($json.body?.data?.key?.fromMe ?? false) }}",
+                "type": "string"
+              },
+              {
+                "id": "a6",
+                "name": "tiene_imagen",
+                "value": "={{ $json.body?.data?.message?.imageMessage ? 'true' : 'false' }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "56efabe8-e0c8-442d-bc60-182315ed9f55",
+        "name": "Extraer Datos",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2016,
+          4352
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "f1",
+                "leftValue": "={{ $json.es_mio }}",
+                "rightValue": "false",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "08e6fef5-d4ce-4c48-aef0-01a9c850a887",
+        "name": "No es mensaje mio",
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2,
+        "position": [
+          2224,
+          4352
+        ]
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "TU_SPREADSHEET_ID_AQUI",
+            "mode": "list",
+            "cachedResultName": "bot_estado_tienda"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1"
+          },
+          "options": {}
+        },
+        "id": "270e72d3-e040-4e6f-ad63-f58f02123c0a",
+        "name": "Leer Bot Estado",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          2448,
+          4352
+        ],
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "9AngrdYrRh5RyUES",
+            "name": "Formulario_Leads_System"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const telefono = $('Extraer Datos').first().json.telefono;\nconst mensaje = $('Extraer Datos').first().json.mensaje;\nconst mensaje_original = $('Extraer Datos').first().json.mensaje_original;\nconst nombre_wa = $('Extraer Datos').first().json.nombre_wa;\nconst tiene_imagen = $('Extraer Datos').first().json.tiene_imagen;\n\nlet filas = [];\ntry { filas = $input.all().map(i => i.json); } catch(e) { filas = []; }\n\nconst telLimpio = String(telefono).trim();\nconst encontrado = filas.find(f => String(f.telefono || '').trim() === telLimpio);\n\nif (encontrado && encontrado.paso) {\n  return [{ json: {\n    existe: true, telefono: telLimpio, mensaje, mensaje_original, nombre_wa, tiene_imagen,\n    paso: String(encontrado.paso || '').trim().toLowerCase(),\n    categoria: encontrado.categoria || '',\n    producto_nombre: encontrado.producto_nombre || '',\n    producto_precio: encontrado.producto_precio || '',\n    nombre: encontrado.nombre || '',\n    ciudad: encontrado.ciudad || '',\n    provincia: encontrado.provincia || '',\n    dato_extra: encontrado.dato_extra || ''\n  }}];\n} else {\n  return [{ json: {\n    existe: false, telefono: telLimpio, mensaje, mensaje_original, nombre_wa, tiene_imagen,\n    paso: 'nuevo', categoria: '', producto_nombre: '', producto_precio: '',\n    nombre: '', ciudad: '', provincia: '', dato_extra: ''\n  }}];\n}"
+        },
+        "id": "f9cc4f96-781c-4a3e-bb40-c5415366ea23",
+        "name": "Buscar Telefono",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2672,
+          4352
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "e1",
+                "leftValue": "={{ $json.existe }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "72361856-d384-47bb-9299-533bdf737ae2",
+        "name": "Ya Existe?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          2896,
+          4352
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "TU_SPREADSHEET_ID_AQUI",
+            "mode": "list",
+            "cachedResultName": "bot_estado_tienda"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "paso": "menu",
+              "categoria": "",
+              "producto_nombre": "",
+              "producto_precio": "",
+              "nombre": "",
+              "ciudad": "",
+              "provincia": "",
+              "dato_extra": "",
+              "timestamp": "={{ $now.toISO() }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "type": "string"
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "type": "string"
+              },
+              {
+                "id": "categoria",
+                "displayName": "categoria",
+                "type": "string"
+              },
+              {
+                "id": "producto_nombre",
+                "displayName": "producto_nombre",
+                "type": "string"
+              },
+              {
+                "id": "producto_precio",
+                "displayName": "producto_precio",
+                "type": "string"
+              },
+              {
+                "id": "nombre",
+                "displayName": "nombre",
+                "type": "string"
+              },
+              {
+                "id": "ciudad",
+                "displayName": "ciudad",
+                "type": "string"
+              },
+              {
+                "id": "provincia",
+                "displayName": "provincia",
+                "type": "string"
+              },
+              {
+                "id": "dato_extra",
+                "displayName": "dato_extra",
+                "type": "string"
+              },
+              {
+                "id": "timestamp",
+                "displayName": "timestamp",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "733adfce-6bc8-4dce-a370-ba0be012b898",
+        "name": "Guardar Nuevo Estado",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          3104,
+          4544
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "9AngrdYrRh5RyUES",
+            "name": "Formulario_Leads_System"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "value": "app6LRnI1AgMk1aTk",
+            "mode": "list",
+            "cachedResultName": "Tienda de Ropa",
+            "cachedResultUrl": "https://airtable.com/app6LRnI1AgMk1aTk"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tbldxArHAQHOmMJB1",
+            "mode": "list",
+            "cachedResultName": "Categorias",
+            "cachedResultUrl": "https://airtable.com/app6LRnI1AgMk1aTk/tbldxArHAQHOmMJB1"
+          },
+          "filterByFormula": "{activa} = TRUE()",
+          "options": {}
+        },
+        "id": "e4de76f7-0ef5-455d-86a3-2428c3daf981",
+        "name": "Leer Categorias Airtable",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          3328,
+          4544
+        ],
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "UjQbCz6cOqJ9NlJ5",
+            "name": "Airtable Access Token Automatizacion whatsapp - tienda de ropas"
+          }
+        },
+        "continueOnFail": true
+      },
+      {
+        "parameters": {
+          "jsCode": "const categorias = $input.all().map(i => i.json);\nconst telefono = $('Buscar Telefono').first().json.telefono;\nconst nombre_wa = $('Buscar Telefono').first().json.nombre_wa;\n\nlet texto = `¡Hola ${nombre_wa}! 👋 Bienvenido a nuestra *Tienda de Ropa* 👕\\n\\n¿Qué categoría te interesa?\\n\\n`;\n\ncategorias.forEach((cat, i) => {\n  const num = i + 1;\n  const emoji = cat.fields?.emoji || cat.emoji || '📦';\n  const nombre = cat.fields?.nombre || cat.nombre || `Categoría ${num}`;\n  texto += `${num}️⃣ ${emoji} *${nombre}*\\n`;\n});\n\ntexto += `\\nRespondé con el *número* de la categoría 😊`;\n\nreturn [{ json: { telefono, texto } }];"
+        },
+        "id": "91cf3582-1d85-47c5-9e98-c45da70e9405",
+        "name": "Armar Menu Categorias",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3552,
+          4544
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"{{ $json.texto }}\"\n}",
+          "options": {}
+        },
+        "id": "0ddeaf33-fabd-445c-9192-60336ed35d9f",
+        "name": "Enviar Menu Categorias",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3776,
+          4544
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "p1",
+                "leftValue": "={{ $json.paso }}",
+                "rightValue": "menu",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "1087640d-ce74-4cac-b748-9c178587f167",
+        "name": "Paso=menu?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          3104,
+          4144
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const mensaje = $('Buscar Telefono').first().json.mensaje;\nconst telefono = $('Buscar Telefono').first().json.telefono;\nconst num = parseInt(mensaje);\n\nif (isNaN(num) || num < 1) {\n  return [{ json: { telefono, categoria_valida: false, categoria_num: 0 } }];\n}\n\nreturn [{ json: { telefono, categoria_valida: true, categoria_num: num } }];"
+        },
+        "id": "e61d8dd1-f46a-4a1d-9e6d-37d31bac82af",
+        "name": "Validar Categoria",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3328,
+          3952
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "value": "app6LRnI1AgMk1aTk",
+            "mode": "list",
+            "cachedResultName": "Tienda de Ropa",
+            "cachedResultUrl": "https://airtable.com/app6LRnI1AgMk1aTk"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tbldxArHAQHOmMJB1",
+            "mode": "list",
+            "cachedResultName": "Categorias",
+            "cachedResultUrl": "https://airtable.com/app6LRnI1AgMk1aTk/tbldxArHAQHOmMJB1"
+          },
+          "filterByFormula": "{activa} = TRUE()",
+          "options": {}
+        },
+        "id": "5b4ff0a6-7229-4afc-8786-1bccb4c0217e",
+        "name": "Leer Cats para Resolver",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          3552,
+          3952
+        ],
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "UjQbCz6cOqJ9NlJ5",
+            "name": "Airtable Access Token Automatizacion whatsapp - tienda de ropas"
+          }
+        },
+        "continueOnFail": true
+      },
+      {
+        "parameters": {
+          "jsCode": "const cats = $input.all().map(i => i.json);\nconst catNum = $('Validar Categoria').first().json.categoria_num;\nconst telefono = $('Buscar Telefono').first().json.telefono;\n\nif (catNum < 1 || catNum > cats.length) {\n  return [{ json: { telefono, categoria_nombre: '', error: true } }];\n}\n\nconst cat = cats[catNum - 1];\nconst nombre = cat.fields?.nombre || cat.nombre || `Categoría ${catNum}`;\n\nreturn [{ json: { telefono, categoria_nombre: nombre, error: false } }];"
+        },
+        "id": "a830e85c-cac1-482f-a9b9-6cc410e66545",
+        "name": "Resolver Categoria",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3776,
+          3952
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "TU_SPREADSHEET_ID_AQUI",
+            "mode": "list",
+            "cachedResultName": "bot_estado_tienda"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "paso": "producto",
+              "categoria": "={{ $json.categoria_nombre }}"
+            },
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "type": "string"
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "type": "string"
+              },
+              {
+                "id": "categoria",
+                "displayName": "categoria",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "a5d454ff-f73a-484b-b8f6-8d5a18c4f082",
+        "name": "Update Categoria",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          3984,
+          3840
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "9AngrdYrRh5RyUES",
+            "name": "Formulario_Leads_System"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "value": "app6LRnI1AgMk1aTk",
+            "mode": "list",
+            "cachedResultName": "Tienda de Ropa",
+            "cachedResultUrl": "https://airtable.com/app6LRnI1AgMk1aTk"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tbl78kL0iBakRjjde",
+            "mode": "list",
+            "cachedResultName": "Productos",
+            "cachedResultUrl": "https://airtable.com/app6LRnI1AgMk1aTk/tbl78kL0iBakRjjde"
+          },
+          "filterByFormula": "=AND({activo} = TRUE(), FIND(LOWER(\"{{ $json.categoria_nombre }}\"), LOWER({categoria})))",
+          "options": {}
+        },
+        "id": "58e18d08-7964-4e0b-98b6-b54276c420af",
+        "name": "Leer Productos Airtable",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          4208,
+          3840
+        ],
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "UjQbCz6cOqJ9NlJ5",
+            "name": "Airtable Access Token Automatizacion whatsapp - tienda de ropas"
+          }
+        },
+        "continueOnFail": true
+      },
+      {
+        "parameters": {
+          "jsCode": "const productos = $input.all().map(i => i.json);\nconst telefono = $('Buscar Telefono').first().json.telefono;\n\nlet mensajes = [];\nproductos.forEach((prod, i) => {\n  const num = i + 1;\n  const nombre = prod.fields?.nombre || prod.nombre || `Producto ${num}`;\n  const desc = prod.fields?.descripcion || prod.descripcion || '';\n  const precio = prod.fields?.precio || prod.precio || 0;\n  const imagen = prod.fields?.imagen_url || prod.imagen_url || '';\n  mensajes.push({\n    telefono, numero: num, nombre, precio: Number(precio), imagen_url: imagen,\n    caption: `${num}️⃣ *${nombre}*\\n${desc}\\n💰 $${Number(precio).toLocaleString('es-AR')}`\n  });\n});\n\nreturn mensajes.map(m => ({ json: m }));"
+        },
+        "id": "c64667f8-2124-4d52-b134-1e3c6243f966",
+        "name": "Armar Productos con Imagen",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4432,
+          3840
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendMedia/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"mediatype\": \"image\",\n  \"media\": \"{{ $json.imagen_url }}\",\n  \"caption\": \"{{ $json.caption }}\"\n}",
+          "options": {}
+        },
+        "id": "5520ea00-d549-4ee0-a191-03ba133bb975",
+        "name": "Enviar Producto con Imagen",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4656,
+          3840
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $('Buscar Telefono').first().json.telefono }}\",\n  \"text\": \"Respondé con el *número* del producto que querés 😊\\n🔙 Escribí *0* para volver a categorías\"\n}",
+          "options": {}
+        },
+        "id": "ce069ebe-3539-49a2-8a5d-f179d9b36fc7",
+        "name": "Enviar Instruccion Producto",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4880,
+          3840
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "p2",
+                "leftValue": "={{ $json.paso }}",
+                "rightValue": "producto",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "65246bfa-1a87-483b-a1c6-56260dd09600",
+        "name": "Paso=producto?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          3328,
+          4256
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const mensaje = $('Buscar Telefono').first().json.mensaje;\nconst telefono = $('Buscar Telefono').first().json.telefono;\nconst categoria = $('Buscar Telefono').first().json.categoria;\n\nif (mensaje === '0') {\n  return [{ json: { telefono, volver_menu: true, producto_num: 0 } }];\n}\n\nconst num = parseInt(mensaje);\nreturn [{ json: { telefono, volver_menu: false, producto_num: isNaN(num) ? 0 : num, categoria } }];"
+        },
+        "id": "728c528f-da15-488d-be97-99b73178a90c",
+        "name": "Resolver Producto",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3552,
+          4144
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "value": "app6LRnI1AgMk1aTk",
+            "mode": "list",
+            "cachedResultName": "Tienda de Ropa",
+            "cachedResultUrl": "https://airtable.com/app6LRnI1AgMk1aTk"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tbl78kL0iBakRjjde",
+            "mode": "list",
+            "cachedResultName": "Productos",
+            "cachedResultUrl": "https://airtable.com/app6LRnI1AgMk1aTk/tbl78kL0iBakRjjde"
+          },
+          "filterByFormula": "=AND({activo} = TRUE(), FIND(LOWER(\"{{ $json.categoria }}\"), LOWER({categoria})))",
+          "options": {}
+        },
+        "id": "bc83b3e9-24ca-46b8-9c01-7cfdc5971d0a",
+        "name": "Leer Prods para Resolver",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          3776,
+          4144
+        ],
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "UjQbCz6cOqJ9NlJ5",
+            "name": "Airtable Access Token Automatizacion whatsapp - tienda de ropas"
+          }
+        },
+        "continueOnFail": true
+      },
+      {
+        "parameters": {
+          "jsCode": "const prods = $input.all().map(i => i.json);\nconst prodNum = $('Resolver Producto').first().json.producto_num;\nconst telefono = $('Buscar Telefono').first().json.telefono;\n\nif (prodNum < 1 || prodNum > prods.length) {\n  return [{ json: { telefono, producto_nombre: '', producto_precio: 0, error: true } }];\n}\n\nconst prod = prods[prodNum - 1];\nconst nombre = prod.fields?.nombre || prod.nombre;\nconst precio = prod.fields?.precio || prod.precio || 0;\n\nreturn [{ json: { telefono, producto_nombre: nombre, producto_precio: Number(precio), error: false } }];"
+        },
+        "id": "636f2f5a-0c83-477a-b5ab-d673347f0b18",
+        "name": "Mapear Producto",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3984,
+          4144
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "TU_SPREADSHEET_ID_AQUI",
+            "mode": "list",
+            "cachedResultName": "bot_estado_tienda"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "paso": "nombre",
+              "producto_nombre": "={{ $json.producto_nombre }}",
+              "producto_precio": "={{ $json.producto_precio }}"
+            },
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "type": "string"
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "type": "string"
+              },
+              {
+                "id": "producto_nombre",
+                "displayName": "producto_nombre",
+                "type": "string"
+              },
+              {
+                "id": "producto_precio",
+                "displayName": "producto_precio",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "7a395419-34cd-4051-bb76-187b4ad948fa",
+        "name": "Update Producto",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          4208,
+          4144
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "9AngrdYrRh5RyUES",
+            "name": "Formulario_Leads_System"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"✅ *¡Excelente elección!*\\n\\n👕 *{{ $json.producto_nombre }}* — ${{ $json.producto_precio }}\\n\\nPara calcular el envío necesito algunos datos.\\n\\n📌 ¿Cuál es tu *nombre completo*?\"\n}",
+          "options": {}
+        },
+        "id": "ba913349-8bc9-453f-9d56-7d6bd4849126",
+        "name": "Pedir Nombre",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4432,
+          4144
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "p3",
+                "leftValue": "={{ $json.paso }}",
+                "rightValue": "nombre",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "5a34f67a-b83b-4714-a4b5-f30a34e4deff",
+        "name": "Paso=nombre?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          3552,
+          4352
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "TU_SPREADSHEET_ID_AQUI",
+            "mode": "list",
+            "cachedResultName": "bot_estado_tienda"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "paso": "ciudad",
+              "nombre": "={{ $json.mensaje_original }}"
+            },
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "type": "string"
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "type": "string"
+              },
+              {
+                "id": "nombre",
+                "displayName": "nombre",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "66e7959d-107e-4070-9cd5-745a42326c90",
+        "name": "Guardar Nombre",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          3776,
+          4352
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "9AngrdYrRh5RyUES",
+            "name": "Formulario_Leads_System"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"Gracias *{{ $json.nombre }}* 😊\\n\\n📌 ¿De qué *ciudad y provincia* sos?\\nEjemplo: Rosario, Santa Fe\"\n}",
+          "options": {}
+        },
+        "id": "f0c2e292-be50-430a-9ad7-0305ca3661c4",
+        "name": "Pedir Ciudad",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3984,
+          4352
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "p4",
+                "leftValue": "={{ $json.paso }}",
+                "rightValue": "ciudad",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "f028b005-cf5b-4262-b380-6686f833ffc1",
+        "name": "Paso=ciudad?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          3776,
+          4544
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const mensaje = $('Buscar Telefono').first().json.mensaje_original || '';\nconst partes = mensaje.split(',');\nconst ciudad = partes[0] ? partes[0].trim() : mensaje.trim();\nconst provincia = partes[1] ? partes[1].trim() : ciudad;\nconst telefono = $('Buscar Telefono').first().json.telefono;\nconst producto_precio = $('Buscar Telefono').first().json.producto_precio;\n\nreturn [{ json: { telefono, ciudad, provincia, producto_precio } }];"
+        },
+        "id": "5c268998-697d-4684-8043-b8855663735c",
+        "name": "Parsear Ubicacion",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3984,
+          4544
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://arnaldoayala157--calculadora-envios-tienda-api-calcular.modal.run/calcular",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"precio_producto\": {{ $json.producto_precio }},\n  \"provincia\": \"{{ $json.provincia }}\"\n}",
+          "options": {}
+        },
+        "id": "8849c3af-fce9-4056-8377-5f8b3b383ad8",
+        "name": "Calcular Envio Modal",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4208,
+          4544
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "TU_SPREADSHEET_ID_AQUI",
+            "mode": "list",
+            "cachedResultName": "bot_estado_tienda"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $('Parsear Ubicacion').first().json.telefono }}",
+              "paso": "pago",
+              "ciudad": "={{ $('Parsear Ubicacion').first().json.ciudad }}",
+              "provincia": "={{ $('Parsear Ubicacion').first().json.provincia }}"
+            },
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "type": "string"
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "type": "string"
+              },
+              {
+                "id": "ciudad",
+                "displayName": "ciudad",
+                "type": "string"
+              },
+              {
+                "id": "provincia",
+                "displayName": "provincia",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "1f31e1d0-70e0-4827-90fa-018defc2c86d",
+        "name": "Guardar Ciudad",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          4432,
+          4544
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "9AngrdYrRh5RyUES",
+            "name": "Formulario_Leads_System"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $('Parsear Ubicacion').first().json.telefono }}\",\n  \"text\": \"{{ $('Calcular Envio Modal').first().json.mensaje_cobro }}\"\n}",
+          "options": {}
+        },
+        "id": "4729f2c9-c78f-47c5-b853-135cee053a6a",
+        "name": "Enviar Total y CVU",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4656,
+          4544
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "p5",
+                "leftValue": "={{ $json.paso }}",
+                "rightValue": "pago",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "a1efcea8-1f75-4dba-98ef-f6b9c8c09bcb",
+        "name": "Paso=pago?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          3984,
+          4752
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "img",
+                "leftValue": "={{ $json.tiene_imagen }}",
+                "rightValue": "true",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "be60bd0d-c911-4428-a490-438b1c95fc0e",
+        "name": "Tiene Captura?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          4208,
+          4752
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"✅ *¡Captura recibida!*\\n\\nEstamos verificando tu pago. Te confirmaremos en breve.\\n\\n⏳ Tiempo estimado: menos de 30 minutos.\"\n}",
+          "options": {}
+        },
+        "id": "c96febab-1cee-417f-971f-aa74e627c884",
+        "name": "Confirmar Captura",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4432,
+          4704
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"NUMERO_DUENO_AQUI\",\n  \"text\": \"🔔 *NUEVO PEDIDO*\\n\\n👤 {{ $json.nombre }}\\n📱 {{ $json.telefono }}\\n👕 {{ $json.producto_nombre }} — ${{ $json.producto_precio }}\\n📍 {{ $json.ciudad }}, {{ $json.provincia }}\\n\\n📸 Captura de pago recibida.\\n\\n✅ Respondé *ok* para confirmar.\"\n}",
+          "options": {}
+        },
+        "id": "6b0e314c-e52b-4f48-893b-11dd067ad429",
+        "name": "Notificar al Dueno",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4656,
+          4704
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "TU_SPREADSHEET_ID_AQUI",
+            "mode": "list",
+            "cachedResultName": "bot_estado_tienda"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "paso": "esperando_ok"
+            },
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "type": "string"
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "4a3a3995-a3b3-4c19-9f87-811d91c9f6cd",
+        "name": "Paso Esperando OK",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          4880,
+          4704
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "9AngrdYrRh5RyUES",
+            "name": "Formulario_Leads_System"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"📸 Necesito la *captura de la transferencia* para verificar tu pago.\\n\\nPor favor, subí la imagen del comprobante 👇\"\n}",
+          "options": {}
+        },
+        "id": "048dab17-7f3d-4090-855e-30eac560c991",
+        "name": "Pedir Captura",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4432,
+          4848
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "p6",
+                "leftValue": "={{ $json.paso }}",
+                "rightValue": "esperando_ok",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "18cb67ae-ff0e-49cd-a8a0-762cc57e1c96",
+        "name": "Paso=esperando_ok?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          4208,
+          4944
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"🎉 *¡Pago confirmado!*\\n\\nTu pedido está siendo preparado para envío.\\n\\n📦 Te enviaremos el tracking cuando sea despachado.\\n📍 Destino: {{ $json.ciudad }}, {{ $json.provincia }}\\n\\n¡Gracias por tu compra! 🙌\"\n}",
+          "options": {}
+        },
+        "id": "a703701d-99f9-4785-81fd-2a4ebc4a4a8c",
+        "name": "Confirmar Pago al Cliente",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4448,
+          5040
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "TU_SPREADSHEET_ID_AQUI",
+            "mode": "list",
+            "cachedResultName": "bot_estado_tienda"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "paso": "completado"
+            },
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "type": "string"
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "36bc7b91-238d-4b5e-ad3b-29c5188e51c1",
+        "name": "Paso Completado",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          4656,
+          5040
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "9AngrdYrRh5RyUES",
+            "name": "Formulario_Leads_System"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "# 👕 TIENDA DE ROPA — Patrón Conecta\n\n## Cadena de Ifs (mismo patrón):\nPaso=menu? → Paso=producto? → Paso=nombre? → Paso=ciudad? → Paso=pago? → Paso=esperando_ok?\n\n## Placeholders:\n- TU_SPREADSHEET_ID_AQUI\n- TU_BASE_ID_AQUI\n- TU_TABLE_CATEGORIAS_ID_AQUI\n- TU_TABLE_PRODUCTOS_ID_AQUI\n- TU_AIRTABLE_CREDENTIAL_ID\n- TU_URL_MODAL_AQUI\n- NUMERO_DUENO_AQUI",
+          "height": 340,
+          "width": 340
+        },
+        "id": "d58ef21e-be9e-4111-93a4-8cc27bdc3f0a",
+        "name": "📋 Documentación",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          1216,
+          4144
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook Evolution API": {
+        "main": [
+          [
+            {
+              "node": "Filtro Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filtro Webhook": {
+        "main": [
+          [
+            {
+              "node": "Extraer Datos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraer Datos": {
+        "main": [
+          [
+            {
+              "node": "No es mensaje mio",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "No es mensaje mio": {
+        "main": [
+          [
+            {
+              "node": "Leer Bot Estado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Leer Bot Estado": {
+        "main": [
+          [
+            {
+              "node": "Buscar Telefono",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Telefono": {
+        "main": [
+          [
+            {
+              "node": "Ya Existe?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Ya Existe?": {
+        "main": [
+          [
+            {
+              "node": "Paso=menu?",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Guardar Nuevo Estado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar Nuevo Estado": {
+        "main": [
+          [
+            {
+              "node": "Leer Categorias Airtable",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Leer Categorias Airtable": {
+        "main": [
+          [
+            {
+              "node": "Armar Menu Categorias",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Armar Menu Categorias": {
+        "main": [
+          [
+            {
+              "node": "Enviar Menu Categorias",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Paso=menu?": {
+        "main": [
+          [
+            {
+              "node": "Validar Categoria",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Paso=producto?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validar Categoria": {
+        "main": [
+          [
+            {
+              "node": "Leer Cats para Resolver",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Leer Cats para Resolver": {
+        "main": [
+          [
+            {
+              "node": "Resolver Categoria",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Resolver Categoria": {
+        "main": [
+          [
+            {
+              "node": "Update Categoria",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Categoria": {
+        "main": [
+          [
+            {
+              "node": "Leer Productos Airtable",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Leer Productos Airtable": {
+        "main": [
+          [
+            {
+              "node": "Armar Productos con Imagen",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Armar Productos con Imagen": {
+        "main": [
+          [
+            {
+              "node": "Enviar Producto con Imagen",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Enviar Producto con Imagen": {
+        "main": [
+          [
+            {
+              "node": "Enviar Instruccion Producto",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Paso=producto?": {
+        "main": [
+          [
+            {
+              "node": "Resolver Producto",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Paso=nombre?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Resolver Producto": {
+        "main": [
+          [
+            {
+              "node": "Leer Prods para Resolver",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Leer Prods para Resolver": {
+        "main": [
+          [
+            {
+              "node": "Mapear Producto",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Mapear Producto": {
+        "main": [
+          [
+            {
+              "node": "Update Producto",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Producto": {
+        "main": [
+          [
+            {
+              "node": "Pedir Nombre",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Paso=nombre?": {
+        "main": [
+          [
+            {
+              "node": "Guardar Nombre",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Paso=ciudad?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar Nombre": {
+        "main": [
+          [
+            {
+              "node": "Pedir Ciudad",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Paso=ciudad?": {
+        "main": [
+          [
+            {
+              "node": "Parsear Ubicacion",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Paso=pago?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parsear Ubicacion": {
+        "main": [
+          [
+            {
+              "node": "Calcular Envio Modal",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Calcular Envio Modal": {
+        "main": [
+          [
+            {
+              "node": "Guardar Ciudad",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar Ciudad": {
+        "main": [
+          [
+            {
+              "node": "Enviar Total y CVU",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Paso=pago?": {
+        "main": [
+          [
+            {
+              "node": "Tiene Captura?",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Paso=esperando_ok?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tiene Captura?": {
+        "main": [
+          [
+            {
+              "node": "Confirmar Captura",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Pedir Captura",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Confirmar Captura": {
+        "main": [
+          [
+            {
+              "node": "Notificar al Dueno",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Notificar al Dueno": {
+        "main": [
+          [
+            {
+              "node": "Paso Esperando OK",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Paso=esperando_ok?": {
+        "main": [
+          [
+            {
+              "node": "Confirmar Pago al Cliente",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Confirmar Pago al Cliente": {
+        "main": [
+          [
+            {
+              "node": "Paso Completado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": [
     {
       "id": "sin-tag",
