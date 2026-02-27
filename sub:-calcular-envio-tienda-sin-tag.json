@@ -1,0 +1,115 @@
+{
+  "id": "B5EmFwWaue0IiNuS",
+  "name": "Sub: Calcular Envío Tienda",
+  "active": true,
+  "tags": [],
+  "nodes": [
+    {
+      "id": "trigger-envio",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        300
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "http-modal",
+      "name": "Calcular Envío Modal",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://arnaldoayala157--calculadora-envios-tienda-api-calcular.modal.run/calcular",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"precio_producto\": {{ $json.precio_producto }},\n  \"provincia\": \"{{ $json.provincia }}\"\n}",
+        "options": {}
+      }
+    },
+    {
+      "id": "set-envio",
+      "name": "Respuesta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        300
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "response",
+              "value": "={{ $json.mensaje_cobro }}",
+              "type": "string"
+            },
+            {
+              "id": "r2",
+              "name": "costo_envio",
+              "value": "={{ $json.costo_envio }}",
+              "type": "number"
+            },
+            {
+              "id": "r3",
+              "name": "total",
+              "value": "={{ $json.total }}",
+              "type": "number"
+            },
+            {
+              "id": "r4",
+              "name": "mensaje_cobro",
+              "value": "={{ $json.mensaje_cobro }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Calcular Envío Modal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular Envío Modal": {
+      "main": [
+        [
+          {
+            "node": "Respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  }
+}
