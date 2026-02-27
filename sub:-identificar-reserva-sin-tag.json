@@ -1,0 +1,150 @@
+{
+  "updatedAt": "2026-02-26T23:22:59.937Z",
+  "createdAt": "2026-02-26T23:22:59.937Z",
+  "id": "2m1ffXRAIEdNzsVR",
+  "name": "Sub: Identificar Reserva",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appdA5rJOmtVvpDrx",
+          "mode": "list",
+          "cachedResultName": "Automatizacion-Restaurantes",
+          "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqD3q6cwnF6YFXJ",
+          "mode": "list",
+          "cachedResultName": "Reservas",
+          "cachedResultUrl": "https://airtable.com/appdA5rJOmtVvpDrx/tblqD3q6cwnF6YFXJ"
+        },
+        "filterByFormula": "=AND(LOWER({Nombre}) = LOWER('{{ $json.nombre }}'), DATETIME_FORMAT({Fecha}, 'YYYY-MM-DD') = '{{ $json.fecha }}', {Hora} = '{{ $json.hora }}')",
+        "options": {}
+      },
+      "id": "d0e19751-0510-444c-bfe2-0007be8b808b",
+      "name": "Buscar en Airtable",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1552,
+        1088
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "cSn4DhEebpFAmHgW",
+          "name": "Airtable Access Token Restaurantes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst firstItem = items[0]?.json || {};\n\nif (firstItem.id) {\n  return [{ json: {\n    encontrada: 'true',\n    id: firstItem.id,\n    nombre: firstItem.Nombre || firstItem.fields?.Nombre || '',\n    fecha: firstItem.Fecha || firstItem.fields?.Fecha || '',\n    hora: firstItem.Hora || firstItem.fields?.Hora || '',\n    personas: String(firstItem.Personas || firstItem.fields?.Personas || ''),\n    resultado: 'Reserva encontrada. ID: ' + firstItem.id\n  }}];\n}\n\nreturn [{ json: {\n  encontrada: 'false',\n  resultado: 'No se encontró ninguna reserva con esos datos'\n}}];"
+      },
+      "id": "9c49e126-8c2f-4a4a-b7c0-37ace91e5585",
+      "name": "Procesar Resultado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1776,
+        1088
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🔎 SUB: IDENTIFICAR RESERVA\n\n**Recibe:** nombre, fecha, hora\n\n**Busca** con AND(nombre, fecha, hora)\n\n**Devuelve** el recID para modificar/cancelar",
+        "height": 180,
+        "width": 280,
+        "color": 5
+      },
+      "id": "cb76e6a9-63c5-40bb-8391-49748104142a",
+      "name": "📋 Info",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        864
+      ]
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "nombre"
+            },
+            {
+              "name": "fecha"
+            },
+            {
+              "name": "hora"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        1328,
+        1088
+      ],
+      "id": "0b6feea0-c052-4295-88ba-e5dafdf34417",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "connections": {
+    "Buscar en Airtable": {
+      "main": [
+        [
+          {
+            "node": "Procesar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Buscar en Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "4105b73b-a31a-4bca-94c2-83739e482ffb",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-26T23:22:59.939Z",
+      "createdAt": "2026-02-26T23:22:59.939Z",
+      "role": "workflow:owner",
+      "workflowId": "2m1ffXRAIEdNzsVR",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "id": "sin-tag",
+      "name": "sin-tag"
+    }
+  ]
+}
