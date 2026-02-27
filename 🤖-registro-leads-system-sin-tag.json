@@ -1,0 +1,758 @@
+{
+  "updatedAt": "2026-02-27T00:24:29.000Z",
+  "createdAt": "2026-02-26T23:23:42.018Z",
+  "id": "Gu8U0ZXK9KgrOD6R",
+  "name": "🤖 Registro Leads System",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "registro-leads-system",
+        "options": {}
+      },
+      "id": "3e7059a5-ea41-4370-95b8-0c51d197ddcb",
+      "name": "📋 Webhook Formulario",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        -464,
+        272
+      ],
+      "webhookId": "registro-leads-system"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst d = input.body || input;\n\nreturn [{\n  json: {\n    fecha_registro: d.fecha_registro || new Date().toLocaleString('es-AR'),\n    nivel_interes: d.nivel_interes || '',\n    nombre_completo: d.nombre_completo || '',\n    nombre_negocio: d.nombre_negocio || '',\n    rubro: d.rubro || '',\n    pais_ciudad: d.pais_ciudad || '',\n    whatsapp: d.whatsapp || '',\n    email: d.email || '',\n    instagram: d.instagram || '',\n    web: d.web || '',\n    empleados: d.empleados || '',\n    origen: d.origen || '',\n    referido_por: d.referido_por || '',\n    herramientas: d.herramientas || '',\n    herramientas_detalle: d.herramientas_detalle || '',\n    canales_captacion: d.canales_captacion || '',\n    consultas_diarias: d.consultas_diarias || '',\n    quien_responde: d.quien_responde || '',\n    problema_principal: d.problema_principal || '',\n    problemas: d.problemas || '',\n    otro_problema: d.otro_problema || '',\n    automatizar_texto: d.automatizar_texto || '',\n    automatizaciones: d.automatizaciones || '',\n    flujo_completo: d.flujo_completo || '',\n    idiomas: d.idiomas || '',\n    horario_bot: d.horario_bot || '',\n    derivar_humano: d.derivar_humano || '',\n    datos_cliente: d.datos_cliente || '',\n    bot_da_precios: d.bot_da_precios || '',\n    tiene_faqs: d.tiene_faqs || '',\n    materiales: d.materiales || '',\n    urgencia: d.urgencia || '',\n    presupuesto_definido: d.presupuesto_definido || '',\n    presupuesto_monto: d.presupuesto_monto || '',\n    modelo_pago: d.modelo_pago || '',\n    experiencia_previa: d.experiencia_previa || '',\n    experiencia_detalle: d.experiencia_detalle || '',\n    resultado_esperado: d.resultado_esperado || '',\n    accesos: d.accesos || '',\n    preguntas_rubro: d.preguntas_rubro || '',\n    notas_adicionales: d.notas_adicionales || '',\n    registrado_por: d.registrado_por || '',\n    estado: 'NUEVO'\n  }\n}];"
+      },
+      "id": "44d3bb09-1ed2-4297-b187-efb0daf92887",
+      "name": "📦 Preparar Datos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1dRSz7z-QnITx5gio_uky9fEtpYPlZ3VNh5lisKD77T0",
+          "mode": "list",
+          "cachedResultName": "Formulario_Leads_System",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dRSz7z-QnITx5gio_uky9fEtpYPlZ3VNh5lisKD77T0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dRSz7z-QnITx5gio_uky9fEtpYPlZ3VNh5lisKD77T0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha_registro": "={{ $json.fecha_registro }}",
+            "nivel_interes": "={{ $json.nivel_interes }}",
+            "nombre_completo": "={{ $json.nombre_completo }}",
+            "nombre_negocio": "={{ $json.nombre_completo }}",
+            "rubro": "={{ $json.rubro }}",
+            "pais_ciudad": "={{ $json.pais_ciudad }}",
+            "whatsapp": "={{ $json.whatsapp }}",
+            "email": "={{ $json.email }}",
+            "instagram": "={{ $json.instagram }}",
+            "web": "={{ $json.web }}",
+            "empleados": "={{ $json.empleados }}",
+            "origen": "={{ $json.origen }}",
+            "referido_por": "={{ $json.referido_por }}",
+            "herramientas": "={{ $json.herramientas }}",
+            "herramientas_detalle": "={{ $json.herramientas_detalle }}",
+            "canales_captacion": "={{ $json.canales_captacion }}",
+            "consultas_diarias": "={{ $json.consultas_diarias }}",
+            "quien_responde": "={{ $json.quien_responde }}",
+            "problema_principal": "={{ $json.problema_principal }}",
+            "problemas": "={{ $json.problemas }}",
+            "otro_problema": "={{ $json.otro_problema }}",
+            "automatizar_texto": "={{ $json.automatizar_texto }}",
+            "automatizaciones": "={{ $json.automatizaciones }}",
+            "flujo_completo": "={{ $json.flujo_completo }}",
+            "idiomas": "={{ $json.idiomas }}",
+            "horario_bot": "={{ $json.horario_bot }}",
+            "derivar_humano": "={{ $json.derivar_humano }}",
+            "datos_cliente": "={{ $json.datos_cliente }}",
+            "bot_da_precios": "={{ $json.bot_da_precios }}",
+            "tiene_faqs": "={{ $json.tiene_faqs }}",
+            "materiales": "={{ $json.materiales }}",
+            "urgencia": "={{ $json.urgencia }}",
+            "presupuesto_definido": "={{ $json.presupuesto_definido }}",
+            "presupuesto_monto": "={{ $json.presupuesto_monto }}",
+            "modelo_pago": "={{ $json.modelo_pago }}",
+            "experiencia_previa": "={{ $json.experiencia_previa }}",
+            "experiencia_detalle": "={{ $json.experiencia_detalle }}",
+            "resultado_esperado": "={{ $json.resultado_esperado }}",
+            "accesos": "={{ $json.accesos }}",
+            "preguntas_rubro": "={{ $json.preguntas_rubro }}",
+            "notas_adicionales": "={{ $json.notas_adicionales }}",
+            "registrado_por": "={{ $json.registrado_por }}",
+            "estado": "={{ $json.estado }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fecha_registro",
+              "displayName": "fecha_registro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nivel_interes",
+              "displayName": "nivel_interes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre_completo",
+              "displayName": "nombre_completo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre_negocio",
+              "displayName": "nombre_negocio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "rubro",
+              "displayName": "rubro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pais_ciudad",
+              "displayName": "pais_ciudad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "whatsapp",
+              "displayName": "whatsapp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "instagram",
+              "displayName": "instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "web",
+              "displayName": "web",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empleados",
+              "displayName": "empleados",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "origen",
+              "displayName": "origen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "referido_por",
+              "displayName": "referido_por",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "herramientas",
+              "displayName": "herramientas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "herramientas_detalle",
+              "displayName": "herramientas_detalle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "canales_captacion",
+              "displayName": "canales_captacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "consultas_diarias",
+              "displayName": "consultas_diarias",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "quien_responde",
+              "displayName": "quien_responde",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "problema_principal",
+              "displayName": "problema_principal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "problemas",
+              "displayName": "problemas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "otro_problema",
+              "displayName": "otro_problema",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "automatizar_texto",
+              "displayName": "automatizar_texto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "automatizaciones",
+              "displayName": "automatizaciones",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "flujo_completo",
+              "displayName": "flujo_completo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "idiomas",
+              "displayName": "idiomas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "horario_bot",
+              "displayName": "horario_bot",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "derivar_humano",
+              "displayName": "derivar_humano",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "datos_cliente",
+              "displayName": "datos_cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "bot_da_precios",
+              "displayName": "bot_da_precios",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tiene_faqs",
+              "displayName": "tiene_faqs",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "materiales",
+              "displayName": "materiales",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "urgencia",
+              "displayName": "urgencia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "presupuesto_definido",
+              "displayName": "presupuesto_definido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "presupuesto_monto",
+              "displayName": "presupuesto_monto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "modelo_pago",
+              "displayName": "modelo_pago",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "experiencia_previa",
+              "displayName": "experiencia_previa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "experiencia_detalle",
+              "displayName": "experiencia_detalle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "resultado_esperado",
+              "displayName": "resultado_esperado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "accesos",
+              "displayName": "accesos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "preguntas_rubro",
+              "displayName": "preguntas_rubro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "notas_adicionales",
+              "displayName": "notas_adicionales",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "registrado_por",
+              "displayName": "registrado_por",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "d5cd44f2-c156-4e38-812e-1babf61b9e19",
+      "name": "📊 Guardar en Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        0,
+        272
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GMCKCQGZj49ZyiKE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.nivel_interes }}",
+              "operation": "contains",
+              "value2": "CALIENTE"
+            }
+          ]
+        }
+      },
+      "id": "b7340cf5-876d-4ed9-8a8c-bf52c924a1ce",
+      "name": "🔴 ¿Es CALIENTE?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        192,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.nivel_interes }}",
+              "operation": "contains",
+              "value2": "TIBIO"
+            }
+          ]
+        }
+      },
+      "id": "793deb9b-e66e-4f40-a8ce-8aad9b53eb1f",
+      "name": "🟡 ¿Es TIBIO?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        432,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"5493765384843\",\n  \"text\": \"🔴 *LEAD CALIENTE - ACCIÓN INMEDIATA*\\n\\n👤 *{{ $json.nombre_completo }}*\\n🏢 {{ $json.nombre_negocio }}\\n📋 {{ $json.rubro }}\\n📍 {{ $json.pais_ciudad }}\\n📱 {{ $json.whatsapp }}\\n\\n😫 *Problema:*\\n{{ $json.problema_principal }}\\n\\n🤖 *Quiere automatizar:*\\n{{ $json.automatizar_texto }}\\n\\n⏰ Urgencia: {{ $json.urgencia }}\\n💰 Presupuesto: {{ $json.presupuesto_definido }} {{ $json.presupuesto_monto || '' }}\\n🎯 Espera: {{ $json.resultado_esperado }}\\n\\n📅 {{ $json.fecha_registro }} | Por: {{ $json.registrado_por }}\"\n}",
+        "options": {}
+      },
+      "id": "c2cd60de-9fce-4c2b-9076-1928184d494b",
+      "name": "📱 WhatsApp URGENTE",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        432,
+        128
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Cg8i23WdofXdKu0X",
+          "name": "Header Auth Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "arnaldoayala222@gmail.com",
+        "toEmail": "arnaldoayala157@gmail.com",
+        "subject": "=🔴 LEAD CALIENTE - {{ $json.nombre_completo }} | {{ $json.nombre_negocio }}",
+        "html": "=<div style=\"font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#1a1a2e;color:#fff;border-radius:12px;overflow:hidden\">\n<div style=\"background:linear-gradient(135deg,#E74C3C,#C0392B);padding:20px;text-align:center\">\n<h1 style=\"margin:0\">🔴 LEAD CALIENTE</h1>\n<p style=\"margin:4px 0 0;opacity:.9\">Requiere acción INMEDIATA</p>\n</div>\n<div style=\"padding:20px\">\n<h2 style=\"color:#E74C3C;margin:0\">{{ $json.nombre_completo }}</h2>\n<p style=\"color:#a29bfe\">{{ $json.nombre_negocio }} — {{ $json.rubro }}</p>\n<table style=\"width:100%;margin:12px 0\">\n<tr><td style=\"padding:6px;color:#888\">📱 WhatsApp</td><td style=\"padding:6px\">{{ $json.whatsapp }}</td></tr>\n<tr><td style=\"padding:6px;color:#888\">� Email</td><td style=\"padding:6px\">{{ $json.email }}</td></tr>\n<tr><td style=\"padding:6px;color:#888\">� Ubicación</td><td style=\"padding:6px\">{{ $json.pais_ciudad }}</td></tr>\n<tr><td style=\"padding:6px;color:#888\">⏰ Urgencia</td><td style=\"padding:6px;color:#E74C3C;font-weight:bold\">{{ $json.urgencia }}</td></tr>\n<tr><td style=\"padding:6px;color:#888\">💰 Presupuesto</td><td style=\"padding:6px\">{{ $json.presupuesto_definido }} {{ $json.presupuesto_monto }}</td></tr>\n</table>\n<div style=\"background:#12122a;border-radius:8px;padding:14px;margin:12px 0\">\n<h3 style=\"color:#fd79a8;margin:0 0 6px\">😫 Problema</h3>\n<p style=\"color:#ddd;margin:0\">{{ $json.problema_principal }}</p>\n</div>\n<div style=\"background:#12122a;border-radius:8px;padding:14px;margin:12px 0\">\n<h3 style=\"color:#00cec9;margin:0 0 6px\">🤖 Quiere Automatizar</h3>\n<p style=\"color:#ddd;margin:0\">{{ $json.automatizar_texto }}</p>\n<p style=\"color:#a29bfe;font-size:12px;margin:6px 0 0\">{{ $json.automatizaciones }}</p>\n</div>\n<div style=\"background:#12122a;border-radius:8px;padding:14px;margin:12px 0\">\n<h3 style=\"color:#00b894;margin:0 0 6px\">🎯 Resultado Esperado</h3>\n<p style=\"color:#ddd;margin:0\">{{ $json.resultado_esperado }}</p>\n</div>\n<p style=\"color:#666;font-size:11px\">📅 {{ $json.fecha_registro }} | Por: {{ $json.registrado_por }}</p>\n</div>\n</div>",
+        "options": {}
+      },
+      "id": "b9ddff66-d68d-4323-b022-afe048ef06da",
+      "name": "📧 Email CALIENTE",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        432,
+        304
+      ],
+      "webhookId": "35606485-ff25-4f16-87a5-8e3774f8be4d",
+      "credentials": {
+        "smtp": {
+          "id": "NSJG1fwGgKL7Yi5I",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "arnaldoayala222@gmail.com",
+        "toEmail": "arnaldoayala157@gmail.com",
+        "subject": "=🟡 Lead Tibio - {{ $json.nombre_completo }} | {{ $json.nombre_negocio }}",
+        "html": "=<div style=\"font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#1a1a2e;color:#fff;border-radius:12px;overflow:hidden\">\n<div style=\"background:linear-gradient(135deg,#F1C40F,#F39C12);padding:20px;text-align:center\">\n<h1 style=\"margin:0;color:#333\">🟡 LEAD TIBIO</h1>\n<p style=\"margin:4px 0 0;color:#555\">Interesado, preparar propuesta</p>\n</div>\n<div style=\"padding:20px\">\n<h2 style=\"color:#F1C40F;margin:0\">{{ $json.nombre_completo }}</h2>\n<p style=\"color:#a29bfe\">{{ $json.nombre_negocio }} — {{ $json.rubro }}</p>\n<table style=\"width:100%;margin:12px 0\">\n<tr><td style=\"padding:6px;color:#888\">📱 WhatsApp</td><td style=\"padding:6px\">{{ $json.whatsapp }}</td></tr>\n<tr><td style=\"padding:6px;color:#888\">📍 Ubicación</td><td style=\"padding:6px\">{{ $json.pais_ciudad }}</td></tr>\n<tr><td style=\"padding:6px;color:#888\">⏰ Urgencia</td><td style=\"padding:6px\">{{ $json.urgencia }}</td></tr>\n<tr><td style=\"padding:6px;color:#888\">💰 Presup.</td><td style=\"padding:6px\">{{ $json.presupuesto_definido }}</td></tr>\n</table>\n<div style=\"background:#12122a;border-radius:8px;padding:14px;margin:12px 0\">\n<h3 style=\"color:#fd79a8;margin:0 0 6px\">😫 Problema</h3>\n<p style=\"color:#ddd;margin:0\">{{ $json.problema_principal }}</p>\n</div>\n<div style=\"background:#12122a;border-radius:8px;padding:14px;margin:12px 0\">\n<h3 style=\"color:#00cec9;margin:0 0 6px\">🤖 Quiere</h3>\n<p style=\"color:#ddd;margin:0\">{{ $json.automatizar_texto }}</p>\n</div>\n<p style=\"color:#666;font-size:11px\">📅 {{ $json.fecha_registro }} | Por: {{ $json.registrado_por }}</p>\n</div>\n</div>",
+        "options": {}
+      },
+      "id": "508f22ef-7874-4cd2-8e50-beb3d0759798",
+      "name": "📧 Email TIBIO",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        384
+      ],
+      "webhookId": "4803d495-4d90-4959-9748-1fe50f534b66",
+      "credentials": {
+        "smtp": {
+          "id": "NSJG1fwGgKL7Yi5I",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "bedc6a8f-52df-4ab6-a1d7-985d406d13be",
+      "name": "🔵 Solo Guardado",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        704,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🤖 Registro de Leads System\n\n### Configurar:\n1. Google Sheets → seleccionar hoja\n2. WhatsApp → URL Evolution API\n3. Email → credenciales SMTP\n\n### Flujo:\nWebhook → Sheets → Si CALIENTE: WA + Email\nSi TIBIO: Email | Si FRÍO: nada",
+        "height": 260,
+        "width": 320,
+        "color": 5
+      },
+      "id": "47d71496-6036-45a7-a0dd-a14540361776",
+      "name": "📝 Nota",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -832,
+        144
+      ]
+    }
+  ],
+  "connections": {
+    "📋 Webhook Formulario": {
+      "main": [
+        [
+          {
+            "node": "📦 Preparar Datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📦 Preparar Datos": {
+      "main": [
+        [
+          {
+            "node": "📊 Guardar en Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Guardar en Sheets": {
+      "main": [
+        [
+          {
+            "node": "🔴 ¿Es CALIENTE?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔴 ¿Es CALIENTE?": {
+      "main": [
+        [
+          {
+            "node": "📱 WhatsApp URGENTE",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "📧 Email CALIENTE",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "🟡 ¿Es TIBIO?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🟡 ¿Es TIBIO?": {
+      "main": [
+        [
+          {
+            "node": "📧 Email TIBIO",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "🔵 Solo Guardado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "b2c3261a-f55f-44e5-bb4e-3f4c0e61f2a9",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-26T23:23:42.020Z",
+      "createdAt": "2026-02-26T23:23:42.020Z",
+      "role": "workflow:owner",
+      "workflowId": "Gu8U0ZXK9KgrOD6R",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "id": "sin-tag",
+      "name": "sin-tag"
+    }
+  ]
+}
