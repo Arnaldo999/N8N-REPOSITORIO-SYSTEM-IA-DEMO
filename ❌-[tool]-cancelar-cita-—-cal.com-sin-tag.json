@@ -1,0 +1,125 @@
+{
+  "updatedAt": "2026-02-26T23:23:14.909Z",
+  "createdAt": "2026-02-26T23:23:14.909Z",
+  "id": "rprndK6H3A0ZWPmf",
+  "name": "❌ [Tool] Cancelar Cita — Cal.com",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-cancel",
+      "name": "Execute Workflow Trigger",
+      "position": [
+        240,
+        304
+      ],
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://api.cal.com/v2/bookings/{{ $json.bookingId }}/cancel",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"cancellationReason\": \"{{ $json.motivo || 'Cancelado por el paciente' }}\"\n}",
+        "options": {}
+      },
+      "id": "http-cancel",
+      "name": "CANCEL Booking Cal.com",
+      "position": [
+        464,
+        304
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "iwHFpfPGDViqragO",
+          "name": "Header Auth Cal.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "format-cancel",
+      "name": "Formatear Cancelación",
+      "position": [
+        688,
+        304
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "content": "## ❌ Cancelar Cita\n\n**Input esperado:**\n- `bookingId` → ID numérico de la cita\n- `motivo` → razón de cancelación (opcional)\n\n**Output:**\n- Confirmación de cancelación",
+        "height": 180,
+        "width": 220
+      },
+      "id": "sticky-cancel",
+      "name": "Sticky Note",
+      "position": [
+        272,
+        80
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "CANCEL Booking Cal.com": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Formatear Cancelación",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "CANCEL Booking Cal.com",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "a95809b3-0be1-4a75-8541-56f9c7ae9b0c",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-26T23:23:14.911Z",
+      "createdAt": "2026-02-26T23:23:14.911Z",
+      "role": "workflow:owner",
+      "workflowId": "rprndK6H3A0ZWPmf",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "id": "sin-tag",
+      "name": "sin-tag"
+    }
+  ]
+}
