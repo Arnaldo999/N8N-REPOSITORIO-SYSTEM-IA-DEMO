@@ -1,0 +1,312 @@
+{
+  "updatedAt": "2026-02-27T21:37:00.768Z",
+  "createdAt": "2026-02-27T20:37:52.513Z",
+  "id": "EOdJH8nzrVsRfHLz",
+  "name": "Sub: Ver Productos Tienda",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-prods",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app6LRnI1AgMk1aTk",
+          "mode": "list",
+          "cachedResultName": "Tienda de Ropa",
+          "cachedResultUrl": "https://airtable.com/app6LRnI1AgMk1aTk"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl78kL0iBakRjjde",
+          "mode": "list",
+          "cachedResultName": "Productos",
+          "cachedResultUrl": "https://airtable.com/app6LRnI1AgMk1aTk/tbl78kL0iBakRjjde"
+        },
+        "filterByFormula": "={{ \"AND({activo} = TRUE(), FIND(LOWER('\" + $json.categoria + \"'), LOWER({categoria})))\" }}",
+        "options": {}
+      },
+      "id": "airtable-prods",
+      "name": "Leer Productos",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        304
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "uHWzSoh9H9THt171",
+          "name": "Airtable Tienda de Ropas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst trigger = $('When Executed by Another Workflow').first().json;\nconst categoria = trigger.categoria || '';\n\nconst productos = items.map((item, i) => {\n  const f = item.json.fields || item.json;\n  return {\n    numero: i + 1,\n    nombre: f.nombre || f.Nombre || '',\n    precio: Number(f.precio || f.Precio || 0),\n    descripcion: f.descripcion || f.Descripcion || '',\n    imagen_url: f.imagen_url || f.Imagen_url || ''\n  };\n});\n\nif (productos.length === 0) {\n  return [{ json: { response: `No encontré productos en la categoría *${categoria}*. Intentá con otra categoría.`, productos: [] } }];\n}\n\nlet texto = `👕 *Productos de ${categoria}:*\\n\\n`;\nproductos.forEach(p => {\n  texto += `${p.numero}. *${p.nombre}*\\n`;\n  if (p.descripcion) texto += `   ${p.descripcion}\\n`;\n  texto += `   💰 $${p.precio.toLocaleString('es-AR')}\\n\\n`;\n});\ntexto += 'Escribí el *número* del producto que te interesa, o *0* para volver al menú.';\n\nreturn [{ json: { productos, response: texto } }];\n"
+      },
+      "id": "code-prods",
+      "name": "Formatear Productos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "response",
+              "value": "={{ $json.response }}",
+              "type": "string"
+            },
+            {
+              "id": "r2",
+              "name": "productos",
+              "value": "={{ JSON.stringify($json.productos) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-prods",
+      "name": "Respuesta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        304
+      ]
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Leer Productos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Productos": {
+      "main": [
+        [
+          {
+            "node": "Formatear Productos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatear Productos": {
+      "main": [
+        [
+          {
+            "node": "Respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "2c422e1a-b10c-470c-8d7f-92c412365a2d",
+  "activeVersionId": "09e2f3e5-46f2-4fcc-9cb0-0e3974900b75",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-27T20:37:52.515Z",
+      "createdAt": "2026-02-27T20:37:52.515Z",
+      "role": "workflow:owner",
+      "workflowId": "EOdJH8nzrVsRfHLz",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-27T20:37:52.517Z",
+    "createdAt": "2026-02-27T20:37:52.517Z",
+    "versionId": "09e2f3e5-46f2-4fcc-9cb0-0e3974900b75",
+    "workflowId": "EOdJH8nzrVsRfHLz",
+    "nodes": [
+      {
+        "id": "trigger-prods",
+        "name": "When Executed by Another Workflow",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          0,
+          300
+        ],
+        "parameters": {}
+      },
+      {
+        "id": "airtable-prods",
+        "name": "Leer Productos",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          240,
+          300
+        ],
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "value": "app6LRnI1AgMk1aTk",
+            "mode": "list",
+            "cachedResultName": "Tienda de Ropa",
+            "cachedResultUrl": "https://airtable.com/app6LRnI1AgMk1aTk"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tbl78kL0iBakRjjde",
+            "mode": "list",
+            "cachedResultName": "Productos",
+            "cachedResultUrl": "https://airtable.com/app6LRnI1AgMk1aTk/tbl78kL0iBakRjjde"
+          },
+          "filterByFormula": "={{ \"AND({activo} = TRUE(), FIND(LOWER('\" + $json.categoria + \"'), LOWER({categoria})))\" }}",
+          "options": {}
+        },
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "uHWzSoh9H9THt171",
+            "name": "Airtable Tienda de Ropas"
+          }
+        }
+      },
+      {
+        "id": "code-prods",
+        "name": "Formatear Productos",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          480,
+          300
+        ],
+        "parameters": {
+          "jsCode": "const items = $input.all();\nconst trigger = $('When Executed by Another Workflow').first().json;\nconst categoria = trigger.categoria || '';\n\nconst productos = items.map((item, i) => {\n  const f = item.json.fields || item.json;\n  return {\n    numero: i + 1,\n    nombre: f.nombre || f.Nombre || '',\n    precio: Number(f.precio || f.Precio || 0),\n    descripcion: f.descripcion || f.Descripcion || '',\n    imagen_url: f.imagen_url || f.Imagen_url || ''\n  };\n});\n\nif (productos.length === 0) {\n  return [{ json: { response: `No encontré productos en la categoría *${categoria}*. Intentá con otra categoría.`, productos: [] } }];\n}\n\nlet texto = `👕 *Productos de ${categoria}:*\\n\\n`;\nproductos.forEach(p => {\n  texto += `${p.numero}. *${p.nombre}*\\n`;\n  if (p.descripcion) texto += `   ${p.descripcion}\\n`;\n  texto += `   💰 $${p.precio.toLocaleString('es-AR')}\\n\\n`;\n});\ntexto += 'Escribí el *número* del producto que te interesa, o *0* para volver al menú.';\n\nreturn [{ json: { productos, response: texto } }];\n"
+        }
+      },
+      {
+        "id": "set-prods",
+        "name": "Respuesta",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          720,
+          300
+        ],
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "r1",
+                "name": "response",
+                "value": "={{ $json.response }}",
+                "type": "string"
+              },
+              {
+                "id": "r2",
+                "name": "productos",
+                "value": "={{ JSON.stringify($json.productos) }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        }
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Leer Productos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Leer Productos": {
+        "main": [
+          [
+            {
+              "node": "Formatear Productos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Formatear Productos": {
+        "main": [
+          [
+            {
+              "node": "Respuesta",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-27T19:58:28.073Z",
+      "createdAt": "2026-02-27T19:58:28.073Z",
+      "id": "Ttv2U1PGT69vmrbF",
+      "name": "Tiendas"
+    },
+    {
+      "updatedAt": "2026-02-27T13:26:22.913Z",
+      "createdAt": "2026-02-27T13:26:22.913Z",
+      "id": "dveKcFU9yNCIwJvk",
+      "name": "DEMO"
+    },
+    {
+      "updatedAt": "2026-02-26T23:58:08.513Z",
+      "createdAt": "2026-02-26T23:58:08.513Z",
+      "id": "h6NCtzLto5r41s9Q",
+      "name": "WHATSAPP"
+    }
+  ]
+}
