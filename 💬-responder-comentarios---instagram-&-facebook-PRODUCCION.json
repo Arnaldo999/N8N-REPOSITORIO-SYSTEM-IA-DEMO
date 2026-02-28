@@ -1,0 +1,360 @@
+{
+  "updatedAt": "2026-02-27T20:02:11.828Z",
+  "createdAt": "2026-02-26T23:23:20.039Z",
+  "id": "b3LvckelvjEXWXv2",
+  "name": "💬 Responder Comentarios - Instagram & Facebook",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "meta-comentarios",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-meta",
+      "name": "Webhook Meta",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        304
+      ],
+      "webhookId": "a95598f4-e148-48b6-81df-e56a81bf2c26"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "meta-comentarios",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-meta-post",
+      "name": "Webhook Meta (Eventos)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        512
+      ],
+      "webhookId": "68858478-9a65-4461-a13b-69258605e7ad"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query['hub.challenge'] }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "verificar-token",
+      "name": "Verificar Token Meta",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        512,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body;\n\n// Extraer evento de comentario de Instagram o Facebook\nconst entry = body?.entry?.[0];\nif (!entry) return [];\n\n// Instagram comment\nconst igChanges = entry.changes?.filter(c => c.field === 'comments');\nif (igChanges && igChanges.length > 0) {\n  const change = igChanges[0].value;\n  return [{\n    json: {\n      tipo: 'instagram',\n      comentario_id: change.id,\n      texto: change.text,\n      page_id: entry.id,\n      media_id: change.media?.id || ''\n    }\n  }];\n}\n\n// Facebook page comment\nconst fbChanges = entry.changes?.filter(c => c.field === 'feed');\nif (fbChanges && fbChanges.length > 0) {\n  const change = fbChanges[0].value;\n  if (change.item === 'comment' && change.verb === 'add') {\n    return [{\n      json: {\n        tipo: 'facebook',\n        comentario_id: change.comment_id,\n        texto: change.message,\n        page_id: entry.id,\n        post_id: change.post_id\n      }\n    }];\n  }\n}\n\nreturn [];"
+      },
+      "id": "extraer-comentario",
+      "name": "Extraer Comentario",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        512,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false
+          },
+          "conditions": [
+            {
+              "id": "tiene-texto",
+              "leftValue": "={{ $json.texto }}",
+              "rightValue": "^[\\p{Emoji}\\s]+$",
+              "operator": {
+                "type": "string",
+                "operation": "regex",
+                "not": true
+              }
+            },
+            {
+              "id": "tiene-contenido",
+              "leftValue": "={{ $json.texto.length }}",
+              "rightValue": 3,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "filtrar-spam",
+      "name": "Filtrar Spam",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        752,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appejn9ep8JMLJmPG",
+          "mode": "list",
+          "cachedResultName": "Clientes (Brand Books AI)"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblgFvYebZcJaYM07",
+          "mode": "list",
+          "cachedResultName": "Branding-Marca",
+          "cachedResultUrl": "https://airtable.com/appejn9ep8JMLJmPG/tblgFvYebZcJaYM07"
+        },
+        "filterByFormula": "={{ `OR({IG Business Account ID}='${$json.page_id}', {Facebook Page ID}='${$json.page_id}')` }}",
+        "options": {}
+      },
+      "id": "buscar-cliente",
+      "name": "Buscar Cliente (Airtable)",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        992,
+        512
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "3amPYJ6MWYf0VZtD",
+          "name": "Airtable Personal Access BRANDING-MARCA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "={{ $vars.GEMINI_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\n  \"contents\": [{\n    \"parts\": [{\n      \"text\": `Sos el community manager de ${$('Buscar Cliente (Airtable)').first().json['Nombre Comercial'] || 'la agencia'}. Alguien comentó en tu post de redes sociales: \"${$('Extraer Comentario').first().json.texto}\"\\n\\nEscribí UNA respuesta corta (máximo 3 líneas) en tono ${$('Buscar Cliente (Airtable)').first().json['Tono de Voz'] || 'cercano y profesional'} que:\\n1. Agradezca el comentario brevemente\\n2. Dé UN tip rápido y accionable relacionado al tema del comentario o al negocio (${$('Buscar Cliente (Airtable)').first().json['Servicio Principal'] || 'automatización con IA'})\\n3. Invite a escribir un DM para más info\\n\\nUSA emojis naturales. NO uses asteriscos ni markdown. Texto plano. Máximo 3 líneas.`\n    }]\n  }]\n} }",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "generar-respuesta",
+      "name": "Generar Respuesta (Gemini)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1232,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const respuesta = $input.first().json.candidates?.[0]?.content?.parts?.[0]?.text || '¡Gracias por tu comentario! 💡 La automatización puede transformar tu negocio. Escribinos un DM y te contamos cómo.';\nconst comentario = $('Extraer Comentario').first().json;\n\nreturn [{\n  json: {\n    ...comentario,\n    respuesta: respuesta.trim()\n  }\n}];"
+      },
+      "id": "extraer-texto",
+      "name": "Extraer Texto Respuesta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ `https://graph.facebook.com/v22.0/${$json.comentario_id}/replies` }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $json.respuesta }}"
+            },
+            {
+              "name": "access_token",
+              "value": "={{ $('Buscar Cliente (Airtable)').first().json['Meta Access Token'] || '' }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "publicar-reply",
+      "name": "Publicar Reply",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1712,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {success: true} }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "responder-ok",
+      "name": "Responder OK a Meta",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1952,
+        512
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Meta": {
+      "main": [
+        [
+          {
+            "node": "Verificar Token Meta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Meta (Eventos)": {
+      "main": [
+        [
+          {
+            "node": "Extraer Comentario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Comentario": {
+      "main": [
+        [
+          {
+            "node": "Filtrar Spam",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar Spam": {
+      "main": [
+        [
+          {
+            "node": "Buscar Cliente (Airtable)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Cliente (Airtable)": {
+      "main": [
+        [
+          {
+            "node": "Generar Respuesta (Gemini)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar Respuesta (Gemini)": {
+      "main": [
+        [
+          {
+            "node": "Extraer Texto Respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Texto Respuesta": {
+      "main": [
+        [
+          {
+            "node": "Publicar Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publicar Reply": {
+      "main": [
+        [
+          {
+            "node": "Responder OK a Meta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "1e126cc2-0c3d-45d8-9c90-e7ba9c88e533",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-26T23:23:20.041Z",
+      "createdAt": "2026-02-26T23:23:20.041Z",
+      "role": "workflow:owner",
+      "workflowId": "b3LvckelvjEXWXv2",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "updatedAt": "2026-02-27T20:01:57.105Z",
+      "createdAt": "2026-02-27T20:01:57.105Z",
+      "id": "fqgGa3s0Gc84BAoD",
+      "name": "PRODUCCION"
+    },
+    {
+      "updatedAt": "2026-02-27T20:01:12.173Z",
+      "createdAt": "2026-02-27T20:01:12.173Z",
+      "id": "sI1NmQGyxdSG4JaR",
+      "name": "REDES"
+    }
+  ]
+}
