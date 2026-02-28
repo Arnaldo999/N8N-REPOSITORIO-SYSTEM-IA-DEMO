@@ -1,0 +1,558 @@
+{
+  "updatedAt": "2026-02-27T21:41:40.827Z",
+  "createdAt": "2026-02-27T20:39:08.290Z",
+  "id": "VBlLIxvJizzgnK9q",
+  "name": "Sub: Registrar Pedido Tienda",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-pedido",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo",
+          "mode": "list",
+          "cachedResultName": "DEMO-Automatizacion Whatsapp - tienda de ropas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1467105671,
+          "mode": "list",
+          "cachedResultName": "pedidos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit#gid=1467105671"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "={{ $now.toFormat('dd/MM/yyyy') }}",
+            "nombre": "={{ $json.nombre }}",
+            "telefono": "={{ $json.telefono }}",
+            "ciudad": "={{ $json.ciudad }}",
+            "provincia": "={{ $json.provincia }}",
+            "producto": "={{ $json.producto }}",
+            "categoria": "={{ $json.categoria }}",
+            "precio_producto": "={{ $json.precio_producto }}",
+            "costo_envio": "={{ $json.costo_envio }}",
+            "total": "={{ $json.total }}",
+            "estado": "pendiente",
+            "timestamp": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "ciudad",
+              "displayName": "ciudad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "provincia",
+              "displayName": "provincia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "producto",
+              "displayName": "producto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "categoria",
+              "displayName": "categoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "precio_producto",
+              "displayName": "precio_producto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number"
+            },
+            {
+              "id": "costo_envio",
+              "displayName": "costo_envio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number"
+            },
+            {
+              "id": "total",
+              "displayName": "total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number"
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false
+        },
+        "options": {}
+      },
+      "id": "sheets-append",
+      "name": "Guardar en Pedidos",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        240,
+        304
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9AngrdYrRh5RyUES",
+          "name": "Formulario_Leads_System"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"+5493765384843\",\n  \"text\": \"🔔 *NUEVO PEDIDO PENDIENTE*\\n\\n👤 Cliente: {{ $('When Executed by Another Workflow').first().json.nombre }}\\n📱 Teléfono: {{ $('When Executed by Another Workflow').first().json.telefono }}\\n👕 Producto: {{ $('When Executed by Another Workflow').first().json.producto }} ({{ $('When Executed by Another Workflow').first().json.categoria }})\\n💰 Precio: ${{ $('When Executed by Another Workflow').first().json.precio_producto }}\\n🚚 Envío: ${{ $('When Executed by Another Workflow').first().json.costo_envio }}\\n💳 *Total: ${{ $('When Executed by Another Workflow').first().json.total }}*\\n📍 {{ $('When Executed by Another Workflow').first().json.ciudad }}, {{ $('When Executed by Another Workflow').first().json.provincia }}\\n\\n📸 Captura de pago recibida.\\nCuando verifiques, respondé *pago confirmado* para notificar al cliente.\"\n}",
+        "options": {}
+      },
+      "id": "http-notify",
+      "name": "Notificar al Dueño",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        304
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "response",
+              "value": "¡Comprobante recibido! 🧧✅ Estamos verificando tu pago. En breve te confirmamos y tu pedido entra en preparación.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-pedido",
+      "name": "Respuesta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        304
+      ]
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Guardar en Pedidos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar en Pedidos": {
+      "main": [
+        [
+          {
+            "node": "Notificar al Dueño",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notificar al Dueño": {
+      "main": [
+        [
+          {
+            "node": "Respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "86cd85e2-3188-49dc-9ad5-77b6da80b587",
+  "activeVersionId": "86cd85e2-3188-49dc-9ad5-77b6da80b587",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-27T20:39:08.291Z",
+      "createdAt": "2026-02-27T20:39:08.291Z",
+      "role": "workflow:owner",
+      "workflowId": "VBlLIxvJizzgnK9q",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-27T21:41:43.000Z",
+    "createdAt": "2026-02-27T21:41:40.828Z",
+    "versionId": "86cd85e2-3188-49dc-9ad5-77b6da80b587",
+    "workflowId": "VBlLIxvJizzgnK9q",
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "trigger-pedido",
+        "name": "When Executed by Another Workflow",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          0,
+          304
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo",
+            "mode": "list",
+            "cachedResultName": "DEMO-Automatizacion Whatsapp - tienda de ropas",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1467105671,
+            "mode": "list",
+            "cachedResultName": "pedidos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo/edit#gid=1467105671"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "fecha": "={{ $now.toFormat('dd/MM/yyyy') }}",
+              "nombre": "={{ $json.nombre }}",
+              "telefono": "={{ $json.telefono }}",
+              "ciudad": "={{ $json.ciudad }}",
+              "provincia": "={{ $json.provincia }}",
+              "producto": "={{ $json.producto }}",
+              "categoria": "={{ $json.categoria }}",
+              "precio_producto": "={{ $json.precio_producto }}",
+              "costo_envio": "={{ $json.costo_envio }}",
+              "total": "={{ $json.total }}",
+              "estado": "pendiente",
+              "timestamp": "={{ $now.toISO() }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "fecha",
+                "displayName": "fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "nombre",
+                "displayName": "nombre",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "ciudad",
+                "displayName": "ciudad",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "provincia",
+                "displayName": "provincia",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "producto",
+                "displayName": "producto",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "categoria",
+                "displayName": "categoria",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "precio_producto",
+                "displayName": "precio_producto",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number"
+              },
+              {
+                "id": "costo_envio",
+                "displayName": "costo_envio",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number"
+              },
+              {
+                "id": "total",
+                "displayName": "total",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number"
+              },
+              {
+                "id": "estado",
+                "displayName": "estado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "timestamp",
+                "displayName": "timestamp",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string"
+              }
+            ],
+            "attemptToConvertTypes": false
+          },
+          "options": {}
+        },
+        "id": "sheets-append",
+        "name": "Guardar en Pedidos",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          240,
+          304
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "9AngrdYrRh5RyUES",
+            "name": "Formulario_Leads_System"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"+5493765384843\",\n  \"text\": \"🔔 *NUEVO PEDIDO PENDIENTE*\\n\\n👤 Cliente: {{ $('When Executed by Another Workflow').first().json.nombre }}\\n📱 Teléfono: {{ $('When Executed by Another Workflow').first().json.telefono }}\\n👕 Producto: {{ $('When Executed by Another Workflow').first().json.producto }} ({{ $('When Executed by Another Workflow').first().json.categoria }})\\n💰 Precio: ${{ $('When Executed by Another Workflow').first().json.precio_producto }}\\n🚚 Envío: ${{ $('When Executed by Another Workflow').first().json.costo_envio }}\\n💳 *Total: ${{ $('When Executed by Another Workflow').first().json.total }}*\\n📍 {{ $('When Executed by Another Workflow').first().json.ciudad }}, {{ $('When Executed by Another Workflow').first().json.provincia }}\\n\\n📸 Captura de pago recibida.\\nCuando verifiques, respondé *pago confirmado* para notificar al cliente.\"\n}",
+          "options": {}
+        },
+        "id": "http-notify",
+        "name": "Notificar al Dueño",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          480,
+          304
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "r1",
+                "name": "response",
+                "value": "¡Comprobante recibido! 🧧✅ Estamos verificando tu pago. En breve te confirmamos y tu pedido entra en preparación.",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "set-pedido",
+        "name": "Respuesta",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          720,
+          304
+        ]
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Guardar en Pedidos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar en Pedidos": {
+        "main": [
+          [
+            {
+              "node": "Notificar al Dueño",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Notificar al Dueño": {
+        "main": [
+          [
+            {
+              "node": "Respuesta",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": "Version 86cd85e2",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-27T19:58:28.073Z",
+      "createdAt": "2026-02-27T19:58:28.073Z",
+      "id": "Ttv2U1PGT69vmrbF",
+      "name": "Tiendas"
+    },
+    {
+      "updatedAt": "2026-02-27T13:26:22.913Z",
+      "createdAt": "2026-02-27T13:26:22.913Z",
+      "id": "dveKcFU9yNCIwJvk",
+      "name": "DEMO"
+    },
+    {
+      "updatedAt": "2026-02-26T23:58:08.513Z",
+      "createdAt": "2026-02-26T23:58:08.513Z",
+      "id": "h6NCtzLto5r41s9Q",
+      "name": "WHATSAPP"
+    }
+  ]
+}
