@@ -1,0 +1,300 @@
+{
+  "updatedAt": "2026-02-27T21:37:15.088Z",
+  "createdAt": "2026-02-27T20:37:26.306Z",
+  "id": "xWb27wiSzpj9d4sx",
+  "name": "Sub: Ver Categorías Tienda",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-cats",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app6LRnI1AgMk1aTk",
+          "mode": "list",
+          "cachedResultName": "Tienda de Ropa",
+          "cachedResultUrl": "https://airtable.com/app6LRnI1AgMk1aTk"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbldxArHAQHOmMJB1",
+          "mode": "list",
+          "cachedResultName": "Categorias",
+          "cachedResultUrl": "https://airtable.com/app6LRnI1AgMk1aTk/tbldxArHAQHOmMJB1"
+        },
+        "filterByFormula": "{activa} = TRUE()",
+        "options": {}
+      },
+      "id": "airtable-cats",
+      "name": "Leer Categorías",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        304
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "uHWzSoh9H9THt171",
+          "name": "Airtable Tienda de Ropas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst categorias = items.map((item, i) => {\n  const f = item.json.fields || item.json;\n  return {\n    numero: i + 1,\n    nombre: f.Nombre || f.nombre || '',\n    emoji: f.Emoji || f.emoji || '📦'\n  };\n});\n\nlet texto = '🛍️ *Estas son nuestras categorías:*\\n\\n';\ncategorias.forEach(c => {\n  texto += `${c.numero}. ${c.emoji} *${c.nombre}*\\n`;\n});\ntexto += '\\nEscribí el *número* de la que te interesa 😊';\n\nreturn [{ json: { response: texto } }];"
+      },
+      "id": "code-cats",
+      "name": "Formatear Categorías",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "response",
+              "value": "={{ $json.response }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-cats",
+      "name": "Respuesta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        304
+      ]
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Leer Categorías",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Categorías": {
+      "main": [
+        [
+          {
+            "node": "Formatear Categorías",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatear Categorías": {
+      "main": [
+        [
+          {
+            "node": "Respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "1b3ea7ee-0da6-47cc-bbbe-b546dfc42a3b",
+  "activeVersionId": "95d7b071-7fd0-4663-bd41-527e871ec924",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-27T20:37:26.311Z",
+      "createdAt": "2026-02-27T20:37:26.311Z",
+      "role": "workflow:owner",
+      "workflowId": "xWb27wiSzpj9d4sx",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-27T20:37:26.317Z",
+    "createdAt": "2026-02-27T20:37:26.317Z",
+    "versionId": "95d7b071-7fd0-4663-bd41-527e871ec924",
+    "workflowId": "xWb27wiSzpj9d4sx",
+    "nodes": [
+      {
+        "id": "trigger-cats",
+        "name": "When Executed by Another Workflow",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          0,
+          300
+        ],
+        "parameters": {}
+      },
+      {
+        "id": "airtable-cats",
+        "name": "Leer Categorías",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          240,
+          300
+        ],
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "value": "app6LRnI1AgMk1aTk",
+            "mode": "list",
+            "cachedResultName": "Tienda de Ropa",
+            "cachedResultUrl": "https://airtable.com/app6LRnI1AgMk1aTk"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tbldxArHAQHOmMJB1",
+            "mode": "list",
+            "cachedResultName": "Categorias",
+            "cachedResultUrl": "https://airtable.com/app6LRnI1AgMk1aTk/tbldxArHAQHOmMJB1"
+          },
+          "filterByFormula": "{activa} = TRUE()",
+          "options": {}
+        },
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "uHWzSoh9H9THt171",
+            "name": "Airtable Tienda de Ropas"
+          }
+        }
+      },
+      {
+        "id": "code-cats",
+        "name": "Formatear Categorías",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          480,
+          300
+        ],
+        "parameters": {
+          "jsCode": "const items = $input.all();\n\nconst categorias = items.map((item, i) => {\n  const f = item.json.fields || item.json;\n  return {\n    numero: i + 1,\n    nombre: f.Nombre || f.nombre || '',\n    emoji: f.Emoji || f.emoji || '📦'\n  };\n});\n\nlet texto = '🛍️ *Estas son nuestras categorías:*\\n\\n';\ncategorias.forEach(c => {\n  texto += `${c.numero}. ${c.emoji} *${c.nombre}*\\n`;\n});\ntexto += '\\nEscribí el *número* de la que te interesa 😊';\n\nreturn [{ json: { response: texto } }];"
+        }
+      },
+      {
+        "id": "set-cats",
+        "name": "Respuesta",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          720,
+          300
+        ],
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "r1",
+                "name": "response",
+                "value": "={{ $json.response }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        }
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Leer Categorías",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Leer Categorías": {
+        "main": [
+          [
+            {
+              "node": "Formatear Categorías",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Formatear Categorías": {
+        "main": [
+          [
+            {
+              "node": "Respuesta",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-27T19:58:28.073Z",
+      "createdAt": "2026-02-27T19:58:28.073Z",
+      "id": "Ttv2U1PGT69vmrbF",
+      "name": "Tiendas"
+    },
+    {
+      "updatedAt": "2026-02-27T13:26:22.913Z",
+      "createdAt": "2026-02-27T13:26:22.913Z",
+      "id": "dveKcFU9yNCIwJvk",
+      "name": "DEMO"
+    },
+    {
+      "updatedAt": "2026-02-26T23:58:08.513Z",
+      "createdAt": "2026-02-26T23:58:08.513Z",
+      "id": "h6NCtzLto5r41s9Q",
+      "name": "WHATSAPP"
+    }
+  ]
+}
