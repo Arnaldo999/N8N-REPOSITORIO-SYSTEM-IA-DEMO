@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-02-26T23:23:06.277Z",
+  "updatedAt": "2026-02-27T20:02:56.000Z",
   "createdAt": "2026-02-26T23:23:06.277Z",
   "id": "mzQLJ1iKWm1dQ1Mj",
   "name": "Tally → Notion + Brevo (System IA)",
   "active": false,
-  "isArchived": false,
+  "isArchived": true,
   "nodes": [
     {
       "id": "33db7f5f-34ab-4b18-867c-c80a6bd72146",
@@ -389,7 +389,7 @@
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "1bf5eff1-8fb1-41e3-9696-ecaba2b8865f",
+  "versionId": "3c9e27ee-adea-4c48-bca4-35563d57d619",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
