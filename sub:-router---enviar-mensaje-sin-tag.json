@@ -1,0 +1,228 @@
+{
+  "updatedAt": "2026-02-28T00:56:30.945Z",
+  "createdAt": "2026-02-27T22:02:47.669Z",
+  "id": "YB7GhZDxStJiDmi5",
+  "name": "Sub: Router - Enviar Mensaje",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "trigger-rm",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        300
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "http-rm",
+      "name": "Enviar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: $json.numero, text: $json.texto }) }}",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
+        }
+      }
+    },
+    {
+      "id": "set-rm",
+      "name": "Respuesta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        300
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "enviado",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "r2",
+              "name": "numero",
+              "value": "={{ $('When Executed by Another Workflow').first().json.numero }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "c7a0e7bb-a23c-4779-8912-80e9230098ed",
+  "activeVersionId": "c7a0e7bb-a23c-4779-8912-80e9230098ed",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-27T22:02:47.671Z",
+      "createdAt": "2026-02-27T22:02:47.671Z",
+      "role": "workflow:owner",
+      "workflowId": "YB7GhZDxStJiDmi5",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-28T00:56:30.946Z",
+    "createdAt": "2026-02-28T00:56:30.946Z",
+    "versionId": "c7a0e7bb-a23c-4779-8912-80e9230098ed",
+    "workflowId": "YB7GhZDxStJiDmi5",
+    "nodes": [
+      {
+        "id": "trigger-rm",
+        "name": "When Executed by Another Workflow",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          0,
+          300
+        ],
+        "parameters": {}
+      },
+      {
+        "id": "http-rm",
+        "name": "Enviar WhatsApp",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          240,
+          300
+        ],
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ number: $json.numero, text: $json.texto }) }}",
+          "options": {}
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
+          }
+        }
+      },
+      {
+        "id": "set-rm",
+        "name": "Respuesta",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          480,
+          300
+        ],
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "r1",
+                "name": "enviado",
+                "value": true,
+                "type": "boolean"
+              },
+              {
+                "id": "r2",
+                "name": "numero",
+                "value": "={{ $('When Executed by Another Workflow').first().json.numero }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        }
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Enviar WhatsApp",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Enviar WhatsApp": {
+        "main": [
+          [
+            {
+              "node": "Respuesta",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "id": "sin-tag",
+      "name": "sin-tag"
+    }
+  ]
+}
