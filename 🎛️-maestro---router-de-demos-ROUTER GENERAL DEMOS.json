@@ -1,0 +1,1912 @@
+{
+  "updatedAt": "2026-02-27T22:18:03.125Z",
+  "createdAt": "2026-02-26T23:23:17.563Z",
+  "id": "BxdteIrpcXQufyIG",
+  "name": "🎛️ MAESTRO - Router de Demos",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "maestro-demos-router",
+        "options": {}
+      },
+      "id": "ddd15410-1779-436e-9ef9-c7e15abb5eed",
+      "name": "Webhook Evolution API",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        8912,
+        12624
+      ],
+      "webhookId": "maestro-demos-router"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.body.event }}",
+              "rightValue": "messages.upsert",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "c2",
+              "leftValue": "={{ $json.body.data.message.conversation }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "c3",
+              "leftValue": "={{ $json.body.data.key.remoteJid }}",
+              "rightValue": "@s.whatsapp.net",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e31fe049-b25c-42a2-9d75-95177cbfb4b1",
+      "name": "Filtro Webhook",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        9120,
+        12624
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "telefono",
+              "value": "={{ ($json.body?.data?.key?.remoteJid || '').replace('@s.whatsapp.net','') }}",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "mensaje",
+              "value": "={{ ($json.body?.data?.message?.conversation || '').trim().toLowerCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "mensaje_original",
+              "value": "={{ ($json.body?.data?.message?.conversation || '').trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "a4",
+              "name": "nombre_wa",
+              "value": "={{ $json.body?.data?.pushName || 'Sin nombre' }}",
+              "type": "string"
+            },
+            {
+              "id": "a5",
+              "name": "es_mio",
+              "value": "={{ String($json.body?.data?.key?.fromMe ?? false) }}",
+              "type": "string"
+            },
+            {
+              "id": "a6",
+              "name": "body_original",
+              "value": "={{ JSON.stringify($json) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dfab8d5d-06f6-4151-99ea-8c12f0e3b99d",
+      "name": "Extraer Datos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        9344,
+        12624
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "f1",
+              "leftValue": "={{ $json.es_mio }}",
+              "rightValue": "false",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0fff12c6-4f30-4a29-b9f7-96816b5ba40d",
+      "name": "No es mensaje mio",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        9568,
+        12624
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE",
+          "mode": "list",
+          "cachedResultName": "sesiones_demo"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1"
+        },
+        "options": {}
+      },
+      "id": "6ee44ddf-3e76-472d-a793-62617b48d5ec",
+      "name": "Leer Sesiones Demo",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        9792,
+        12624
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9AngrdYrRh5RyUES",
+          "name": "Formulario_Leads_System"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const telefono = $('Extraer Datos').first().json.telefono;\nconst mensaje = $('Extraer Datos').first().json.mensaje;\nconst mensaje_original = $('Extraer Datos').first().json.mensaje_original;\nconst nombre_wa = $('Extraer Datos').first().json.nombre_wa;\nconst body_original = $('Extraer Datos').first().json.body_original;\n\nlet filas = [];\ntry { filas = $input.all().map(i => i.json); } catch(e) { filas = []; }\n\nconst telLimpio = String(telefono).trim();\nconst encontrado = filas.find(f => String(f.telefono || '').trim() === telLimpio);\n\nif (encontrado && encontrado.demo_activa) {\n  return [{ json: { existe: true, telefono: telLimpio, mensaje, mensaje_original, nombre_wa, body_original, demo_activa: String(encontrado.demo_activa || '').trim().toLowerCase(), paso: String(encontrado.paso || '').trim().toLowerCase(), datos_extra: encontrado.datos_extra || '' } }];\n} else {\n  return [{ json: { existe: false, telefono: telLimpio, mensaje, mensaje_original, nombre_wa, body_original, demo_activa: '', paso: 'nuevo', datos_extra: '' } }];\n}"
+      },
+      "id": "6f01b8f3-d95a-4a4d-84ec-f8d916faa714",
+      "name": "Buscar Sesion",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        10016,
+        12624
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": false,
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.demo_activa }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "c2",
+              "leftValue": "={{ $json.demo_activa }}",
+              "rightValue": "menu",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5dd2150e-3559-4f42-a7a6-3dd7ea35a02b",
+      "name": "En Demo Activa?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        10240,
+        12624
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "r1",
+                    "leftValue": "={{ $json.demo_activa }}",
+                    "rightValue": "tienda_ropa",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "r2",
+                    "leftValue": "={{ $json.demo_activa }}",
+                    "rightValue": "restaurante",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "r3",
+                    "leftValue": "={{ $json.demo_activa }}",
+                    "rightValue": "conecta",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "r4",
+                    "leftValue": "={{ $json.demo_activa }}",
+                    "rightValue": "redes",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "new-sw01",
+      "name": "Switch Demo",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        10464,
+        12304
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/tienda-ropa",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.parse($('Extraer Datos').first().json.body_original).body }}",
+        "options": {}
+      },
+      "id": "15f51a6c-59e7-4dfd-b510-a81af9b03162",
+      "name": "Reenviar a Tienda",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        10688,
+        12112
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/webhook/automatizacion-restaurantes",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.parse($('Extraer Datos').first().json.body_original).body }}",
+        "options": {}
+      },
+      "id": "dcdc6c2f-1a90-4fd8-9af5-bd06b72843f5",
+      "name": "Reenviar a Restaurante",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        10688,
+        12304
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/4973a60b-fbc7-4499-9fce-b76c25785570",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.parse($('Extraer Datos').first().json.body_original).body }}",
+        "options": {}
+      },
+      "id": "b5b14ebd-0c45-4fdd-b8c1-b2023c52069f",
+      "name": "Reenviar a Conecta",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        10688,
+        12512
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"number\": \"{{ $json.telefono }}\", \"text\": \"Esta demo está en construcción. Escribí *menu* para volver.\"}",
+        "options": {}
+      },
+      "id": "15ac4100-18be-4737-907d-534336632493",
+      "name": "Demo Redes (Construccion)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        10688,
+        12704
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "n1",
+              "leftValue": "={{ $json.existe }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "new-nu01",
+      "name": "¿Es nuevo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        10464,
+        12960
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE",
+          "mode": "list",
+          "cachedResultName": "sesiones_demo"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "nombre_wa": "={{ $json.nombre_wa }}",
+            "demo_activa": "menu",
+            "paso": "seleccion",
+            "datos_extra": "",
+            "timestamp": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "type": "string"
+            },
+            {
+              "id": "nombre_wa",
+              "displayName": "nombre_wa",
+              "type": "string"
+            },
+            {
+              "id": "demo_activa",
+              "displayName": "demo_activa",
+              "type": "string"
+            },
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "type": "string"
+            },
+            {
+              "id": "datos_extra",
+              "displayName": "datos_extra",
+              "type": "string"
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2db51789-2c25-4914-b3dd-a825f5b9ff55",
+      "name": "Guardar Nueva Sesion",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        10688,
+        13152
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9AngrdYrRh5RyUES",
+          "name": "Formulario_Leads_System"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "agent": "toolsAgent",
+        "promptType": "define",
+        "text": "={{ $('Extraer Datos').first().json.mensaje_original }}",
+        "options": {
+          "systemMessage": "=`Sos el router interno de System IA. Guiás a potenciales clientes a elegir una demo de automatización.\n\nDATOS DEL CLIENTE:\n- Teléfono: ${ $('Extraer Datos').first().json.telefono }\n- Nombre: ${ $('Extraer Datos').first().json.nombre_wa }\n- Estado sesión: ${ $json.demo_activa || 'nuevo' }\n\nDEMOS DISPONIBLES (usar exactamente estos IDs al activar):\n1 → conecta      | WhatsApp a CRM/Sheets\n2 → redes        | Redes Sociales con IA\n3 → tienda_ropa  | Tienda de Ropa\n4 → restaurante  | Restaurante con IA\n0 → Asesor humano\n\nINSTRUCCIONES:\n- Estado nuevo o menu: usar enviar_mensaje con el menú completo\n- Elige 1-4 o nombre de demo: primero activar_demo, luego enviar_mensaje con confirmación corta y decile que escriba Hola para empezar\n- Elige 0 o pide asesor: enviar_mensaje avisando que un asesor lo contacta pronto, NO activar demo\n- Escribe menu: enviar_mensaje con el menú de nuevo\n\nCRÍTICO: Tu respuesta de texto NO llega al usuario. Usá SIEMPRE las herramientas para enviar mensajes.`"
+        }
+      },
+      "id": "new-ag01",
+      "name": "Router IA",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        11008,
+        13056
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "new-lm01",
+      "name": "GPT-4o-mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        11008,
+        13312
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "BrD15coHeXdGWac2",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "enviar_mensaje",
+        "description": "Envía un mensaje de WhatsApp al usuario. Parámetros: numero (teléfono sin @s.whatsapp.net), texto (mensaje completo). Usá para TODA comunicación con el cliente.",
+        "workflowId": {
+          "__rl": true,
+          "value": "YB7GhZDxStJiDmi5",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/YB7GhZDxStJiDmi5",
+          "cachedResultName": "Sub: Router - Enviar Mensaje"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "numero": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('numero', 'Telefono del usuario', 'string') }}",
+            "texto": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('texto', 'Mensaje a enviar', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "numero",
+              "displayName": "numero",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "texto",
+              "displayName": "texto",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        }
+      },
+      "id": "new-tw01",
+      "name": "Tool: Enviar Mensaje",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        11424,
+        13296
+      ]
+    },
+    {
+      "parameters": {
+        "name": "activar_demo",
+        "description": "Activa una demo para el usuario. Usar cuando el cliente elige una demo. Parámetros: telefono (string), demo (uno de: conecta, redes, tienda_ropa, restaurante).",
+        "workflowId": {
+          "__rl": true,
+          "value": "ddmpOcJwiojghn4X",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/ddmpOcJwiojghn4X",
+          "cachedResultName": "Sub: Router - Activar Demo"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('telefono', 'Telefono del usuario', 'string') }}",
+            "demo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('demo', 'ID de la demo: conecta, redes, tienda_ropa o restaurante', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "demo",
+              "displayName": "demo",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        }
+      },
+      "id": "new-ta01",
+      "name": "Tool: Activar Demo",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        11248,
+        13312
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# Router v2 - AI Agent\n19 nodos (antes 36)\n\nFlujo:\n- En demo activa: Switch HTTP\n- En menu/nuevo: Router IA\n\nTools: enviar_mensaje, activar_demo",
+        "height": 300,
+        "width": 320
+      },
+      "id": "8dd14c4e-22e0-48cd-a506-f4f199c89b22",
+      "name": "📋 Documentación",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        8512,
+        12400
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Evolution API": {
+      "main": [
+        [
+          {
+            "node": "Filtro Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtro Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extraer Datos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Extraer Datos": {
+      "main": [
+        [
+          {
+            "node": "No es mensaje mio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No es mensaje mio": {
+      "main": [
+        [
+          {
+            "node": "Leer Sesiones Demo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Sesiones Demo": {
+      "main": [
+        [
+          {
+            "node": "Buscar Sesion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Sesion": {
+      "main": [
+        [
+          {
+            "node": "En Demo Activa?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "En Demo Activa?": {
+      "main": [
+        [
+          {
+            "node": "Switch Demo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "¿Es nuevo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Demo": {
+      "main": [
+        [
+          {
+            "node": "Reenviar a Tienda",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reenviar a Restaurante",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reenviar a Conecta",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Demo Redes (Construccion)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es nuevo?": {
+      "main": [
+        [
+          {
+            "node": "Guardar Nueva Sesion",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Router IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Nueva Sesion": {
+      "main": [
+        [
+          {
+            "node": "Router IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-4o-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Router IA",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Enviar Mensaje": {
+      "ai_tool": [
+        [
+          {
+            "node": "Router IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Activar Demo": {
+      "ai_tool": [
+        [
+          {
+            "node": "Router IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "f887b3b6-520d-4699-98e9-8b8b3cb5e7ca",
+  "activeVersionId": "f887b3b6-520d-4699-98e9-8b8b3cb5e7ca",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-26T23:23:17.597Z",
+      "createdAt": "2026-02-26T23:23:17.597Z",
+      "role": "workflow:owner",
+      "workflowId": "BxdteIrpcXQufyIG",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-27T22:18:03.126Z",
+    "createdAt": "2026-02-27T22:18:03.126Z",
+    "versionId": "f887b3b6-520d-4699-98e9-8b8b3cb5e7ca",
+    "workflowId": "BxdteIrpcXQufyIG",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "maestro-demos-router",
+          "options": {}
+        },
+        "id": "ddd15410-1779-436e-9ef9-c7e15abb5eed",
+        "name": "Webhook Evolution API",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1.1,
+        "position": [
+          8912,
+          12624
+        ],
+        "webhookId": "maestro-demos-router"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c1",
+                "leftValue": "={{ $json.body.event }}",
+                "rightValue": "messages.upsert",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "c2",
+                "leftValue": "={{ $json.body.data.message.conversation }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty"
+                }
+              },
+              {
+                "id": "c3",
+                "leftValue": "={{ $json.body.data.key.remoteJid }}",
+                "rightValue": "@s.whatsapp.net",
+                "operator": {
+                  "type": "string",
+                  "operation": "endsWith"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "e31fe049-b25c-42a2-9d75-95177cbfb4b1",
+        "name": "Filtro Webhook",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          9120,
+          12624
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a1",
+                "name": "telefono",
+                "value": "={{ ($json.body?.data?.key?.remoteJid || '').replace('@s.whatsapp.net','') }}",
+                "type": "string"
+              },
+              {
+                "id": "a2",
+                "name": "mensaje",
+                "value": "={{ ($json.body?.data?.message?.conversation || '').trim().toLowerCase() }}",
+                "type": "string"
+              },
+              {
+                "id": "a3",
+                "name": "mensaje_original",
+                "value": "={{ ($json.body?.data?.message?.conversation || '').trim() }}",
+                "type": "string"
+              },
+              {
+                "id": "a4",
+                "name": "nombre_wa",
+                "value": "={{ $json.body?.data?.pushName || 'Sin nombre' }}",
+                "type": "string"
+              },
+              {
+                "id": "a5",
+                "name": "es_mio",
+                "value": "={{ String($json.body?.data?.key?.fromMe ?? false) }}",
+                "type": "string"
+              },
+              {
+                "id": "a6",
+                "name": "body_original",
+                "value": "={{ JSON.stringify($json) }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "dfab8d5d-06f6-4151-99ea-8c12f0e3b99d",
+        "name": "Extraer Datos",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          9344,
+          12624
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "f1",
+                "leftValue": "={{ $json.es_mio }}",
+                "rightValue": "false",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "0fff12c6-4f30-4a29-b9f7-96816b5ba40d",
+        "name": "No es mensaje mio",
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2,
+        "position": [
+          9568,
+          12624
+        ]
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE",
+            "mode": "list",
+            "cachedResultName": "sesiones_demo"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1"
+          },
+          "options": {}
+        },
+        "id": "6ee44ddf-3e76-472d-a793-62617b48d5ec",
+        "name": "Leer Sesiones Demo",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          9792,
+          12624
+        ],
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "9AngrdYrRh5RyUES",
+            "name": "Formulario_Leads_System"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const telefono = $('Extraer Datos').first().json.telefono;\nconst mensaje = $('Extraer Datos').first().json.mensaje;\nconst mensaje_original = $('Extraer Datos').first().json.mensaje_original;\nconst nombre_wa = $('Extraer Datos').first().json.nombre_wa;\nconst body_original = $('Extraer Datos').first().json.body_original;\n\nlet filas = [];\ntry { filas = $input.all().map(i => i.json); } catch(e) { filas = []; }\n\nconst telLimpio = String(telefono).trim();\nconst encontrado = filas.find(f => String(f.telefono || '').trim() === telLimpio);\n\nif (encontrado && encontrado.demo_activa) {\n  return [{ json: { existe: true, telefono: telLimpio, mensaje, mensaje_original, nombre_wa, body_original, demo_activa: String(encontrado.demo_activa || '').trim().toLowerCase(), paso: String(encontrado.paso || '').trim().toLowerCase(), datos_extra: encontrado.datos_extra || '' } }];\n} else {\n  return [{ json: { existe: false, telefono: telLimpio, mensaje, mensaje_original, nombre_wa, body_original, demo_activa: '', paso: 'nuevo', datos_extra: '' } }];\n}"
+        },
+        "id": "6f01b8f3-d95a-4a4d-84ec-f8d916faa714",
+        "name": "Buscar Sesion",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          10016,
+          12624
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": false,
+              "typeValidation": "loose"
+            },
+            "conditions": [
+              {
+                "id": "c1",
+                "leftValue": "={{ $json.demo_activa }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty"
+                }
+              },
+              {
+                "id": "c2",
+                "leftValue": "={{ $json.demo_activa }}",
+                "rightValue": "menu",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEquals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "5dd2150e-3559-4f42-a7a6-3dd7ea35a02b",
+        "name": "En Demo Activa?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          10240,
+          12624
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "options": {
+                    "caseSensitive": false,
+                    "leftValue": "",
+                    "typeValidation": "loose",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "id": "r1",
+                      "leftValue": "={{ $json.demo_activa }}",
+                      "rightValue": "tienda_ropa",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "options": {
+                    "caseSensitive": false,
+                    "leftValue": "",
+                    "typeValidation": "loose",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "id": "r2",
+                      "leftValue": "={{ $json.demo_activa }}",
+                      "rightValue": "restaurante",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "options": {
+                    "caseSensitive": false,
+                    "leftValue": "",
+                    "typeValidation": "loose",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "id": "r3",
+                      "leftValue": "={{ $json.demo_activa }}",
+                      "rightValue": "conecta",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "options": {
+                    "caseSensitive": false,
+                    "leftValue": "",
+                    "typeValidation": "loose",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "id": "r4",
+                      "leftValue": "={{ $json.demo_activa }}",
+                      "rightValue": "redes",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "new-sw01",
+        "name": "Switch Demo",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          10464,
+          12304
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/tienda-ropa",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.parse($('Extraer Datos').first().json.body_original).body }}",
+          "options": {}
+        },
+        "id": "15f51a6c-59e7-4dfd-b510-a81af9b03162",
+        "name": "Reenviar a Tienda",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          10688,
+          12112
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/webhook/automatizacion-restaurantes",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.parse($('Extraer Datos').first().json.body_original).body }}",
+          "options": {}
+        },
+        "id": "dcdc6c2f-1a90-4fd8-9af5-bd06b72843f5",
+        "name": "Reenviar a Restaurante",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          10688,
+          12304
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/4973a60b-fbc7-4499-9fce-b76c25785570",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.parse($('Extraer Datos').first().json.body_original).body }}",
+          "options": {}
+        },
+        "id": "b5b14ebd-0c45-4fdd-b8c1-b2023c52069f",
+        "name": "Reenviar a Conecta",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          10688,
+          12512
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\"number\": \"{{ $json.telefono }}\", \"text\": \"Esta demo está en construcción. Escribí *menu* para volver.\"}",
+          "options": {}
+        },
+        "id": "15ac4100-18be-4737-907d-534336632493",
+        "name": "Demo Redes (Construccion)",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          10688,
+          12704
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "S4QSQlXLKNyAfGtu",
+            "name": "Header Auth Evolution Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "conditions": [
+              {
+                "id": "n1",
+                "leftValue": "={{ $json.existe }}",
+                "rightValue": false,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "new-nu01",
+        "name": "¿Es nuevo?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          10464,
+          12960
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE",
+            "mode": "list",
+            "cachedResultName": "sesiones_demo"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "nombre_wa": "={{ $json.nombre_wa }}",
+              "demo_activa": "menu",
+              "paso": "seleccion",
+              "datos_extra": "",
+              "timestamp": "={{ $now.toISO() }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "type": "string"
+              },
+              {
+                "id": "nombre_wa",
+                "displayName": "nombre_wa",
+                "type": "string"
+              },
+              {
+                "id": "demo_activa",
+                "displayName": "demo_activa",
+                "type": "string"
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "type": "string"
+              },
+              {
+                "id": "datos_extra",
+                "displayName": "datos_extra",
+                "type": "string"
+              },
+              {
+                "id": "timestamp",
+                "displayName": "timestamp",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "2db51789-2c25-4914-b3dd-a825f5b9ff55",
+        "name": "Guardar Nueva Sesion",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          10688,
+          13152
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "9AngrdYrRh5RyUES",
+            "name": "Formulario_Leads_System"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "agent": "toolsAgent",
+          "promptType": "define",
+          "text": "={{ $('Extraer Datos').first().json.mensaje_original }}",
+          "options": {
+            "systemMessage": "=`Sos el router interno de System IA. Guiás a potenciales clientes a elegir una demo de automatización.\n\nDATOS DEL CLIENTE:\n- Teléfono: ${ $('Extraer Datos').first().json.telefono }\n- Nombre: ${ $('Extraer Datos').first().json.nombre_wa }\n- Estado sesión: ${ $json.demo_activa || 'nuevo' }\n\nDEMOS DISPONIBLES (usar exactamente estos IDs al activar):\n1 → conecta      | WhatsApp a CRM/Sheets\n2 → redes        | Redes Sociales con IA\n3 → tienda_ropa  | Tienda de Ropa\n4 → restaurante  | Restaurante con IA\n0 → Asesor humano\n\nINSTRUCCIONES:\n- Estado nuevo o menu: usar enviar_mensaje con el menú completo\n- Elige 1-4 o nombre de demo: primero activar_demo, luego enviar_mensaje con confirmación corta y decile que escriba Hola para empezar\n- Elige 0 o pide asesor: enviar_mensaje avisando que un asesor lo contacta pronto, NO activar demo\n- Escribe menu: enviar_mensaje con el menú de nuevo\n\nCRÍTICO: Tu respuesta de texto NO llega al usuario. Usá SIEMPRE las herramientas para enviar mensajes.`"
+          }
+        },
+        "id": "new-ag01",
+        "name": "Router IA",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7,
+        "position": [
+          11008,
+          13056
+        ]
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4o-mini",
+            "mode": "list",
+            "cachedResultName": "gpt-4o-mini"
+          },
+          "options": {}
+        },
+        "id": "new-lm01",
+        "name": "GPT-4o-mini",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          11008,
+          13312
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "BrD15coHeXdGWac2",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "name": "enviar_mensaje",
+          "description": "Envía un mensaje de WhatsApp al usuario. Parámetros: numero (teléfono sin @s.whatsapp.net), texto (mensaje completo). Usá para TODA comunicación con el cliente.",
+          "workflowId": {
+            "__rl": true,
+            "value": "YB7GhZDxStJiDmi5",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/YB7GhZDxStJiDmi5",
+            "cachedResultName": "Sub: Router - Enviar Mensaje"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "numero": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('numero', 'Telefono del usuario', 'string') }}",
+              "texto": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('texto', 'Mensaje a enviar', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "numero",
+                "displayName": "numero",
+                "required": true,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "texto",
+                "displayName": "texto",
+                "required": true,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ]
+          }
+        },
+        "id": "new-tw01",
+        "name": "Tool: Enviar Mensaje",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2,
+        "position": [
+          11424,
+          13296
+        ]
+      },
+      {
+        "parameters": {
+          "name": "activar_demo",
+          "description": "Activa una demo para el usuario. Usar cuando el cliente elige una demo. Parámetros: telefono (string), demo (uno de: conecta, redes, tienda_ropa, restaurante).",
+          "workflowId": {
+            "__rl": true,
+            "value": "ddmpOcJwiojghn4X",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/ddmpOcJwiojghn4X",
+            "cachedResultName": "Sub: Router - Activar Demo"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('telefono', 'Telefono del usuario', 'string') }}",
+              "demo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('demo', 'ID de la demo: conecta, redes, tienda_ropa o restaurante', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": true,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "demo",
+                "displayName": "demo",
+                "required": true,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ]
+          }
+        },
+        "id": "new-ta01",
+        "name": "Tool: Activar Demo",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2,
+        "position": [
+          11248,
+          13312
+        ]
+      },
+      {
+        "parameters": {
+          "content": "# Router v2 - AI Agent\n19 nodos (antes 36)\n\nFlujo:\n- En demo activa: Switch HTTP\n- En menu/nuevo: Router IA\n\nTools: enviar_mensaje, activar_demo",
+          "height": 300,
+          "width": 320
+        },
+        "id": "8dd14c4e-22e0-48cd-a506-f4f199c89b22",
+        "name": "📋 Documentación",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          8512,
+          12400
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook Evolution API": {
+        "main": [
+          [
+            {
+              "node": "Filtro Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filtro Webhook": {
+        "main": [
+          [
+            {
+              "node": "Extraer Datos",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "Extraer Datos": {
+        "main": [
+          [
+            {
+              "node": "No es mensaje mio",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "No es mensaje mio": {
+        "main": [
+          [
+            {
+              "node": "Leer Sesiones Demo",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Leer Sesiones Demo": {
+        "main": [
+          [
+            {
+              "node": "Buscar Sesion",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Sesion": {
+        "main": [
+          [
+            {
+              "node": "En Demo Activa?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "En Demo Activa?": {
+        "main": [
+          [
+            {
+              "node": "Switch Demo",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "¿Es nuevo?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch Demo": {
+        "main": [
+          [
+            {
+              "node": "Reenviar a Tienda",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Reenviar a Restaurante",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Reenviar a Conecta",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Demo Redes (Construccion)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "¿Es nuevo?": {
+        "main": [
+          [
+            {
+              "node": "Guardar Nueva Sesion",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Router IA",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar Nueva Sesion": {
+        "main": [
+          [
+            {
+              "node": "Router IA",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "GPT-4o-mini": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Router IA",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tool: Enviar Mensaje": {
+        "ai_tool": [
+          [
+            {
+              "node": "Router IA",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tool: Activar Demo": {
+        "ai_tool": [
+          [
+            {
+              "node": "Router IA",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-27T19:59:15.481Z",
+      "createdAt": "2026-02-27T19:59:15.481Z",
+      "id": "EtGJQBETeBArywjg",
+      "name": "ROUTER GENERAL DEMOS"
+    }
+  ]
+}
