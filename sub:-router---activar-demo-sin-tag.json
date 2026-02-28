@@ -1,0 +1,320 @@
+{
+  "updatedAt": "2026-02-27T22:10:36.549Z",
+  "createdAt": "2026-02-27T22:02:52.807Z",
+  "id": "ddmpOcJwiojghn4X",
+  "name": "Sub: Router - Activar Demo",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "trigger-ad",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        300
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "sheets-ad",
+      "name": "Actualizar Sesion",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        240,
+        300
+      ],
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE",
+          "mode": "list",
+          "cachedResultName": "sesiones_demo"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "demo_activa": "={{ $json.demo }}",
+            "paso": "inicio"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "demo_activa",
+              "displayName": "demo_activa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9AngrdYrRh5RyUES",
+          "name": "Formulario_Leads_System"
+        }
+      }
+    },
+    {
+      "id": "set-ad",
+      "name": "Respuesta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        300
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "activado",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "r2",
+              "name": "demo",
+              "value": "={{ $('When Executed by Another Workflow').first().json.demo }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Sesion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar Sesion": {
+      "main": [
+        [
+          {
+            "node": "Respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "54ec1fa8-9721-463c-831a-41677b56151e",
+  "activeVersionId": "54ec1fa8-9721-463c-831a-41677b56151e",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-27T22:02:52.810Z",
+      "createdAt": "2026-02-27T22:02:52.810Z",
+      "role": "workflow:owner",
+      "workflowId": "ddmpOcJwiojghn4X",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-27T22:02:52.812Z",
+    "createdAt": "2026-02-27T22:02:52.812Z",
+    "versionId": "54ec1fa8-9721-463c-831a-41677b56151e",
+    "workflowId": "ddmpOcJwiojghn4X",
+    "nodes": [
+      {
+        "id": "trigger-ad",
+        "name": "When Executed by Another Workflow",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          0,
+          300
+        ],
+        "parameters": {}
+      },
+      {
+        "id": "sheets-ad",
+        "name": "Actualizar Sesion",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          240,
+          300
+        ],
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "14f2808Uxz8qUbG3BDPSCDk6o4fgLE_nTmwn1p-WHkYE",
+            "mode": "list",
+            "cachedResultName": "sesiones_demo"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "telefono": "={{ $json.telefono }}",
+              "demo_activa": "={{ $json.demo }}",
+              "paso": "inicio"
+            },
+            "matchingColumns": [
+              "telefono"
+            ],
+            "schema": [
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "demo_activa",
+                "displayName": "demo_activa",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "paso",
+                "displayName": "paso",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ]
+          },
+          "options": {}
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "9AngrdYrRh5RyUES",
+            "name": "Formulario_Leads_System"
+          }
+        }
+      },
+      {
+        "id": "set-ad",
+        "name": "Respuesta",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          480,
+          300
+        ],
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "r1",
+                "name": "activado",
+                "value": true,
+                "type": "boolean"
+              },
+              {
+                "id": "r2",
+                "name": "demo",
+                "value": "={{ $('When Executed by Another Workflow').first().json.demo }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        }
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Actualizar Sesion",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Actualizar Sesion": {
+        "main": [
+          [
+            {
+              "node": "Respuesta",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "id": "sin-tag",
+      "name": "sin-tag"
+    }
+  ]
+}
