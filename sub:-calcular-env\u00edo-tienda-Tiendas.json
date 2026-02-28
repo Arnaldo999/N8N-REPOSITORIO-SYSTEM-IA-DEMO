@@ -1,0 +1,272 @@
+{
+  "updatedAt": "2026-02-27T21:36:23.977Z",
+  "createdAt": "2026-02-27T20:38:27.944Z",
+  "id": "B5EmFwWaue0IiNuS",
+  "name": "Sub: Calcular Env\\u00edo Tienda",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-envio",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://arnaldoayala157--calculadora-envios-tienda-api-calcular.modal.run/calcular",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"precio_producto\": {{ $json.precio_producto }},\n  \"provincia\": \"{{ $json.provincia }}\"\n}",
+        "options": {}
+      },
+      "id": "http-modal",
+      "name": "Calcular Envío Modal",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "response",
+              "value": "={{ $json.mensaje_cobro }}",
+              "type": "string"
+            },
+            {
+              "id": "r2",
+              "name": "costo_envio",
+              "value": "={{ $json.costo_envio }}",
+              "type": "number"
+            },
+            {
+              "id": "r3",
+              "name": "total",
+              "value": "={{ $json.total }}",
+              "type": "number"
+            },
+            {
+              "id": "r4",
+              "name": "mensaje_cobro",
+              "value": "={{ $json.mensaje_cobro }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-envio",
+      "name": "Respuesta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        304
+      ]
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Calcular Envío Modal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular Envío Modal": {
+      "main": [
+        [
+          {
+            "node": "Respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "31d981fd-4daa-485b-b625-4ce07da8d79c",
+  "activeVersionId": "74a71878-c35a-4845-82be-441069202dbe",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-27T20:38:27.947Z",
+      "createdAt": "2026-02-27T20:38:27.947Z",
+      "role": "workflow:owner",
+      "workflowId": "B5EmFwWaue0IiNuS",
+      "projectId": "zU8ZqM5Dx6MPXDiw"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-27T20:38:27.949Z",
+    "createdAt": "2026-02-27T20:38:27.949Z",
+    "versionId": "74a71878-c35a-4845-82be-441069202dbe",
+    "workflowId": "B5EmFwWaue0IiNuS",
+    "nodes": [
+      {
+        "id": "trigger-envio",
+        "name": "When Executed by Another Workflow",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          0,
+          300
+        ],
+        "parameters": {}
+      },
+      {
+        "id": "http-modal",
+        "name": "Calcular Envío Modal",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          240,
+          300
+        ],
+        "parameters": {
+          "method": "POST",
+          "url": "https://arnaldoayala157--calculadora-envios-tienda-api-calcular.modal.run/calcular",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"precio_producto\": {{ $json.precio_producto }},\n  \"provincia\": \"{{ $json.provincia }}\"\n}",
+          "options": {}
+        }
+      },
+      {
+        "id": "set-envio",
+        "name": "Respuesta",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          480,
+          300
+        ],
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "r1",
+                "name": "response",
+                "value": "={{ $json.mensaje_cobro }}",
+                "type": "string"
+              },
+              {
+                "id": "r2",
+                "name": "costo_envio",
+                "value": "={{ $json.costo_envio }}",
+                "type": "number"
+              },
+              {
+                "id": "r3",
+                "name": "total",
+                "value": "={{ $json.total }}",
+                "type": "number"
+              },
+              {
+                "id": "r4",
+                "name": "mensaje_cobro",
+                "value": "={{ $json.mensaje_cobro }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        }
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Calcular Envío Modal",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Calcular Envío Modal": {
+        "main": [
+          [
+            {
+              "node": "Respuesta",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-27T19:58:28.073Z",
+      "createdAt": "2026-02-27T19:58:28.073Z",
+      "id": "Ttv2U1PGT69vmrbF",
+      "name": "Tiendas"
+    },
+    {
+      "updatedAt": "2026-02-27T13:26:22.913Z",
+      "createdAt": "2026-02-27T13:26:22.913Z",
+      "id": "dveKcFU9yNCIwJvk",
+      "name": "DEMO"
+    },
+    {
+      "updatedAt": "2026-02-26T23:58:08.513Z",
+      "createdAt": "2026-02-26T23:58:08.513Z",
+      "id": "h6NCtzLto5r41s9Q",
+      "name": "WHATSAPP"
+    }
+  ]
+}
