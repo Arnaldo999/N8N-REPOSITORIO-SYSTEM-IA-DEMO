@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-02-26T23:23:09.940Z",
+  "updatedAt": "2026-02-27T19:54:20.000Z",
   "createdAt": "2026-02-26T23:23:09.940Z",
   "id": "8AeIS0z2D4xKjkoV",
   "name": "tiny-test",
   "active": false,
-  "isArchived": false,
+  "isArchived": true,
   "nodes": [
     {
       "id": "trigger-1",
@@ -30,7 +30,7 @@
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "c55b4047-734c-4289-a78a-15267e0998da",
+  "versionId": "b4ece875-8882-42c2-9109-2f9a5d431fc1",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
