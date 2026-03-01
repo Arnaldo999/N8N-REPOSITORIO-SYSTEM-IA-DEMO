@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-02-27T00:24:29.000Z",
-  "createdAt": "2026-02-26T23:23:42.018Z",
-  "id": "Gu8U0ZXK9KgrOD6R",
+  "updatedAt": "2026-02-27T11:52:04.000Z",
+  "createdAt": "2026-02-26T23:23:36.528Z",
+  "id": "yp2YGpEwdCUfL9xP",
   "name": "🤖 Registro Leads System",
   "active": false,
   "isArchived": true,
@@ -17,8 +17,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1.1,
       "position": [
-        -464,
-        272
+        -496,
+        256
       ],
       "webhookId": "registro-leads-system"
     },
@@ -31,29 +31,29 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -240,
-        272
+        -288,
+        256
       ]
     },
     {
       "parameters": {
-        "operation": "append",
+        "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "1dRSz7z-QnITx5gio_uky9fEtpYPlZ3VNh5lisKD77T0",
+          "value": "14HJkGerBAY5KCR6YBarae59aiCPhKzvt374strsGk3M",
           "mode": "list",
-          "cachedResultName": "Formulario_Leads_System",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dRSz7z-QnITx5gio_uky9fEtpYPlZ3VNh5lisKD77T0/edit?usp=drivesdk"
+          "cachedResultName": "DB Leads Calificados - System IA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14HJkGerBAY5KCR6YBarae59aiCPhKzvt374strsGk3M/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
           "mode": "list",
           "cachedResultName": "Hoja 1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dRSz7z-QnITx5gio_uky9fEtpYPlZ3VNh5lisKD77T0/edit#gid=0"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14HJkGerBAY5KCR6YBarae59aiCPhKzvt374strsGk3M/edit#gid=0"
         },
         "columns": {
-          "mappingMode": "defineBelow",
+          "mappingMode": "autoMapInputData",
           "value": {
             "fecha_registro": "={{ $json.fecha_registro }}",
             "nivel_interes": "={{ $json.nivel_interes }}",
@@ -99,7 +99,9 @@
             "registrado_por": "={{ $json.registrado_por }}",
             "estado": "={{ $json.estado }}"
           },
-          "matchingColumns": [],
+          "matchingColumns": [
+            "email"
+          ],
           "schema": [
             {
               "id": "fecha_registro",
@@ -171,7 +173,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true
+              "canBeUsedToMatch": true,
+              "removed": false
             },
             {
               "id": "instagram",
@@ -499,13 +502,13 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        0,
-        272
+        -48,
+        256
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "GMCKCQGZj49ZyiKE",
-          "name": "Google Sheets account"
+          "id": "9AngrdYrRh5RyUES",
+          "name": "Formulario_Leads_System"
         }
       }
     },
@@ -527,7 +530,7 @@
       "typeVersion": 1,
       "position": [
         192,
-        272
+        256
       ]
     },
     {
@@ -548,7 +551,7 @@
       "typeVersion": 1,
       "position": [
         432,
-        464
+        496
       ]
     },
     {
@@ -568,7 +571,7 @@
       "typeVersion": 4.2,
       "position": [
         432,
-        128
+        112
       ],
       "credentials": {
         "httpHeaderAuth": {
@@ -596,7 +599,7 @@
       "webhookId": "35606485-ff25-4f16-87a5-8e3774f8be4d",
       "credentials": {
         "smtp": {
-          "id": "NSJG1fwGgKL7Yi5I",
+          "id": "03pXLi1JTyV252l7",
           "name": "SMTP account"
         }
       }
@@ -614,27 +617,16 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        672,
+        688,
         384
       ],
       "webhookId": "4803d495-4d90-4959-9748-1fe50f534b66",
       "credentials": {
         "smtp": {
-          "id": "NSJG1fwGgKL7Yi5I",
+          "id": "03pXLi1JTyV252l7",
           "name": "SMTP account"
         }
       }
-    },
-    {
-      "parameters": {},
-      "id": "bedc6a8f-52df-4ab6-a1d7-985d406d13be",
-      "name": "🔵 Solo Guardado",
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        704,
-        576
-      ]
     },
     {
       "parameters": {
@@ -651,6 +643,37 @@
         -832,
         144
       ]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "https://www.notion.so/309668bb053e80d8a3ebea165a96ff1a",
+          "mode": "url"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        688,
+        576
+      ],
+      "id": "87906ae0-f31a-46f1-a55d-6a733a46cacb",
+      "name": "Update a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "igqM8G9QWZGjx1Mi",
+          "name": "Notion account 2"
+        }
+      }
     }
   ],
   "connections": {
@@ -721,7 +744,7 @@
         ],
         [
           {
-            "node": "🔵 Solo Guardado",
+            "node": "Update a database page",
             "type": "main",
             "index": 0
           }
@@ -734,17 +757,19 @@
     "availableInMCP": false
   },
   "staticData": null,
-  "meta": null,
-  "pinData": null,
-  "versionId": "b2c3261a-f55f-44e5-bb4e-3f4c0e61f2a9",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "69749263-da81-49d7-80fd-406e9c1559b0",
   "activeVersionId": null,
-  "triggerCount": 0,
+  "triggerCount": 1,
   "shared": [
     {
-      "updatedAt": "2026-02-26T23:23:42.020Z",
-      "createdAt": "2026-02-26T23:23:42.020Z",
+      "updatedAt": "2026-02-26T23:23:36.530Z",
+      "createdAt": "2026-02-26T23:23:36.530Z",
       "role": "workflow:owner",
-      "workflowId": "Gu8U0ZXK9KgrOD6R",
+      "workflowId": "yp2YGpEwdCUfL9xP",
       "projectId": "zU8ZqM5Dx6MPXDiw"
     }
   ],
