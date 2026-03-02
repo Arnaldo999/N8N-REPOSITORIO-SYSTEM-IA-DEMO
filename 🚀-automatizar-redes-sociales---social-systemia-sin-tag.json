@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-02-26T23:23:33.024Z",
-  "createdAt": "2026-02-26T23:23:33.024Z",
-  "id": "sAAIQaOzYpzRv0HE",
+  "updatedAt": "2026-02-26T23:23:34.186Z",
+  "createdAt": "2026-02-26T23:23:34.186Z",
+  "id": "Y4yaZ0Z3fahWh2RQ",
   "name": "🚀 Automatizar Redes Sociales - social-systemia",
   "active": false,
   "isArchived": false,
@@ -35,6 +35,41 @@
         1536,
         480
       ]
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appejn9ep8JMLJmPG",
+          "mode": "list",
+          "cachedResultName": "Clientes (Brand Books AI)",
+          "cachedResultUrl": "https://airtable.com/appejn9ep8JMLJmPG"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblgFvYebZcJaYM07",
+          "mode": "list",
+          "cachedResultName": "Branding-Marca",
+          "cachedResultUrl": "https://airtable.com/appejn9ep8JMLJmPG/tblgFvYebZcJaYM07"
+        },
+        "filterByFormula": "{ID Cliente} = 'Arnaldo_Ayala'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1808,
+        480
+      ],
+      "id": "d50403b4-004f-45d4-80db-c510358f7e8b",
+      "name": "Traer Brand Book (Airtable)",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "3amPYJ6MWYf0VZtD",
+          "name": "Airtable Personal Access BRANDING-MARCA"
+        }
+      }
     },
     {
       "parameters": {
@@ -74,41 +109,6 @@
       "maxTries": 3,
       "retryOnFail": true,
       "waitBetweenTries": 5000
-    },
-    {
-      "parameters": {
-        "operation": "search",
-        "base": {
-          "__rl": true,
-          "value": "appejn9ep8JMLJmPG",
-          "mode": "list",
-          "cachedResultName": "Clientes (Brand Books AI)",
-          "cachedResultUrl": "https://airtable.com/appejn9ep8JMLJmPG"
-        },
-        "table": {
-          "__rl": true,
-          "value": "tblgFvYebZcJaYM07",
-          "mode": "list",
-          "cachedResultName": "Branding-Marca",
-          "cachedResultUrl": "https://airtable.com/appejn9ep8JMLJmPG/tblgFvYebZcJaYM07"
-        },
-        "filterByFormula": "{ID Cliente} = 'SystemIA'",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.airtable",
-      "typeVersion": 2.1,
-      "position": [
-        1808,
-        480
-      ],
-      "id": "d50403b4-004f-45d4-80db-c510358f7e8b",
-      "name": "Traer Brand Book (Airtable-Micaela)",
-      "credentials": {
-        "airtableTokenApi": {
-          "id": "3amPYJ6MWYf0VZtD",
-          "name": "Airtable Personal Access BRANDING-MARCA"
-        }
-      }
     }
   ],
   "connections": {
@@ -116,7 +116,7 @@
       "main": [
         [
           {
-            "node": "Traer Brand Book (Airtable-Micaela)",
+            "node": "Traer Brand Book (Airtable)",
             "type": "main",
             "index": 0
           }
@@ -127,14 +127,14 @@
       "main": [
         [
           {
-            "node": "Traer Brand Book (Airtable-Micaela)",
+            "node": "Traer Brand Book (Airtable)",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Traer Brand Book (Airtable-Micaela)": {
+    "Traer Brand Book (Airtable)": {
       "main": [
         [
           {
@@ -153,15 +153,15 @@
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "a7a36475-873f-4786-a13c-ecf8028c5537",
+  "versionId": "5b7ddd7a-ad63-4a1c-a85d-287ac84dae0b",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2026-02-26T23:23:33.025Z",
-      "createdAt": "2026-02-26T23:23:33.025Z",
+      "updatedAt": "2026-02-26T23:23:34.188Z",
+      "createdAt": "2026-02-26T23:23:34.188Z",
       "role": "workflow:owner",
-      "workflowId": "sAAIQaOzYpzRv0HE",
+      "workflowId": "Y4yaZ0Z3fahWh2RQ",
       "projectId": "zU8ZqM5Dx6MPXDiw"
     }
   ],
