@@ -1,8 +1,6 @@
 {
-  "updatedAt": "2026-02-19T00:45:21.794Z",
-  "createdAt": "2026-02-18T13:55:53.377Z",
-  "id": "Mkw7iZRvCtSX8QWI",
   "name": "FORMULARIO-KICKOFF DE LEADS→ Notion + Sheets (System IA)",
+  "description": null,
   "active": true,
   "isArchived": false,
   "nodes": [
@@ -12,7 +10,8 @@
         "responseMode": "responseNode",
         "options": {
           "allowedOrigins": "*"
-        }
+        },
+        "httpMethod": "POST"
       },
       "id": "8027a0ef-4530-47b6-8bf5-ee70193919f4",
       "name": "Webhook Kickoff",
@@ -26,7 +25,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const query = $input.first().json.query || $input.first().json;\nconst email = (query.email_cliente || '').trim().toLowerCase();\nif (!email) throw new Error('email_cliente es requerido');\nreturn [{ json: {\n  email_cliente: email,\n  id_lead: query.id_lead || '',\n  precio_setup: parseFloat(query.precio_setup) || 0,\n  fee_mensual: parseFloat(query.fee_mensual) || 0,\n  estado_pago: query.estado_pago || 'Pendiente',\n  prioridad: query.prioridad || 'Media',\n  servicios: query.servicios || '',\n  plan: query.plan || '',\n  metodo_pago: query.metodo_pago || '',\n  proximo_pago: query.proximo_pago || '',\n  fecha_inicio: query.fecha_inicio || '',\n  fecha_renovacion: query.fecha_renovacion || '',\n  ultimo_contacto: query.ultimo_contacto || '',\n  proxima_accion: query.proxima_accion || '',\n  responsable: query.responsable || 'Arnaldo',\n  timestamp: new Date().toISOString()\n} }];"
+        "jsCode": "const query = $input.first().json.body || $input.first().json.query || $input.first().json;\nconst email = (query.email_cliente || '').trim().toLowerCase();\nif (!email) throw new Error('email_cliente es requerido');\nreturn [{ json: {\n  email_cliente: email,\n  id_lead: query.id_lead || '',\n  precio_setup: parseFloat(query.precio_setup) || 0,\n  fee_mensual: parseFloat(query.fee_mensual) || 0,\n  estado_pago: query.estado_pago || 'Pendiente',\n  prioridad: query.prioridad || 'Media',\n  servicios: query.servicios || '',\n  plan: query.plan || '',\n  metodo_pago: query.metodo_pago || '',\n  proximo_pago: query.proximo_pago || '',\n  fecha_inicio: query.fecha_inicio || '',\n  fecha_renovacion: query.fecha_renovacion || '',\n  ultimo_contacto: query.ultimo_contacto || '',\n  proxima_accion: query.proxima_accion || '',\n  responsable: query.responsable || 'Arnaldo',\n  timestamp: new Date().toISOString()\n} }];"
       },
       "id": "86dd9abd-97a1-4a11-a06b-cdcf02163036",
       "name": "Parsear Datos",
@@ -60,8 +59,8 @@
       "typeVersion": 2.1,
       "credentials": {
         "notionApi": {
-          "id": "0TW8kczx4zP0B6nS",
-          "name": "Notion System-Leads"
+          "id": "2LmvsaMYbOfbLZ8w",
+          "name": "Notion account"
         }
       }
     },
@@ -138,8 +137,8 @@
       "typeVersion": 4.1,
       "credentials": {
         "notionApi": {
-          "id": "0TW8kczx4zP0B6nS",
-          "name": "Notion System-Leads"
+          "id": "2LmvsaMYbOfbLZ8w",
+          "name": "Notion account"
         }
       }
     },
@@ -161,8 +160,10 @@
         "operation": "update",
         "documentId": {
           "__rl": true,
-          "mode": "url",
-          "value": "https://docs.google.com/spreadsheets/d/14HJkGerBAY5KCR6YBarae59aiCPhKzvt374strsGk3M/edit"
+          "value": "14HJkGerBAY5KCR6YBarae59aiCPhKzvt374strsGk3M",
+          "mode": "list",
+          "cachedResultName": "DB Leads Calificados - System IA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14HJkGerBAY5KCR6YBarae59aiCPhKzvt374strsGk3M/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
@@ -395,7 +396,7 @@
       "typeVersion": 4.5,
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "GMCKCQGZj49ZyiKE",
+          "id": "ySGy5iHCXbMxirsk",
           "name": "Google Sheets account"
         }
       }
@@ -426,7 +427,7 @@
       "id": "7a78338a-3862-424a-9729-994e75f5997a",
       "name": "Responder No Encontrado",
       "position": [
-        1968,
+        1984,
         896
       ],
       "type": "n8n-nodes-base.respondToWebhook",
@@ -547,36 +548,45 @@
     }
   },
   "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
     "executionOrder": "v1",
     "saveDataErrorExecution": "all",
     "saveDataSuccessExecution": "all",
     "saveManualExecutions": true,
-    "saveExecutionProgress": true,
-    "callerPolicy": "workflowsFromSameOwner",
-    "availableInMCP": false
+    "saveExecutionProgress": true
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
+  "meta": null,
   "pinData": {},
-  "versionId": "1eb6b8b6-2320-42a0-9c59-0491abe5ef17",
-  "activeVersionId": "1eb6b8b6-2320-42a0-9c59-0491abe5ef17",
+  "activeVersionId": "7ee34415-0461-4e63-aac1-8cbdf1998bda",
+  "versionCounter": 22,
   "triggerCount": 1,
   "shared": [
     {
-      "updatedAt": "2026-02-18T13:55:53.377Z",
-      "createdAt": "2026-02-18T13:55:53.377Z",
+      "updatedAt": "2026-03-02T10:43:24.347Z",
+      "createdAt": "2026-03-02T10:43:24.347Z",
       "role": "workflow:owner",
-      "workflowId": "Mkw7iZRvCtSX8QWI",
-      "projectId": "A5erh6pqAqSjR28k"
+      "workflowId": "GZWBiidMR9HtRuh7",
+      "projectId": "YfmAb61LMhjH6jFL",
+      "project": {
+        "updatedAt": "2026-03-02T10:33:35.043Z",
+        "createdAt": "2026-03-02T10:28:45.056Z",
+        "id": "YfmAb61LMhjH6jFL",
+        "name": "Micaela Colmenares <micaelacolmenares208@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "92b9d887-3183-46b1-9db4-c38b54ef2cb6"
+      }
     }
   ],
+  "tags": [],
   "activeVersion": {
-    "updatedAt": "2026-02-19T00:45:43.199Z",
-    "createdAt": "2026-02-19T00:45:21.796Z",
-    "versionId": "1eb6b8b6-2320-42a0-9c59-0491abe5ef17",
-    "workflowId": "Mkw7iZRvCtSX8QWI",
+    "updatedAt": "2026-03-02T14:54:35.626Z",
+    "createdAt": "2026-03-02T14:54:35.626Z",
+    "versionId": "7ee34415-0461-4e63-aac1-8cbdf1998bda",
+    "workflowId": "GZWBiidMR9HtRuh7",
     "nodes": [
       {
         "parameters": {
@@ -584,7 +594,8 @@
           "responseMode": "responseNode",
           "options": {
             "allowedOrigins": "*"
-          }
+          },
+          "httpMethod": "POST"
         },
         "id": "8027a0ef-4530-47b6-8bf5-ee70193919f4",
         "name": "Webhook Kickoff",
@@ -598,7 +609,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const query = $input.first().json.query || $input.first().json;\nconst email = (query.email_cliente || '').trim().toLowerCase();\nif (!email) throw new Error('email_cliente es requerido');\nreturn [{ json: {\n  email_cliente: email,\n  id_lead: query.id_lead || '',\n  precio_setup: parseFloat(query.precio_setup) || 0,\n  fee_mensual: parseFloat(query.fee_mensual) || 0,\n  estado_pago: query.estado_pago || 'Pendiente',\n  prioridad: query.prioridad || 'Media',\n  servicios: query.servicios || '',\n  plan: query.plan || '',\n  metodo_pago: query.metodo_pago || '',\n  proximo_pago: query.proximo_pago || '',\n  fecha_inicio: query.fecha_inicio || '',\n  fecha_renovacion: query.fecha_renovacion || '',\n  ultimo_contacto: query.ultimo_contacto || '',\n  proxima_accion: query.proxima_accion || '',\n  responsable: query.responsable || 'Arnaldo',\n  timestamp: new Date().toISOString()\n} }];"
+          "jsCode": "const query = $input.first().json.body || $input.first().json.query || $input.first().json;\nconst email = (query.email_cliente || '').trim().toLowerCase();\nif (!email) throw new Error('email_cliente es requerido');\nreturn [{ json: {\n  email_cliente: email,\n  id_lead: query.id_lead || '',\n  precio_setup: parseFloat(query.precio_setup) || 0,\n  fee_mensual: parseFloat(query.fee_mensual) || 0,\n  estado_pago: query.estado_pago || 'Pendiente',\n  prioridad: query.prioridad || 'Media',\n  servicios: query.servicios || '',\n  plan: query.plan || '',\n  metodo_pago: query.metodo_pago || '',\n  proximo_pago: query.proximo_pago || '',\n  fecha_inicio: query.fecha_inicio || '',\n  fecha_renovacion: query.fecha_renovacion || '',\n  ultimo_contacto: query.ultimo_contacto || '',\n  proxima_accion: query.proxima_accion || '',\n  responsable: query.responsable || 'Arnaldo',\n  timestamp: new Date().toISOString()\n} }];"
         },
         "id": "86dd9abd-97a1-4a11-a06b-cdcf02163036",
         "name": "Parsear Datos",
@@ -632,8 +643,8 @@
         "typeVersion": 2.1,
         "credentials": {
           "notionApi": {
-            "id": "0TW8kczx4zP0B6nS",
-            "name": "Notion System-Leads"
+            "id": "2LmvsaMYbOfbLZ8w",
+            "name": "Notion account"
           }
         }
       },
@@ -710,8 +721,8 @@
         "typeVersion": 4.1,
         "credentials": {
           "notionApi": {
-            "id": "0TW8kczx4zP0B6nS",
-            "name": "Notion System-Leads"
+            "id": "2LmvsaMYbOfbLZ8w",
+            "name": "Notion account"
           }
         }
       },
@@ -733,8 +744,10 @@
           "operation": "update",
           "documentId": {
             "__rl": true,
-            "mode": "url",
-            "value": "https://docs.google.com/spreadsheets/d/14HJkGerBAY5KCR6YBarae59aiCPhKzvt374strsGk3M/edit"
+            "value": "14HJkGerBAY5KCR6YBarae59aiCPhKzvt374strsGk3M",
+            "mode": "list",
+            "cachedResultName": "DB Leads Calificados - System IA",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14HJkGerBAY5KCR6YBarae59aiCPhKzvt374strsGk3M/edit?usp=drivesdk"
           },
           "sheetName": {
             "__rl": true,
@@ -967,7 +980,7 @@
         "typeVersion": 4.5,
         "credentials": {
           "googleSheetsOAuth2Api": {
-            "id": "GMCKCQGZj49ZyiKE",
+            "id": "ySGy5iHCXbMxirsk",
             "name": "Google Sheets account"
           }
         }
@@ -998,7 +1011,7 @@
         "id": "7a78338a-3862-424a-9729-994e75f5997a",
         "name": "Responder No Encontrado",
         "position": [
-          1968,
+          1984,
           896
         ],
         "type": "n8n-nodes-base.respondToWebhook",
@@ -1119,22 +1132,26 @@
       }
     },
     "authors": "Micaela Colmenares",
-    "name": "Version 1eb6b8b6",
-    "description": "",
-    "autosaved": true
-  },
-  "tags": [
-    {
-      "updatedAt": "2026-02-09T19:43:32.621Z",
-      "createdAt": "2026-02-09T19:43:32.621Z",
-      "id": "igcPlxzoy2OTsvdL",
-      "name": "⚡ Producción"
-    },
-    {
-      "updatedAt": "2026-02-16T09:53:07.520Z",
-      "createdAt": "2026-02-16T09:53:07.520Z",
-      "id": "NV4DPWxeft6Qc2wd",
-      "name": "LEADS"
-    }
-  ]
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-03-02T14:54:35.678Z",
+        "id": 28,
+        "workflowId": "GZWBiidMR9HtRuh7",
+        "versionId": "7ee34415-0461-4e63-aac1-8cbdf1998bda",
+        "event": "activated",
+        "userId": "92b9d887-3183-46b1-9db4-c38b54ef2cb6"
+      },
+      {
+        "createdAt": "2026-03-02T14:54:35.665Z",
+        "id": 27,
+        "workflowId": "GZWBiidMR9HtRuh7",
+        "versionId": "7ee34415-0461-4e63-aac1-8cbdf1998bda",
+        "event": "deactivated",
+        "userId": "92b9d887-3183-46b1-9db4-c38b54ef2cb6"
+      }
+    ]
+  }
 }
