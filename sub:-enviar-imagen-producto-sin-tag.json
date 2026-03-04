@@ -1,0 +1,120 @@
+{
+  "updatedAt": "2026-03-02T10:43:53.277Z",
+  "createdAt": "2026-03-02T10:43:53.277Z",
+  "id": "5ikHUQ96fYlDhlsV",
+  "name": "Sub: Enviar Imagen Producto",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "trigger-img",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        300
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "http-img",
+      "name": "Enviar Imagen WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendMedia/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"mediatype\": \"image\",\n  \"media\": \"{{ $json.imagen_url }}\",\n  \"caption\": \"{{ $json.caption }}\"\n}",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
+        }
+      }
+    },
+    {
+      "id": "set-img",
+      "name": "Respuesta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        300
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "response",
+              "value": "Imagen enviada. Ahora decime el número del producto que querés o si querés ver otro.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Enviar Imagen WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Imagen WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "a087f07f-49df-4ded-bc6a-086da2a8b7d7",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-03-02T10:43:53.278Z",
+      "createdAt": "2026-03-02T10:43:53.278Z",
+      "role": "workflow:owner",
+      "workflowId": "5ikHUQ96fYlDhlsV",
+      "projectId": "YfmAb61LMhjH6jFL"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "id": "sin-tag",
+      "name": "sin-tag"
+    }
+  ]
+}
