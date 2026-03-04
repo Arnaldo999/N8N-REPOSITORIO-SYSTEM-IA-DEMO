@@ -1,0 +1,1772 @@
+{
+  "updatedAt": "2026-03-03T20:15:20.125Z",
+  "createdAt": "2026-03-02T19:36:06.738Z",
+  "id": "soTJnOeS9ZGAo995",
+  "name": "🍷 Restaurante - Flujo Principal (FastAPI)",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "webhook/automatizacion-restaurantes",
+        "options": {}
+      },
+      "id": "5f5c66d6-8136-4df1-a966-d49600329ee1",
+      "name": "Webhook Evolution API",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        880,
+        2032
+      ],
+      "webhookId": "automatizacion-restaurantes"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.body.event }}",
+              "rightValue": "messages.upsert",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "c3",
+              "leftValue": "={{ $json.body.data.key.remoteJid }}",
+              "rightValue": "@s.whatsapp.net",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d574f1c4-2903-402c-a399-01d91245ff1e",
+      "name": "Filtro Webhook",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        2032
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "telefono",
+              "value": "={{ ($json.body?.data?.key?.remoteJid || '').replace('@s.whatsapp.net','') }}",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "mensaje",
+              "value": "={{ ($json.body?.data?.message?.conversation || $json.body?.data?.message?.extendedTextMessage?.text || $json.body?.data?.message?.imageMessage?.caption || '').trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "nombre_wa",
+              "value": "={{ $json.body?.data?.pushName || 'Cliente' }}",
+              "type": "string"
+            },
+            {
+              "id": "a4",
+              "name": "es_mio",
+              "value": "={{ String($json.body?.data?.key?.fromMe ?? false) }}",
+              "type": "string"
+            },
+            {
+              "id": "a5",
+              "name": "remoteJid",
+              "value": "={{ $json.body?.data?.key?.remoteJid || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "a6",
+              "name": "tiene_imagen",
+              "value": "={{ ['imageMessage','documentMessage','videoMessage'].includes($json.body?.data?.messageType || '') }}",
+              "type": "boolean"
+            },
+            {
+              "id": "a7",
+              "name": "es_admin",
+              "value": "={{ ($json.body?.data?.key?.remoteJid || '').replace('@s.whatsapp.net','') === ($vars?.NUMERO_DUENO || '').replace('+','').replace(/\\s/g,'') }}",
+              "type": "boolean"
+            },
+            {
+              "id": "a8",
+              "name": "audio_base64",
+              "value": "={{ $json.body?.data?.message?.audioMessage?.base64 || $json.body?.data?.message?.base64 || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "a9",
+              "name": "audio_url",
+              "value": "={{ $json.body?.data?.message?.audioMessage?.url || $json.body?.data?.message?.pttMessage?.url || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "a10",
+              "name": "audio_msg_raw",
+              "value": "={{ ['audioMessage','pttMessage'].includes($json.body?.data?.messageType || '') ? JSON.stringify({key: $json.body.data.key, message: $json.body.data.message}) : '{}' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3d424b64-98e5-453c-a64d-70f7d02a71d6",
+      "name": "Extraer Datos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1328,
+        2032
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "f1",
+              "leftValue": "={{ $json.es_mio }}",
+              "rightValue": "false",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "68de2922-9c4c-41d4-8c6c-95ea6debfe8d",
+      "name": "No es mensaje mio",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        2032
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1",
+              "name": "fecha_hoy",
+              "value": "={{ $now.format('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "f2",
+              "name": "fecha_formateada",
+              "value": "={{ $now.format('EEEE d MMMM yyyy', { locale: 'es' }) }}",
+              "type": "string"
+            },
+            {
+              "id": "f3",
+              "name": "telefono",
+              "value": "={{ $json.telefono }}",
+              "type": "string"
+            },
+            {
+              "id": "f4",
+              "name": "mensaje",
+              "value": "={{ $json.mensaje }}",
+              "type": "string"
+            },
+            {
+              "id": "f5",
+              "name": "nombre_wa",
+              "value": "={{ $json.nombre_wa }}",
+              "type": "string"
+            },
+            {
+              "id": "f6",
+              "name": "remoteJid",
+              "value": "={{ $json.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "f7",
+              "name": "tiene_imagen",
+              "value": "={{ $json.tiene_imagen }}",
+              "type": "boolean"
+            },
+            {
+              "id": "f8",
+              "name": "es_admin",
+              "value": "={{ $json.es_admin }}",
+              "type": "boolean"
+            },
+            {
+              "id": "f9",
+              "name": "audio_base64",
+              "value": "={{ $json.audio_base64 || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "f10",
+              "name": "audio_url",
+              "value": "={{ $json.audio_url || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "f11",
+              "name": "audio_msg_raw",
+              "value": "={{ $json.audio_msg_raw || '{}' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3b554da7-3ff7-40c1-b24d-c894084364fd",
+      "name": "Agregar Fecha",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1776,
+        2032
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://system-ia-agentes.onrender.com/gastronomico/basico/mensaje",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ telefono: $json.telefono, mensaje: $json.mensaje, tiene_imagen: $json.tiene_imagen, es_admin: $json.es_admin, audio_base64: $json.audio_base64 || '', audio_url: $json.audio_url || '', audio_msg_raw: $json.audio_msg_raw || '{}' }) }}",
+        "options": {
+          "timeout": 35000
+        }
+      },
+      "id": "f6ebfd6b-5cb8-4819-a48d-329594a469e1",
+      "name": "🧠 FastAPI — Cerebro IA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2000,
+        2032
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false
+          },
+          "conditions": [
+            {
+              "id": "nd1",
+              "leftValue": "={{ $json.notificar_dueno }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "796030fc-9487-4399-b611-3b890c691bd3",
+      "name": "🔔 ¿Notificar Dueño?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2224,
+        2032
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: $('🧠 FastAPI — Cerebro IA').first().json.telefono_cliente || $('Agregar Fecha').first().json.telefono, text: $('🧠 FastAPI — Cerebro IA').first().json.mensaje_para_dueno }) }}",
+        "options": {}
+      },
+      "id": "4daea6fb-28bb-4424-ae10-c9adc4804ff2",
+      "name": "📲 WhatsApp → Dueño",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2448,
+        1840
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZL2CdsQqaFeTMR2w",
+          "name": "Header Auth Evolution api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const respuesta = $('🧠 FastAPI — Cerebro IA').first().json.respuesta || $input.first().json.respuesta || 'Hola! En qué puedo ayudarte?';\nconst telefono = $('Agregar Fecha').first().json.telefono;\nconst remoteJid = $('Agregar Fecha').first().json.remoteJid;\n\nfunction escapeJson(str) {\n  if (!str) return '';\n  return str\n    .replace(/\\\\/g, '\\\\\\\\')\n    .replace(/\"/g, '\\\\\"')\n    .replace(/\\n/g, '\\\\n')\n    .replace(/\\r/g, '\\\\r')\n    .replace(/\\t/g, '\\\\t');\n}\n\nconst bloques = respuesta.split('\\n\\n').filter(b => b.trim() !== '');\n\nlet parte_1 = '';\nlet parte_2 = '';\nlet parte_3 = '';\n\nif (bloques.length === 1) {\n  parte_1 = bloques[0].trim();\n} else if (bloques.length === 2) {\n  parte_1 = bloques[0].trim();\n  parte_2 = bloques[1].trim();\n} else if (bloques.length >= 3) {\n  parte_1 = bloques[0].trim();\n  parte_2 = bloques.slice(1, -1).join('\\n\\n').trim();\n  parte_3 = bloques[bloques.length - 1].trim();\n}\n\nreturn {\n  json: {\n    telefono,\n    remoteJid,\n    parte_1,\n    parte_2,\n    parte_3,\n    body_1: JSON.stringify({ number: telefono, text: parte_1 }),\n    body_2: JSON.stringify({ number: telefono, text: parte_2 }),\n    body_3: JSON.stringify({ number: telefono, text: parte_3 }),\n    body_presence: JSON.stringify({ number: remoteJid, delay: 2000, presence: 'composing' })\n  }\n};"
+      },
+      "id": "49f029fb-3de2-4d8d-8941-79fe21e2642a",
+      "name": "Dividir Mensaje",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2672,
+        2032
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/chat/sendPresence/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Dividir Mensaje').first().json.body_presence }}",
+        "options": {}
+      },
+      "id": "8e721224-d3e0-4393-96e0-7917be614a62",
+      "name": "Escribiendo 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2448,
+        2032
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZL2CdsQqaFeTMR2w",
+          "name": "Header Auth Evolution api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Dividir Mensaje').first().json.body_1 }}",
+        "options": {}
+      },
+      "id": "397be597-cad2-43e5-b8dc-cadbad316e70",
+      "name": "Enviar Parte 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2672,
+        2032
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZL2CdsQqaFeTMR2w",
+          "name": "Header Auth Evolution api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "p2",
+              "leftValue": "={{ $('Dividir Mensaje').first().json.parte_2 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "2882c125-072f-483e-8389-f3e08e99c300",
+      "name": "Tiene Parte 2?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2896,
+        2032
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/chat/sendPresence/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Dividir Mensaje').first().json.body_presence }}",
+        "options": {}
+      },
+      "id": "7cea9299-5dc2-4316-b651-f41f0475f2cb",
+      "name": "Escribiendo 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3120,
+        1936
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZL2CdsQqaFeTMR2w",
+          "name": "Header Auth Evolution api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "id": "66b55574-349e-4cd5-b188-5808e50a4ca6",
+      "name": "Esperar 3s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3344,
+        1936
+      ],
+      "webhookId": "wait-3s-restaurante"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Dividir Mensaje').first().json.body_2 }}",
+        "options": {}
+      },
+      "id": "47fad2e4-91e3-4f32-bdb8-42d1a0b4a173",
+      "name": "Enviar Parte 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3568,
+        1936
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZL2CdsQqaFeTMR2w",
+          "name": "Header Auth Evolution api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "p3",
+              "leftValue": "={{ $('Dividir Mensaje').first().json.parte_3 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "43651a77-7952-4214-963c-9031eea77053",
+      "name": "Tiene Parte 3?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3792,
+        1936
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/chat/sendPresence/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Dividir Mensaje').first().json.body_presence }}",
+        "options": {}
+      },
+      "id": "b8379cd2-7a06-4385-80cb-7b23514b4450",
+      "name": "Escribiendo 3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4016,
+        1840
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZL2CdsQqaFeTMR2w",
+          "name": "Header Auth Evolution api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 4
+      },
+      "id": "4271d175-4d87-4fc2-91ff-9959dfb9d9bc",
+      "name": "Esperar 4s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4240,
+        1840
+      ],
+      "webhookId": "wait-4s-restaurante"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Dividir Mensaje').first().json.body_3 }}",
+        "options": {}
+      },
+      "id": "7e828379-c647-4b60-8cb6-9bf006054179",
+      "name": "Enviar Parte 3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4464,
+        1840
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZL2CdsQqaFeTMR2w",
+          "name": "Header Auth Evolution api"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Evolution API": {
+      "main": [
+        [
+          {
+            "node": "Filtro Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtro Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extraer Datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Datos": {
+      "main": [
+        [
+          {
+            "node": "No es mensaje mio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No es mensaje mio": {
+      "main": [
+        [
+          {
+            "node": "Agregar Fecha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agregar Fecha": {
+      "main": [
+        [
+          {
+            "node": "🧠 FastAPI — Cerebro IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧠 FastAPI — Cerebro IA": {
+      "main": [
+        [
+          {
+            "node": "🔔 ¿Notificar Dueño?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔔 ¿Notificar Dueño?": {
+      "main": [
+        [
+          {
+            "node": "📲 WhatsApp → Dueño",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Dividir Mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Dividir Mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dividir Mensaje": {
+      "main": [
+        [
+          {
+            "node": "Escribiendo 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escribiendo 1": {
+      "main": [
+        [
+          {
+            "node": "Enviar Parte 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Parte 1": {
+      "main": [
+        [
+          {
+            "node": "Tiene Parte 2?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tiene Parte 2?": {
+      "main": [
+        [
+          {
+            "node": "Escribiendo 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escribiendo 2": {
+      "main": [
+        [
+          {
+            "node": "Esperar 3s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esperar 3s": {
+      "main": [
+        [
+          {
+            "node": "Enviar Parte 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Parte 2": {
+      "main": [
+        [
+          {
+            "node": "Tiene Parte 3?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tiene Parte 3?": {
+      "main": [
+        [
+          {
+            "node": "Escribiendo 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escribiendo 3": {
+      "main": [
+        [
+          {
+            "node": "Esperar 4s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esperar 4s": {
+      "main": [
+        [
+          {
+            "node": "Enviar Parte 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "50e8e8bb-058d-4788-b4da-f8236e31bd82",
+  "activeVersionId": "50e8e8bb-058d-4788-b4da-f8236e31bd82",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-02T19:36:06.739Z",
+      "createdAt": "2026-03-02T19:36:06.739Z",
+      "role": "workflow:owner",
+      "workflowId": "soTJnOeS9ZGAo995",
+      "projectId": "YfmAb61LMhjH6jFL"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-03T20:15:20.127Z",
+    "createdAt": "2026-03-03T20:15:20.127Z",
+    "versionId": "50e8e8bb-058d-4788-b4da-f8236e31bd82",
+    "workflowId": "soTJnOeS9ZGAo995",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "webhook/automatizacion-restaurantes",
+          "options": {}
+        },
+        "id": "5f5c66d6-8136-4df1-a966-d49600329ee1",
+        "name": "Webhook Evolution API",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          880,
+          2032
+        ],
+        "webhookId": "automatizacion-restaurantes"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c1",
+                "leftValue": "={{ $json.body.event }}",
+                "rightValue": "messages.upsert",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "c3",
+                "leftValue": "={{ $json.body.data.key.remoteJid }}",
+                "rightValue": "@s.whatsapp.net",
+                "operator": {
+                  "type": "string",
+                  "operation": "endsWith"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "d574f1c4-2903-402c-a399-01d91245ff1e",
+        "name": "Filtro Webhook",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          1104,
+          2032
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a1",
+                "name": "telefono",
+                "value": "={{ ($json.body?.data?.key?.remoteJid || '').replace('@s.whatsapp.net','') }}",
+                "type": "string"
+              },
+              {
+                "id": "a2",
+                "name": "mensaje",
+                "value": "={{ ($json.body?.data?.message?.conversation || $json.body?.data?.message?.extendedTextMessage?.text || $json.body?.data?.message?.imageMessage?.caption || '').trim() }}",
+                "type": "string"
+              },
+              {
+                "id": "a3",
+                "name": "nombre_wa",
+                "value": "={{ $json.body?.data?.pushName || 'Cliente' }}",
+                "type": "string"
+              },
+              {
+                "id": "a4",
+                "name": "es_mio",
+                "value": "={{ String($json.body?.data?.key?.fromMe ?? false) }}",
+                "type": "string"
+              },
+              {
+                "id": "a5",
+                "name": "remoteJid",
+                "value": "={{ $json.body?.data?.key?.remoteJid || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "a6",
+                "name": "tiene_imagen",
+                "value": "={{ ['imageMessage','documentMessage','videoMessage'].includes($json.body?.data?.messageType || '') }}",
+                "type": "boolean"
+              },
+              {
+                "id": "a7",
+                "name": "es_admin",
+                "value": "={{ ($json.body?.data?.key?.remoteJid || '').replace('@s.whatsapp.net','') === ($vars?.NUMERO_DUENO || '').replace('+','').replace(/\\s/g,'') }}",
+                "type": "boolean"
+              },
+              {
+                "id": "a8",
+                "name": "audio_base64",
+                "value": "={{ $json.body?.data?.message?.audioMessage?.base64 || $json.body?.data?.message?.base64 || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "a9",
+                "name": "audio_url",
+                "value": "={{ $json.body?.data?.message?.audioMessage?.url || $json.body?.data?.message?.pttMessage?.url || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "a10",
+                "name": "audio_msg_raw",
+                "value": "={{ ['audioMessage','pttMessage'].includes($json.body?.data?.messageType || '') ? JSON.stringify({key: $json.body.data.key, message: $json.body.data.message}) : '{}' }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "3d424b64-98e5-453c-a64d-70f7d02a71d6",
+        "name": "Extraer Datos",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1328,
+          2032
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "f1",
+                "leftValue": "={{ $json.es_mio }}",
+                "rightValue": "false",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "68de2922-9c4c-41d4-8c6c-95ea6debfe8d",
+        "name": "No es mensaje mio",
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2,
+        "position": [
+          1552,
+          2032
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f1",
+                "name": "fecha_hoy",
+                "value": "={{ $now.format('yyyy-MM-dd') }}",
+                "type": "string"
+              },
+              {
+                "id": "f2",
+                "name": "fecha_formateada",
+                "value": "={{ $now.format('EEEE d MMMM yyyy', { locale: 'es' }) }}",
+                "type": "string"
+              },
+              {
+                "id": "f3",
+                "name": "telefono",
+                "value": "={{ $json.telefono }}",
+                "type": "string"
+              },
+              {
+                "id": "f4",
+                "name": "mensaje",
+                "value": "={{ $json.mensaje }}",
+                "type": "string"
+              },
+              {
+                "id": "f5",
+                "name": "nombre_wa",
+                "value": "={{ $json.nombre_wa }}",
+                "type": "string"
+              },
+              {
+                "id": "f6",
+                "name": "remoteJid",
+                "value": "={{ $json.remoteJid }}",
+                "type": "string"
+              },
+              {
+                "id": "f7",
+                "name": "tiene_imagen",
+                "value": "={{ $json.tiene_imagen }}",
+                "type": "boolean"
+              },
+              {
+                "id": "f8",
+                "name": "es_admin",
+                "value": "={{ $json.es_admin }}",
+                "type": "boolean"
+              },
+              {
+                "id": "f9",
+                "name": "audio_base64",
+                "value": "={{ $json.audio_base64 || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "f10",
+                "name": "audio_url",
+                "value": "={{ $json.audio_url || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "f11",
+                "name": "audio_msg_raw",
+                "value": "={{ $json.audio_msg_raw || '{}' }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "3b554da7-3ff7-40c1-b24d-c894084364fd",
+        "name": "Agregar Fecha",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1776,
+          2032
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://system-ia-agentes.onrender.com/gastronomico/basico/mensaje",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ telefono: $json.telefono, mensaje: $json.mensaje, tiene_imagen: $json.tiene_imagen, es_admin: $json.es_admin, audio_base64: $json.audio_base64 || '', audio_url: $json.audio_url || '', audio_msg_raw: $json.audio_msg_raw || '{}' }) }}",
+          "options": {
+            "timeout": 35000
+          }
+        },
+        "id": "f6ebfd6b-5cb8-4819-a48d-329594a469e1",
+        "name": "🧠 FastAPI — Cerebro IA",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2000,
+          2032
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false
+            },
+            "conditions": [
+              {
+                "id": "nd1",
+                "leftValue": "={{ $json.notificar_dueno }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "796030fc-9487-4399-b611-3b890c691bd3",
+        "name": "🔔 ¿Notificar Dueño?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          2224,
+          2032
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ number: $('🧠 FastAPI — Cerebro IA').first().json.telefono_cliente || $('Agregar Fecha').first().json.telefono, text: $('🧠 FastAPI — Cerebro IA').first().json.mensaje_para_dueno }) }}",
+          "options": {}
+        },
+        "id": "4daea6fb-28bb-4424-ae10-c9adc4804ff2",
+        "name": "📲 WhatsApp → Dueño",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2448,
+          1840
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZL2CdsQqaFeTMR2w",
+            "name": "Header Auth Evolution api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const respuesta = $('🧠 FastAPI — Cerebro IA').first().json.respuesta || $input.first().json.respuesta || 'Hola! En qué puedo ayudarte?';\nconst telefono = $('Agregar Fecha').first().json.telefono;\nconst remoteJid = $('Agregar Fecha').first().json.remoteJid;\n\nfunction escapeJson(str) {\n  if (!str) return '';\n  return str\n    .replace(/\\\\/g, '\\\\\\\\')\n    .replace(/\"/g, '\\\\\"')\n    .replace(/\\n/g, '\\\\n')\n    .replace(/\\r/g, '\\\\r')\n    .replace(/\\t/g, '\\\\t');\n}\n\nconst bloques = respuesta.split('\\n\\n').filter(b => b.trim() !== '');\n\nlet parte_1 = '';\nlet parte_2 = '';\nlet parte_3 = '';\n\nif (bloques.length === 1) {\n  parte_1 = bloques[0].trim();\n} else if (bloques.length === 2) {\n  parte_1 = bloques[0].trim();\n  parte_2 = bloques[1].trim();\n} else if (bloques.length >= 3) {\n  parte_1 = bloques[0].trim();\n  parte_2 = bloques.slice(1, -1).join('\\n\\n').trim();\n  parte_3 = bloques[bloques.length - 1].trim();\n}\n\nreturn {\n  json: {\n    telefono,\n    remoteJid,\n    parte_1,\n    parte_2,\n    parte_3,\n    body_1: JSON.stringify({ number: telefono, text: parte_1 }),\n    body_2: JSON.stringify({ number: telefono, text: parte_2 }),\n    body_3: JSON.stringify({ number: telefono, text: parte_3 }),\n    body_presence: JSON.stringify({ number: remoteJid, delay: 2000, presence: 'composing' })\n  }\n};"
+        },
+        "id": "49f029fb-3de2-4d8d-8941-79fe21e2642a",
+        "name": "Dividir Mensaje",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2672,
+          2032
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/chat/sendPresence/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $('Dividir Mensaje').first().json.body_presence }}",
+          "options": {}
+        },
+        "id": "8e721224-d3e0-4393-96e0-7917be614a62",
+        "name": "Escribiendo 1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2448,
+          2032
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZL2CdsQqaFeTMR2w",
+            "name": "Header Auth Evolution api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $('Dividir Mensaje').first().json.body_1 }}",
+          "options": {}
+        },
+        "id": "397be597-cad2-43e5-b8dc-cadbad316e70",
+        "name": "Enviar Parte 1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2672,
+          2032
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZL2CdsQqaFeTMR2w",
+            "name": "Header Auth Evolution api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "p2",
+                "leftValue": "={{ $('Dividir Mensaje').first().json.parte_2 }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "2882c125-072f-483e-8389-f3e08e99c300",
+        "name": "Tiene Parte 2?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          2896,
+          2032
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/chat/sendPresence/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $('Dividir Mensaje').first().json.body_presence }}",
+          "options": {}
+        },
+        "id": "7cea9299-5dc2-4316-b651-f41f0475f2cb",
+        "name": "Escribiendo 2",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3120,
+          1936
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZL2CdsQqaFeTMR2w",
+            "name": "Header Auth Evolution api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "amount": 3
+        },
+        "id": "66b55574-349e-4cd5-b188-5808e50a4ca6",
+        "name": "Esperar 3s",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          3344,
+          1936
+        ],
+        "webhookId": "wait-3s-restaurante"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $('Dividir Mensaje').first().json.body_2 }}",
+          "options": {}
+        },
+        "id": "47fad2e4-91e3-4f32-bdb8-42d1a0b4a173",
+        "name": "Enviar Parte 2",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3568,
+          1936
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZL2CdsQqaFeTMR2w",
+            "name": "Header Auth Evolution api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "p3",
+                "leftValue": "={{ $('Dividir Mensaje').first().json.parte_3 }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "43651a77-7952-4214-963c-9031eea77053",
+        "name": "Tiene Parte 3?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          3792,
+          1936
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/chat/sendPresence/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $('Dividir Mensaje').first().json.body_presence }}",
+          "options": {}
+        },
+        "id": "b8379cd2-7a06-4385-80cb-7b23514b4450",
+        "name": "Escribiendo 3",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4016,
+          1840
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZL2CdsQqaFeTMR2w",
+            "name": "Header Auth Evolution api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "amount": 4
+        },
+        "id": "4271d175-4d87-4fc2-91ff-9959dfb9d9bc",
+        "name": "Esperar 4s",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          4240,
+          1840
+        ],
+        "webhookId": "wait-4s-restaurante"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $('Dividir Mensaje').first().json.body_3 }}",
+          "options": {}
+        },
+        "id": "7e828379-c647-4b60-8cb6-9bf006054179",
+        "name": "Enviar Parte 3",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4464,
+          1840
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZL2CdsQqaFeTMR2w",
+            "name": "Header Auth Evolution api"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Webhook Evolution API": {
+        "main": [
+          [
+            {
+              "node": "Filtro Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filtro Webhook": {
+        "main": [
+          [
+            {
+              "node": "Extraer Datos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraer Datos": {
+        "main": [
+          [
+            {
+              "node": "No es mensaje mio",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "No es mensaje mio": {
+        "main": [
+          [
+            {
+              "node": "Agregar Fecha",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Agregar Fecha": {
+        "main": [
+          [
+            {
+              "node": "🧠 FastAPI — Cerebro IA",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🧠 FastAPI — Cerebro IA": {
+        "main": [
+          [
+            {
+              "node": "🔔 ¿Notificar Dueño?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🔔 ¿Notificar Dueño?": {
+        "main": [
+          [
+            {
+              "node": "📲 WhatsApp → Dueño",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Dividir Mensaje",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Dividir Mensaje",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Dividir Mensaje": {
+        "main": [
+          [
+            {
+              "node": "Escribiendo 1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Escribiendo 1": {
+        "main": [
+          [
+            {
+              "node": "Enviar Parte 1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Enviar Parte 1": {
+        "main": [
+          [
+            {
+              "node": "Tiene Parte 2?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tiene Parte 2?": {
+        "main": [
+          [
+            {
+              "node": "Escribiendo 2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Escribiendo 2": {
+        "main": [
+          [
+            {
+              "node": "Esperar 3s",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Esperar 3s": {
+        "main": [
+          [
+            {
+              "node": "Enviar Parte 2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Enviar Parte 2": {
+        "main": [
+          [
+            {
+              "node": "Tiene Parte 3?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tiene Parte 3?": {
+        "main": [
+          [
+            {
+              "node": "Escribiendo 3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Escribiendo 3": {
+        "main": [
+          [
+            {
+              "node": "Esperar 4s",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Esperar 4s": {
+        "main": [
+          [
+            {
+              "node": "Enviar Parte 3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "id": "sin-tag",
+      "name": "sin-tag"
+    }
+  ]
+}
