@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2026-03-02T10:44:36.266Z",
+  "updatedAt": "2026-03-05T02:33:03.750Z",
   "createdAt": "2026-03-02T10:44:36.266Z",
   "id": "7hwWuqVD1bA5habN",
   "name": "🚀 Automatizar Redes Sociales (Arnaldo)",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -55,10 +55,10 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://sytem-ia-pruebas-agente.6g0gdj.easypanel.host/social/publicar-completo",
+        "url": "https://system-ia-agentes.onrender.com/social/publicar-completo",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ { 'datos_marca': $json } }}",
+        "jsonBody": "={{  { \"cliente_id\": $json[\"ID Cliente\"], \"datos_marca\": $json } }}",
         "options": {
           "timeout": 300000
         }
@@ -80,19 +80,18 @@
         "operation": "search",
         "base": {
           "__rl": true,
-          "value": "appejn9ep8JMLJmPG",
+          "value": "appOUtGnMYHrbLaMa",
           "mode": "list",
-          "cachedResultName": "Clientes (Brand Books AI)",
-          "cachedResultUrl": "https://airtable.com/appejn9ep8JMLJmPG"
+          "cachedResultName": "WORKSPACE Arnaldo Ayala",
+          "cachedResultUrl": "https://airtable.com/appOUtGnMYHrbLaMa"
         },
         "table": {
           "__rl": true,
           "value": "tblgFvYebZcJaYM07",
           "mode": "list",
           "cachedResultName": "Branding-Marca",
-          "cachedResultUrl": "https://airtable.com/appejn9ep8JMLJmPG/tblgFvYebZcJaYM07"
+          "cachedResultUrl": "https://airtable.com/appOUtGnMYHrbLaMa/tblgFvYebZcJaYM07"
         },
-        "filterByFormula": "{ID Cliente} = 'Arnaldo_Ayala'",
         "options": {}
       },
       "type": "n8n-nodes-base.airtable",
@@ -105,8 +104,8 @@
       "name": "Traer Brand Book (Airtable-Arnaldo)",
       "credentials": {
         "airtableTokenApi": {
-          "id": "3amPYJ6MWYf0VZtD",
-          "name": "Airtable Personal Access BRANDING-MARCA"
+          "id": "Cmjj6v8g6OqJtYFt",
+          "name": "Airtable Personal Access Token account"
         }
       }
     }
@@ -150,12 +149,16 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "staticData": null,
+  "staticData": {
+    "node:Trigger Programado": {
+      "recurrenceRules": []
+    }
+  },
   "meta": null,
-  "pinData": null,
-  "versionId": "ce59107e-61f0-4acb-b1a0-a05a0949fc14",
-  "activeVersionId": null,
-  "triggerCount": 0,
+  "pinData": {},
+  "versionId": "7c3fc353-ef91-4496-80ee-9a9db2a657e8",
+  "activeVersionId": "2e991993-65a2-4c00-bc37-5848fe6f469e",
+  "triggerCount": 1,
   "shared": [
     {
       "updatedAt": "2026-03-02T10:44:36.267Z",
@@ -165,7 +168,156 @@
       "projectId": "YfmAb61LMhjH6jFL"
     }
   ],
-  "activeVersion": null,
+  "activeVersion": {
+    "updatedAt": "2026-03-05T02:10:42.000Z",
+    "createdAt": "2026-03-05T01:38:05.854Z",
+    "versionId": "2e991993-65a2-4c00-bc37-5848fe6f469e",
+    "workflowId": "7hwWuqVD1bA5habN",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 9
+              }
+            ]
+          }
+        },
+        "id": "node-trigger",
+        "name": "Trigger Programado",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          1552,
+          704
+        ]
+      },
+      {
+        "parameters": {},
+        "id": "node-manual",
+        "name": "Ejecutar manualmente",
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          1536,
+          480
+        ]
+      },
+      {
+        "parameters": {
+          "content": "## 🤖 Flujo Agéntico (Nivel Enterprise)\\n\\nArriba estamos construyendo el futuro.\\n1. **Airtable:** Trae todas las reglas de tu marca (Tono, Colores, Público).\\n2. **Agente Generador (Easypanel):** Este único nodo va a reemplazar a los 30 nodos de abajo. Se encargará de pensar la estrategia, redactarla y postearla.\\n\\n*Nota: Aún no lo conectamos al Trigger para no romper el flujo de abajo mientras hacemos pruebas.*",
+          "height": 586,
+          "width": 400,
+          "color": 4
+        },
+        "id": "sticky-agentico",
+        "name": "Sticky Note Agentico",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          1072,
+          336
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://system-ia-agentes.onrender.com/social/publicar-completo",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ \"cliente_id\": $json[\"ID Cliente\"], \"datos_marca\": $json }) }}",
+          "options": {
+            "timeout": 300000
+          }
+        },
+        "id": "publicar-completo",
+        "name": "Publicar en Redes (Easypanel)",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          2096,
+          480
+        ],
+        "maxTries": 3,
+        "retryOnFail": true,
+        "waitBetweenTries": 5000
+      },
+      {
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "value": "appOUtGnMYHrbLaMa",
+            "mode": "list",
+            "cachedResultName": "WORKSPACE Arnaldo Ayala",
+            "cachedResultUrl": "https://airtable.com/appOUtGnMYHrbLaMa"
+          },
+          "table": {
+            "__rl": true,
+            "value": "tblgFvYebZcJaYM07",
+            "mode": "list",
+            "cachedResultName": "Branding-Marca",
+            "cachedResultUrl": "https://airtable.com/appOUtGnMYHrbLaMa/tblgFvYebZcJaYM07"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          1808,
+          480
+        ],
+        "id": "ffe526a1-571b-4656-9b0c-a24204f6617a",
+        "name": "Traer Brand Book (Airtable-Arnaldo)",
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "Cmjj6v8g6OqJtYFt",
+            "name": "Airtable Personal Access Token account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Ejecutar manualmente": {
+        "main": [
+          [
+            {
+              "node": "Traer Brand Book (Airtable-Arnaldo)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Trigger Programado": {
+        "main": [
+          [
+            {
+              "node": "Traer Brand Book (Airtable-Arnaldo)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Traer Brand Book (Airtable-Arnaldo)": {
+        "main": [
+          [
+            {
+              "node": "Publicar en Redes (Easypanel)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": "Version 2e991993",
+    "description": "",
+    "autosaved": true
+  },
   "tags": [
     {
       "id": "sin-tag",
