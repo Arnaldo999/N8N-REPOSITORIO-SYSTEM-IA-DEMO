@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-02T10:44:27.754Z",
+  "updatedAt": "2026-03-05T12:34:13.233Z",
   "createdAt": "2026-03-02T10:44:27.754Z",
   "id": "LKfHv7GMM5N75ehk",
   "name": "💬 Responder Comentarios - Instagram & Facebook",
@@ -332,7 +332,7 @@
   "pinData": null,
   "versionId": "f87036e1-3591-49bc-8725-04cf67385035",
   "activeVersionId": null,
-  "triggerCount": 0,
+  "triggerCount": 2,
   "shared": [
     {
       "updatedAt": "2026-03-02T10:44:27.755Z",
