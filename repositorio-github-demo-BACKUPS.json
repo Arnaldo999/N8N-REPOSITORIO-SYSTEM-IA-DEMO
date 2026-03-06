@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-05T12:02:34.901Z",
+  "updatedAt": "2026-03-06T19:03:07.890Z",
   "createdAt": "2026-03-02T10:43:34.988Z",
   "id": "LdSCJ1HapCGdXa28",
   "name": "REPOSITORIO-GITHUB-DEMO",
@@ -12,7 +12,7 @@
           "interval": [
             {
               "triggerAtHour": 23,
-              "triggerAtMinute": 55
+              "triggerAtMinute": null
             }
           ]
         }
@@ -542,8 +542,8 @@
   },
   "meta": null,
   "pinData": {},
-  "versionId": "e42935ed-da01-46c3-a05f-9e4c61f88fb3",
-  "activeVersionId": "e42935ed-da01-46c3-a05f-9e4c61f88fb3",
+  "versionId": "cb0c5e65-ec49-475c-9e36-fc249e097e6a",
+  "activeVersionId": "cb0c5e65-ec49-475c-9e36-fc249e097e6a",
   "triggerCount": 1,
   "shared": [
     {
@@ -555,9 +555,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-05T12:02:51.000Z",
-    "createdAt": "2026-03-05T12:02:34.902Z",
-    "versionId": "e42935ed-da01-46c3-a05f-9e4c61f88fb3",
+    "updatedAt": "2026-03-06T19:03:24.000Z",
+    "createdAt": "2026-03-06T19:03:07.893Z",
+    "versionId": "cb0c5e65-ec49-475c-9e36-fc249e097e6a",
     "workflowId": "LdSCJ1HapCGdXa28",
     "nodes": [
       {
@@ -566,7 +566,7 @@
             "interval": [
               {
                 "triggerAtHour": 23,
-                "triggerAtMinute": 55
+                "triggerAtMinute": null
               }
             ]
           }
@@ -1086,7 +1086,7 @@
       }
     },
     "authors": "Micaela Colmenares",
-    "name": "Version e42935ed",
+    "name": "Version cb0c5e65",
     "description": "",
     "autosaved": true
   },
