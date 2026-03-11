@@ -1,0 +1,1094 @@
+{
+  "updatedAt": "2026-03-11T14:00:39.825Z",
+  "createdAt": "2026-03-11T12:00:55.216Z",
+  "id": "Q86P20NkSsIouybH",
+  "name": "04 · Brevo Bounce Handler — Marcar rebotados en Sheet",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "brevo-bounce",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "wh-bounce-01",
+      "name": "Webhook Brevo Bounce",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        304
+      ],
+      "webhookId": "13fcb55a-f28b-48fa-adb8-633c5b470ced"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\nconst event = body.event || '';\nconst email = body.email || '';\n\nif (event === 'hard_bounce' && email) {\n  return [{ json: { correo: email.toLowerCase(), estado: 'rebotado', evento: event, razon: body.reason || '' } }];\n}\n\n// Not a hard bounce, ignore\nreturn [{ json: { _skip: true } }];"
+      },
+      "id": "code-bounce-02",
+      "name": "Extraer email rebotado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cond-1",
+              "leftValue": "={{ $json.evento }}",
+              "rightValue": "hard_bounce",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "if-bounce-03",
+      "name": "Es hard bounce?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        688,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "14l7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oYQ",
+          "mode": "list",
+          "cachedResultName": "LEAD SCRAPPING CONTROL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14l7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oYQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14l7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oYQ/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "correo",
+              "lookupValue": "={{ $json.correo }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "read-bounce-04",
+      "name": "Buscar lead en Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        912,
+        208
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ySGy5iHCXbMxirsk",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cond-found",
+              "leftValue": "={{ $json.web }}",
+              "rightValue": "http",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "if-found-05",
+      "name": "Encontrado en Sheet?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1120,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "web",
+              "value": "={{ $json.web }}",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "estado",
+              "value": "rebotado",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-bounce-06",
+      "name": "Preparar update Sheet",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1344,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "14l7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oYQ",
+          "mode": "list",
+          "cachedResultName": "LEAD SCRAPPING CONTROL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14l7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oYQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14l7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oYQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "web"
+          ],
+          "schema": [
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "web",
+              "displayName": "web",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "correo",
+              "displayName": "correo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rating",
+              "displayName": "rating",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reviews",
+              "displayName": "reviews",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha_scraped",
+              "displayName": "fecha_scraped",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "asunto_email1",
+              "displayName": "asunto_email1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email_1_enviado",
+              "displayName": "email_1_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha_email_1",
+              "displayName": "fecha_email_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email_2_enviado",
+              "displayName": "email_2_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha_email_2",
+              "displayName": "fecha_email_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email_3_enviado",
+              "displayName": "email_3_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha_email_3",
+              "displayName": "fecha_email_3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email_4_enviado",
+              "displayName": "email_4_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha_email_4",
+              "displayName": "fecha_email_4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "respondio",
+              "displayName": "respondio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "_source",
+              "displayName": "_source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "update-bounce-07",
+      "name": "Actualizar estado en Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1568,
+        112
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ySGy5iHCXbMxirsk",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"status\": \"ok\"}",
+        "options": {}
+      },
+      "id": "respond-bounce-08",
+      "name": "Responder 200 OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1792,
+        304
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Brevo Bounce": {
+      "main": [
+        [
+          {
+            "node": "Extraer email rebotado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer email rebotado": {
+      "main": [
+        [
+          {
+            "node": "Es hard bounce?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es hard bounce?": {
+      "main": [
+        [
+          {
+            "node": "Buscar lead en Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder 200 OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar lead en Sheet": {
+      "main": [
+        [
+          {
+            "node": "Encontrado en Sheet?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encontrado en Sheet?": {
+      "main": [
+        [
+          {
+            "node": "Preparar update Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder 200 OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar update Sheet": {
+      "main": [
+        [
+          {
+            "node": "Actualizar estado en Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar estado en Sheet": {
+      "main": [
+        [
+          {
+            "node": "Responder 200 OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "b7c5e29c-3723-48b9-a902-4690fbc2e759",
+  "activeVersionId": "8c39e9c2-5de5-4725-b267-3e202522617d",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-11T12:00:55.219Z",
+      "createdAt": "2026-03-11T12:00:55.219Z",
+      "role": "workflow:owner",
+      "workflowId": "Q86P20NkSsIouybH",
+      "projectId": "YfmAb61LMhjH6jFL"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-11T13:13:07.469Z",
+    "createdAt": "2026-03-11T13:13:07.469Z",
+    "versionId": "8c39e9c2-5de5-4725-b267-3e202522617d",
+    "workflowId": "Q86P20NkSsIouybH",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "brevo-bounce",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "wh-bounce-01",
+        "name": "Webhook Brevo Bounce",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          240,
+          304
+        ],
+        "webhookId": "13fcb55a-f28b-48fa-adb8-633c5b470ced"
+      },
+      {
+        "parameters": {
+          "jsCode": "const body = $input.first().json.body || $input.first().json;\nconst event = body.event || '';\nconst email = body.email || '';\n\nif (event === 'hard_bounce' && email) {\n  return [{ json: { correo: email.toLowerCase(), estado: 'rebotado', evento: event, razon: body.reason || '' } }];\n}\n\n// Not a hard bounce, ignore\nreturn [{ json: { _skip: true } }];"
+        },
+        "id": "code-bounce-02",
+        "name": "Extraer email rebotado",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          464,
+          304
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 2
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "cond-1",
+                "leftValue": "={{ $json.evento }}",
+                "rightValue": "hard_bounce",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ]
+          }
+        },
+        "id": "if-bounce-03",
+        "name": "Es hard bounce?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          688,
+          304
+        ]
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "14l7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oYQ",
+            "mode": "list",
+            "cachedResultName": "LEAD SCRAPPING CONTROL",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14l7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oYQ/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14l7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oYQ/edit#gid=0"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "correo",
+                "lookupValue": "={{ $json.correo }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "read-bounce-04",
+        "name": "Buscar lead en Sheet",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          912,
+          208
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "ySGy5iHCXbMxirsk",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 2
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "cond-found",
+                "leftValue": "={{ $json.web }}",
+                "rightValue": "http",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ]
+          }
+        },
+        "id": "if-found-05",
+        "name": "Encontrado en Sheet?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1120,
+          208
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a1",
+                "name": "web",
+                "value": "={{ $json.web }}",
+                "type": "string"
+              },
+              {
+                "id": "a2",
+                "name": "estado",
+                "value": "rebotado",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "set-bounce-06",
+        "name": "Preparar update Sheet",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1344,
+          112
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "14l7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oYQ",
+            "mode": "list",
+            "cachedResultName": "LEAD SCRAPPING CONTROL",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14l7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oYQ/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14l7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oYQ/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "autoMapInputData",
+            "value": {},
+            "matchingColumns": [
+              "web"
+            ],
+            "schema": [
+              {
+                "id": "nombre",
+                "displayName": "nombre",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "web",
+                "displayName": "web",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "correo",
+                "displayName": "correo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "rating",
+                "displayName": "rating",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "reviews",
+                "displayName": "reviews",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fecha_scraped",
+                "displayName": "fecha_scraped",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "asunto_email1",
+                "displayName": "asunto_email1",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "email_1_enviado",
+                "displayName": "email_1_enviado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fecha_email_1",
+                "displayName": "fecha_email_1",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "email_2_enviado",
+                "displayName": "email_2_enviado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fecha_email_2",
+                "displayName": "fecha_email_2",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "email_3_enviado",
+                "displayName": "email_3_enviado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fecha_email_3",
+                "displayName": "fecha_email_3",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "email_4_enviado",
+                "displayName": "email_4_enviado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fecha_email_4",
+                "displayName": "fecha_email_4",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "respondio",
+                "displayName": "respondio",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "estado",
+                "displayName": "estado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "_source",
+                "displayName": "_source",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "update-bounce-07",
+        "name": "Actualizar estado en Sheet",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          1568,
+          112
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "ySGy5iHCXbMxirsk",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\"status\": \"ok\"}",
+          "options": {}
+        },
+        "id": "respond-bounce-08",
+        "name": "Responder 200 OK",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1792,
+          304
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook Brevo Bounce": {
+        "main": [
+          [
+            {
+              "node": "Extraer email rebotado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraer email rebotado": {
+        "main": [
+          [
+            {
+              "node": "Es hard bounce?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Es hard bounce?": {
+        "main": [
+          [
+            {
+              "node": "Buscar lead en Sheet",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Responder 200 OK",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar lead en Sheet": {
+        "main": [
+          [
+            {
+              "node": "Encontrado en Sheet?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Encontrado en Sheet?": {
+        "main": [
+          [
+            {
+              "node": "Preparar update Sheet",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Responder 200 OK",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Preparar update Sheet": {
+        "main": [
+          [
+            {
+              "node": "Actualizar estado en Sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Actualizar estado en Sheet": {
+        "main": [
+          [
+            {
+              "node": "Responder 200 OK",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-03-11T14:00:19.305Z",
+      "createdAt": "2026-03-11T14:00:19.305Z",
+      "id": "VO0n7X4g3AKuSqEd",
+      "name": "SCRAPING LEADS"
+    }
+  ]
+}
