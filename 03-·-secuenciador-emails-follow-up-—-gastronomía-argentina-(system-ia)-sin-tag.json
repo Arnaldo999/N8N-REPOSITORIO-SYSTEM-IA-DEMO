@@ -1,0 +1,1583 @@
+{
+  "updatedAt": "2026-03-10T21:23:58.567Z",
+  "createdAt": "2026-03-10T09:44:20.953Z",
+  "id": "AQrcRpUyHChKP0VB",
+  "name": "03 · Secuenciador Emails Follow-Up — Gastronomía Argentina (System IA)",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 12 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "sched-wf03",
+      "name": "Schedule — 9am Argentina",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY",
+          "mode": "list",
+          "cachedResultName": "LEAD SCRAPPING CONTROL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "sheets-read-wf03",
+      "name": "Leer leads — Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        464,
+        304
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ySGy5iHCXbMxirsk",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst today = new Date();\n\nfunction daysSince(dateStr) {\n  if (!dateStr || dateStr.toString().trim() === '') return -1;\n  const date = new Date(dateStr);\n  if (isNaN(date.getTime())) return -1;\n  return Math.floor((today - date) / (1000 * 60 * 60 * 24));\n}\n\nfunction isFalsy(val) {\n  return !val || val.toString().trim() === '' || val.toString().toUpperCase() === 'FALSE';\n}\n\nreturn items.map(item => {\n  const d = item.json;\n  const correo = (d.correo || '').toString().trim();\n\n  if (!correo) return { json: { ...d, accion: 'skip' } };\n\n  const email1Sent = !isFalsy(d.email_1_enviado);\n  const email2Sent = !isFalsy(d.email_2_enviado);\n  const email3Sent = !isFalsy(d.email_3_enviado);\n  const email4Sent = !isFalsy(d.email_4_enviado);\n\n  let accion = 'skip';\n\n  // Solo avanzar si la fecha del email anterior existe Y pasaron los días requeridos\n  const dias1 = daysSince(d.fecha_email_1);\n  const dias2 = daysSince(d.fecha_email_2);\n  const dias3 = daysSince(d.fecha_email_3);\n\n  if (email1Sent && !email2Sent && dias1 >= 3) {\n    accion = 'email_2';\n  } else if (email2Sent && !email3Sent && dias2 >= 3) {\n    accion = 'email_3';\n  } else if (email3Sent && !email4Sent && dias3 >= 5) {\n    accion = 'email_4';\n  }\n\n  const nombre = (d.nombre || 'equipo').toString().split(' ')[0];\n\n  return {\n    json: {\n      ...d,\n      accion,\n      _email_to: correo,\n      _nombre: d.nombre || '',\n      _nombre_short: nombre,\n      _saludo: `Hola ${nombre}`\n    }\n  };\n});"
+      },
+      "id": "code-decide-wf03",
+      "name": "Determinar acción",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "email_2",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "email_2"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "email_3",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "email_3"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "email_4",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "email_4"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "switch-wf03",
+      "name": "Router — accion",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        912,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brevo.com/v3/smtp/email",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ to: [{ email: $json._email_to, name: $json._nombre }], templateId: 2, params: { saludo: $json._saludo, nombre: $json._nombre_short, nombre_local: $json._nombre, texto: $json._saludo + ',\\n\\nTe escribi hace unos dias despues de dejarles una estrella en Maps. No se si lo viste!\\n\\nTe cuento algo rapido: un bar en Cordoba empezo a usar nuestro bot de WhatsApp y en la primera semana dejo de perder reservas de noche. El dueno nos dijo \"por fin puedo dormir tranquilo\". Literal.\\n\\nSi queres ver como funciona, tenemos el piloto gratis de 7 dias. Lo prueban, y si no les sirve, lo sacan. Asi de simple.\\n\\nAbrazo, Mica' }, subject: $json._nombre + ', te cuento algo que paso en un bar' }) }}",
+        "options": {}
+      },
+      "id": "brevo-email2",
+      "name": "Brevo — Email 2 (Caso Éxito)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        112
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "e90IV0eIC231hw0N",
+          "name": "Header Auth Brevo Google Maps"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY",
+          "mode": "list",
+          "cachedResultName": "LEAD SCRAPPING CONTROL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "web"
+          ],
+          "schema": [
+            {
+              "id": "web",
+              "displayName": "web",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_2_enviado",
+              "displayName": "email_2_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_email_2",
+              "displayName": "fecha_email_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "sheets-upd2",
+      "name": "Actualizar Sheet — Email 2",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1456,
+        112
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ySGy5iHCXbMxirsk",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brevo.com/v3/smtp/email",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ to: [{ email: $json._email_to, name: $json._nombre }], templateId: 3, params: { saludo: $json._saludo, nombre: $json._nombre_short, nombre_local: $json._nombre, texto: $json._saludo + ',\\n\\nUltimo mensaje, lo prometo! jaja\\n\\nArme un videito de 2 minutos mostrando como funciona el bot en un restaurante real. Podes verlo aca: https://melodic-lamington-c19525.netlify.app\\n\\nSi les interesa probarlo, el piloto de 7 dias sigue disponible. Sin compromiso, sin tarjeta, sin letra chica.\\n\\nSi no es el momento, todo bien! Les deseo lo mejor con el local.\\n\\nUn abrazo grande, Mica' }, subject: 'Les arme un videito de 2 min 🎬' }) }}",
+        "options": {}
+      },
+      "id": "brevo-email3",
+      "name": "Brevo — Email 3 (Video Demo)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        304
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "e90IV0eIC231hw0N",
+          "name": "Header Auth Brevo Google Maps"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY",
+          "mode": "list",
+          "cachedResultName": "LEAD SCRAPPING CONTROL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "web"
+          ],
+          "schema": [
+            {
+              "id": "web",
+              "displayName": "web",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_3_enviado",
+              "displayName": "email_3_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_email_3",
+              "displayName": "fecha_email_3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "sheets-upd3",
+      "name": "Actualizar Sheet — Email 3",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1456,
+        304
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ySGy5iHCXbMxirsk",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brevo.com/v3/smtp/email",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ to: [{ email: $json._email_to, name: $json._nombre }], templateId: 4, params: { saludo: $json._saludo, nombre: $json._nombre_short, nombre_local: $json._nombre, texto: $json._saludo + ',\\n\\nSoy Mica de System IA. Te habia escrito hace unas semanas despues de dejarles una reseña en Maps.\\n\\nEntiendo que quizas no es el momento o no les interesa, y esta perfecto! No voy a insistir mas.\\n\\nSi algun dia quieren probar el bot de WhatsApp, el piloto gratis de 7 dias siempre va a estar disponible: https://melodic-lamington-c19525.netlify.app\\n\\nLes mando un abrazo y mucho exito con ' + $json._nombre + '!\\n\\nMica 😊' }, subject: $json._nombre + ', ultimo mensaje de mi parte' }) }}",
+        "options": {}
+      },
+      "id": "brevo-email4",
+      "name": "Brevo — Email 4 (Breakup)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        512
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "e90IV0eIC231hw0N",
+          "name": "Header Auth Brevo Google Maps"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY",
+          "mode": "list",
+          "cachedResultName": "LEAD SCRAPPING CONTROL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "web"
+          ],
+          "schema": [
+            {
+              "id": "web",
+              "displayName": "web",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_4_enviado",
+              "displayName": "email_4_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_email_4",
+              "displayName": "fecha_email_4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "sheets-upd4",
+      "name": "Actualizar Sheet — Email 4",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1456,
+        512
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ySGy5iHCXbMxirsk",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# ⚙️ WF03 — Secuenciador Follow-Up\n\n## Cómo funciona\nCorre **L-V a las 9am Argentina** (12:00 UTC).\nLee el Sheet, determina qué email enviar y lo manda por Brevo.\n\n## Lógica de timing\n- Email 2: ≥3 días después del Email 1\n- Email 3: ≥3 días después del Email 2\n- Email 4: ≥5 días después del Email 3\n\n## Templates Brevo\n- ID 2 → Caso Éxito\n- ID 3 → Video Demo\n- ID 4 → Breakup\n\n## Credenciales requeridas\n- `Google Sheets — System IA` → en los nodos de Sheets\n\n## IMPORTANTE\nEl WF02 maneja el Email 1 (Icebreaker).\nEste workflow solo maneja emails 2, 3 y 4.",
+        "height": 736,
+        "width": 560,
+        "color": 5
+      },
+      "id": "sticky-wf03",
+      "name": "Setup — WF03",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s2-web",
+              "name": "web",
+              "value": "={{ $('Determinar acción').item.json.web }}",
+              "type": "string"
+            },
+            {
+              "id": "s2-flag",
+              "name": "email_2_enviado",
+              "value": "TRUE",
+              "type": "string"
+            },
+            {
+              "id": "s2-fecha",
+              "name": "fecha_email_2",
+              "value": "={{ $now.toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "s2-estado",
+              "name": "estado",
+              "value": "email_2_enviado",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "prep-sheet2",
+      "name": "Preparar Sheet 2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1264,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s3-web",
+              "name": "web",
+              "value": "={{ $('Determinar acción').item.json.web }}",
+              "type": "string"
+            },
+            {
+              "id": "s3-flag",
+              "name": "email_3_enviado",
+              "value": "TRUE",
+              "type": "string"
+            },
+            {
+              "id": "s3-fecha",
+              "name": "fecha_email_3",
+              "value": "={{ $now.toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "s3-estado",
+              "name": "estado",
+              "value": "email_3_enviado",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "prep-sheet3",
+      "name": "Preparar Sheet 3",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1264,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s4-web",
+              "name": "web",
+              "value": "={{ $('Determinar acción').item.json.web }}",
+              "type": "string"
+            },
+            {
+              "id": "s4-flag",
+              "name": "email_4_enviado",
+              "value": "TRUE",
+              "type": "string"
+            },
+            {
+              "id": "s4-fecha",
+              "name": "fecha_email_4",
+              "value": "={{ $now.toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "s4-estado",
+              "name": "estado",
+              "value": "secuencia_completa",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "prep-sheet4",
+      "name": "Preparar Sheet 4",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        512
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule — 9am Argentina": {
+      "main": [
+        [
+          {
+            "node": "Leer leads — Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer leads — Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Determinar acción",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Determinar acción": {
+      "main": [
+        [
+          {
+            "node": "Router — accion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router — accion": {
+      "main": [
+        [
+          {
+            "node": "Brevo — Email 2 (Caso Éxito)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Brevo — Email 3 (Video Demo)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Brevo — Email 4 (Breakup)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brevo — Email 2 (Caso Éxito)": {
+      "main": [
+        [
+          {
+            "node": "Preparar Sheet 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Sheet 2": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Sheet — Email 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brevo — Email 3 (Video Demo)": {
+      "main": [
+        [
+          {
+            "node": "Preparar Sheet 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Sheet 3": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Sheet — Email 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brevo — Email 4 (Breakup)": {
+      "main": [
+        [
+          {
+            "node": "Preparar Sheet 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Sheet 4": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Sheet — Email 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Argentina/Buenos_Aires",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:Schedule — 9am Argentina": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "versionId": "52815644-2b57-4396-a10c-fb7cd1d14124",
+  "activeVersionId": "52815644-2b57-4396-a10c-fb7cd1d14124",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-10T09:44:20.956Z",
+      "createdAt": "2026-03-10T09:44:20.956Z",
+      "role": "workflow:owner",
+      "workflowId": "AQrcRpUyHChKP0VB",
+      "projectId": "YfmAb61LMhjH6jFL"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-10T21:23:58.568Z",
+    "createdAt": "2026-03-10T21:23:58.568Z",
+    "versionId": "52815644-2b57-4396-a10c-fb7cd1d14124",
+    "workflowId": "AQrcRpUyHChKP0VB",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "0 12 * * 1-5"
+              }
+            ]
+          }
+        },
+        "id": "sched-wf03",
+        "name": "Schedule — 9am Argentina",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          240,
+          304
+        ]
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY",
+            "mode": "list",
+            "cachedResultName": "LEAD SCRAPPING CONTROL",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY/edit#gid=0"
+          },
+          "options": {}
+        },
+        "id": "sheets-read-wf03",
+        "name": "Leer leads — Google Sheets",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          464,
+          304
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "ySGy5iHCXbMxirsk",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const items = $input.all();\nconst today = new Date();\n\nfunction daysSince(dateStr) {\n  if (!dateStr || dateStr.toString().trim() === '') return -1;\n  const date = new Date(dateStr);\n  if (isNaN(date.getTime())) return -1;\n  return Math.floor((today - date) / (1000 * 60 * 60 * 24));\n}\n\nfunction isFalsy(val) {\n  return !val || val.toString().trim() === '' || val.toString().toUpperCase() === 'FALSE';\n}\n\nreturn items.map(item => {\n  const d = item.json;\n  const correo = (d.correo || '').toString().trim();\n\n  if (!correo) return { json: { ...d, accion: 'skip' } };\n\n  const email1Sent = !isFalsy(d.email_1_enviado);\n  const email2Sent = !isFalsy(d.email_2_enviado);\n  const email3Sent = !isFalsy(d.email_3_enviado);\n  const email4Sent = !isFalsy(d.email_4_enviado);\n\n  let accion = 'skip';\n\n  // Solo avanzar si la fecha del email anterior existe Y pasaron los días requeridos\n  const dias1 = daysSince(d.fecha_email_1);\n  const dias2 = daysSince(d.fecha_email_2);\n  const dias3 = daysSince(d.fecha_email_3);\n\n  if (email1Sent && !email2Sent && dias1 >= 3) {\n    accion = 'email_2';\n  } else if (email2Sent && !email3Sent && dias2 >= 3) {\n    accion = 'email_3';\n  } else if (email3Sent && !email4Sent && dias3 >= 5) {\n    accion = 'email_4';\n  }\n\n  const nombre = (d.nombre || 'equipo').toString().split(' ')[0];\n\n  return {\n    json: {\n      ...d,\n      accion,\n      _email_to: correo,\n      _nombre: d.nombre || '',\n      _nombre_short: nombre,\n      _saludo: `Hola ${nombre}`\n    }\n  };\n});"
+        },
+        "id": "code-decide-wf03",
+        "name": "Determinar acción",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          688,
+          304
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": false,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.accion }}",
+                      "rightValue": "email_2",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "email_2"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": false,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.accion }}",
+                      "rightValue": "email_3",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "email_3"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": false,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.accion }}",
+                      "rightValue": "email_4",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "email_4"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "switch-wf03",
+        "name": "Router — accion",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3,
+        "position": [
+          912,
+          288
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.brevo.com/v3/smtp/email",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ to: [{ email: $json._email_to, name: $json._nombre }], templateId: 2, params: { saludo: $json._saludo, nombre: $json._nombre_short, nombre_local: $json._nombre, texto: $json._saludo + ',\\n\\nTe escribi hace unos dias despues de dejarles una estrella en Maps. No se si lo viste!\\n\\nTe cuento algo rapido: un bar en Cordoba empezo a usar nuestro bot de WhatsApp y en la primera semana dejo de perder reservas de noche. El dueno nos dijo \"por fin puedo dormir tranquilo\". Literal.\\n\\nSi queres ver como funciona, tenemos el piloto gratis de 7 dias. Lo prueban, y si no les sirve, lo sacan. Asi de simple.\\n\\nAbrazo, Mica' }, subject: $json._nombre + ', te cuento algo que paso en un bar' }) }}",
+          "options": {}
+        },
+        "id": "brevo-email2",
+        "name": "Brevo — Email 2 (Caso Éxito)",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1120,
+          112
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "e90IV0eIC231hw0N",
+            "name": "Header Auth Brevo Google Maps"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY",
+            "mode": "list",
+            "cachedResultName": "LEAD SCRAPPING CONTROL",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "autoMapInputData",
+            "value": {},
+            "matchingColumns": [
+              "web"
+            ],
+            "schema": [
+              {
+                "id": "web",
+                "displayName": "web",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "email_2_enviado",
+                "displayName": "email_2_enviado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "fecha_email_2",
+                "displayName": "fecha_email_2",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "estado",
+                "displayName": "estado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "id": "sheets-upd2",
+        "name": "Actualizar Sheet — Email 2",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          1456,
+          112
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "ySGy5iHCXbMxirsk",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.brevo.com/v3/smtp/email",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ to: [{ email: $json._email_to, name: $json._nombre }], templateId: 3, params: { saludo: $json._saludo, nombre: $json._nombre_short, nombre_local: $json._nombre, texto: $json._saludo + ',\\n\\nUltimo mensaje, lo prometo! jaja\\n\\nArme un videito de 2 minutos mostrando como funciona el bot en un restaurante real. Podes verlo aca: https://melodic-lamington-c19525.netlify.app\\n\\nSi les interesa probarlo, el piloto de 7 dias sigue disponible. Sin compromiso, sin tarjeta, sin letra chica.\\n\\nSi no es el momento, todo bien! Les deseo lo mejor con el local.\\n\\nUn abrazo grande, Mica' }, subject: 'Les arme un videito de 2 min 🎬' }) }}",
+          "options": {}
+        },
+        "id": "brevo-email3",
+        "name": "Brevo — Email 3 (Video Demo)",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1120,
+          304
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "e90IV0eIC231hw0N",
+            "name": "Header Auth Brevo Google Maps"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY",
+            "mode": "list",
+            "cachedResultName": "LEAD SCRAPPING CONTROL",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "autoMapInputData",
+            "value": {},
+            "matchingColumns": [
+              "web"
+            ],
+            "schema": [
+              {
+                "id": "web",
+                "displayName": "web",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "email_3_enviado",
+                "displayName": "email_3_enviado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "fecha_email_3",
+                "displayName": "fecha_email_3",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "estado",
+                "displayName": "estado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "id": "sheets-upd3",
+        "name": "Actualizar Sheet — Email 3",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          1456,
+          304
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "ySGy5iHCXbMxirsk",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.brevo.com/v3/smtp/email",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ to: [{ email: $json._email_to, name: $json._nombre }], templateId: 4, params: { saludo: $json._saludo, nombre: $json._nombre_short, nombre_local: $json._nombre, texto: $json._saludo + ',\\n\\nSoy Mica de System IA. Te habia escrito hace unas semanas despues de dejarles una reseña en Maps.\\n\\nEntiendo que quizas no es el momento o no les interesa, y esta perfecto! No voy a insistir mas.\\n\\nSi algun dia quieren probar el bot de WhatsApp, el piloto gratis de 7 dias siempre va a estar disponible: https://melodic-lamington-c19525.netlify.app\\n\\nLes mando un abrazo y mucho exito con ' + $json._nombre + '!\\n\\nMica 😊' }, subject: $json._nombre + ', ultimo mensaje de mi parte' }) }}",
+          "options": {}
+        },
+        "id": "brevo-email4",
+        "name": "Brevo — Email 4 (Breakup)",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1120,
+          512
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "e90IV0eIC231hw0N",
+            "name": "Header Auth Brevo Google Maps"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY",
+            "mode": "list",
+            "cachedResultName": "LEAD SCRAPPING CONTROL",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14I7hkWWM5OBG4_nALiER7PqZYC9UB8qJnkRHFrl-oY/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "autoMapInputData",
+            "value": {},
+            "matchingColumns": [
+              "web"
+            ],
+            "schema": [
+              {
+                "id": "web",
+                "displayName": "web",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "email_4_enviado",
+                "displayName": "email_4_enviado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "fecha_email_4",
+                "displayName": "fecha_email_4",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "estado",
+                "displayName": "estado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "id": "sheets-upd4",
+        "name": "Actualizar Sheet — Email 4",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          1456,
+          512
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "ySGy5iHCXbMxirsk",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "# ⚙️ WF03 — Secuenciador Follow-Up\n\n## Cómo funciona\nCorre **L-V a las 9am Argentina** (12:00 UTC).\nLee el Sheet, determina qué email enviar y lo manda por Brevo.\n\n## Lógica de timing\n- Email 2: ≥3 días después del Email 1\n- Email 3: ≥3 días después del Email 2\n- Email 4: ≥5 días después del Email 3\n\n## Templates Brevo\n- ID 2 → Caso Éxito\n- ID 3 → Video Demo\n- ID 4 → Breakup\n\n## Credenciales requeridas\n- `Google Sheets — System IA` → en los nodos de Sheets\n\n## IMPORTANTE\nEl WF02 maneja el Email 1 (Icebreaker).\nEste workflow solo maneja emails 2, 3 y 4.",
+          "height": 736,
+          "width": 560,
+          "color": 5
+        },
+        "id": "sticky-wf03",
+        "name": "Setup — WF03",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -400,
+          80
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "s2-web",
+                "name": "web",
+                "value": "={{ $('Determinar acción').item.json.web }}",
+                "type": "string"
+              },
+              {
+                "id": "s2-flag",
+                "name": "email_2_enviado",
+                "value": "TRUE",
+                "type": "string"
+              },
+              {
+                "id": "s2-fecha",
+                "name": "fecha_email_2",
+                "value": "={{ $now.toFormat('yyyy-MM-dd') }}",
+                "type": "string"
+              },
+              {
+                "id": "s2-estado",
+                "name": "estado",
+                "value": "email_2_enviado",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "prep-sheet2",
+        "name": "Preparar Sheet 2",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1264,
+          112
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "s3-web",
+                "name": "web",
+                "value": "={{ $('Determinar acción').item.json.web }}",
+                "type": "string"
+              },
+              {
+                "id": "s3-flag",
+                "name": "email_3_enviado",
+                "value": "TRUE",
+                "type": "string"
+              },
+              {
+                "id": "s3-fecha",
+                "name": "fecha_email_3",
+                "value": "={{ $now.toFormat('yyyy-MM-dd') }}",
+                "type": "string"
+              },
+              {
+                "id": "s3-estado",
+                "name": "estado",
+                "value": "email_3_enviado",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "prep-sheet3",
+        "name": "Preparar Sheet 3",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1264,
+          304
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "s4-web",
+                "name": "web",
+                "value": "={{ $('Determinar acción').item.json.web }}",
+                "type": "string"
+              },
+              {
+                "id": "s4-flag",
+                "name": "email_4_enviado",
+                "value": "TRUE",
+                "type": "string"
+              },
+              {
+                "id": "s4-fecha",
+                "name": "fecha_email_4",
+                "value": "={{ $now.toFormat('yyyy-MM-dd') }}",
+                "type": "string"
+              },
+              {
+                "id": "s4-estado",
+                "name": "estado",
+                "value": "secuencia_completa",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "prep-sheet4",
+        "name": "Preparar Sheet 4",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1280,
+          512
+        ]
+      }
+    ],
+    "connections": {
+      "Schedule — 9am Argentina": {
+        "main": [
+          [
+            {
+              "node": "Leer leads — Google Sheets",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Leer leads — Google Sheets": {
+        "main": [
+          [
+            {
+              "node": "Determinar acción",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Determinar acción": {
+        "main": [
+          [
+            {
+              "node": "Router — accion",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Router — accion": {
+        "main": [
+          [
+            {
+              "node": "Brevo — Email 2 (Caso Éxito)",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Brevo — Email 3 (Video Demo)",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Brevo — Email 4 (Breakup)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Brevo — Email 2 (Caso Éxito)": {
+        "main": [
+          [
+            {
+              "node": "Preparar Sheet 2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Preparar Sheet 2": {
+        "main": [
+          [
+            {
+              "node": "Actualizar Sheet — Email 2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Brevo — Email 3 (Video Demo)": {
+        "main": [
+          [
+            {
+              "node": "Preparar Sheet 3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Preparar Sheet 3": {
+        "main": [
+          [
+            {
+              "node": "Actualizar Sheet — Email 3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Brevo — Email 4 (Breakup)": {
+        "main": [
+          [
+            {
+              "node": "Preparar Sheet 4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Preparar Sheet 4": {
+        "main": [
+          [
+            {
+              "node": "Actualizar Sheet — Email 4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "id": "sin-tag",
+      "name": "sin-tag"
+    }
+  ]
+}
