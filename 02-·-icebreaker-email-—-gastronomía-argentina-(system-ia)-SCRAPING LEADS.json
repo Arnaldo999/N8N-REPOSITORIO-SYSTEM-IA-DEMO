@@ -701,7 +701,7 @@
   "meta": null,
   "pinData": {},
   "versionId": "1b4944f0-22a6-4454-9801-6a9b7bc7bc21",
-  "activeVersionId": "a1d3b375-b8b4-478b-b7f1-b6b3a553e923",
+  "activeVersionId": "1b4944f0-22a6-4454-9801-6a9b7bc7bc21",
   "triggerCount": 1,
   "shared": [
     {
@@ -713,9 +713,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-11T12:05:01.966Z",
-    "createdAt": "2026-03-11T12:05:01.966Z",
-    "versionId": "a1d3b375-b8b4-478b-b7f1-b6b3a553e923",
+    "updatedAt": "2026-03-11T14:22:35.000Z",
+    "createdAt": "2026-03-11T14:01:02.910Z",
+    "versionId": "1b4944f0-22a6-4454-9801-6a9b7bc7bc21",
     "workflowId": "Zq0T8HyXcNzR9zgt",
     "nodes": [
       {
@@ -1225,8 +1225,6 @@
       },
       {
         "parameters": {
-          "mode": "manual",
-          "duplicateItem": false,
           "assignments": {
             "assignments": [
               {
@@ -1261,7 +1259,6 @@
               }
             ]
           },
-          "includeOtherFields": false,
           "options": {}
         },
         "type": "n8n-nodes-base.set",
@@ -1404,9 +1401,9 @@
       }
     },
     "authors": "Micaela Colmenares",
-    "name": null,
-    "description": null,
-    "autosaved": false
+    "name": "Version 1b4944f0",
+    "description": "",
+    "autosaved": true
   },
   "tags": [
     {
