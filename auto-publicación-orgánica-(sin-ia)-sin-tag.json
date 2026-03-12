@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-03-02T10:43:15.993Z",
+  "updatedAt": "2026-03-11T14:04:08.000Z",
   "createdAt": "2026-03-02T10:43:15.993Z",
   "id": "BVVKwC6OHZNVWtor",
   "name": "Auto-Publicación Orgánica (Sin IA)",
   "active": false,
-  "isArchived": false,
+  "isArchived": true,
   "nodes": [
     {
       "id": "trigger-1",
@@ -275,7 +275,7 @@
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "a6e9032d-2585-4a19-8c7f-c0c61a477ebb",
+  "versionId": "c1d63c9b-8c4c-4e21-aae7-4e36e8266af0",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
