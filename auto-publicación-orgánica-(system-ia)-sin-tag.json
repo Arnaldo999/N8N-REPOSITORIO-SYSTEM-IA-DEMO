@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-03-02T10:43:19.272Z",
+  "updatedAt": "2026-03-11T14:04:04.000Z",
   "createdAt": "2026-03-02T10:43:19.272Z",
   "id": "AeDLT72XfHvX2Zax",
   "name": "Auto-Publicación Orgánica (System IA)",
   "active": false,
-  "isArchived": false,
+  "isArchived": true,
   "nodes": [
     {
       "id": "sticky-1",
@@ -335,7 +335,7 @@
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "379e208a-aca9-4a2b-83b4-a624a3aad4bf",
+  "versionId": "2b9e3bad-4efc-4edd-af98-749b9173fccc",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
