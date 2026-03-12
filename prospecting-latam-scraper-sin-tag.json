@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-03-02T10:43:28.816Z",
+  "updatedAt": "2026-03-11T14:04:20.000Z",
   "createdAt": "2026-03-02T10:43:28.816Z",
   "id": "Ce9XI1nmtrkNA6mM",
   "name": "Prospecting LatAm Scraper",
   "active": false,
-  "isArchived": false,
+  "isArchived": true,
   "nodes": [
     {
       "parameters": {
@@ -125,7 +125,7 @@
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "a814d868-0ea0-466c-a49b-1876076b9c4b",
+  "versionId": "05bbb451-de3d-46a6-ac89-d00cdc5bf09e",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
