@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-05T11:55:59.976Z",
+  "updatedAt": "2026-03-11T15:00:57.213Z",
   "createdAt": "2026-03-02T10:44:23.439Z",
   "id": "bdjxbKMBKIoLD7NH",
   "name": "MAESTRO Router",
@@ -192,7 +192,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const demo = $input.first().json.demo_activa;\nconst body_original = $input.first().json.body_original;\n\nconst demos = {\n  'conecta':     'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/4973a60b-fbc7-4499-9fce-b76c25785570',\n  'tienda':      'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/tienda-ropa',\n  'restaurante': 'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/webhook/automatizacion-restaurantes',\n  'citas':       'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/agendamiento-citas',\n  'redes':       null\n};\n\nconst url = demos[demo];\nif (url === undefined) return [];  // demo key desconocida\nif (url === null) return [];       // en construcción, no rutear\n\nreturn [{ json: { demo_url: url, body_original } }];"
+        "jsCode": "const demo = $input.first().json.demo_activa;\nconst body_original = $input.first().json.body_original;\n\nconst demos = {\n  'conecta':     'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/4973a60b-fbc7-4499-9fce-b76c25785570',\n  'tienda':      'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/tienda-ropa',\n  'restaurante': 'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/webhook/automatizacion-restaurantes',\n  'citas':       'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/agendamiento-citas',\n  'redes':       null,\n  'comercio':    'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/comercio-whatsapp-in'\n};\n\nconst url = demos[demo];\nif (url === undefined) return [];  // demo key desconocida\nif (url === null) return [];       // en construcción, no rutear\n\nreturn [{ json: { demo_url: url, body_original } }];"
       },
       "id": "co-02",
       "name": "Enrutar a Demo",
@@ -223,7 +223,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const data = $input.first().json;\nconst telefono = data.telefono;\nconst msg = data.mensaje; // already lowercase\n\nconst MENU = `¡Hola! 👋 Bienvenido a *System IA Demos*.\n\nEstas son las demos disponibles:\n1️⃣ *Conecta CRM* - gestión automatizada de clientes\n2️⃣ *Redes Sociales* - automatización de publicaciones _(en construcción)_\n3️⃣ *Tienda de Ropa* - chatbot e-commerce para WhatsApp\n4️⃣ *Restaurantes y Bares* - reservas y menú por WhatsApp\n5️⃣ *Agendamiento de Citas* - sistema de citas por WhatsApp\n\nRespondé con el número de la demo que querés probar 🚀`;\n\nconst demoMap = {\n  '1': 'conecta', 'conecta': 'conecta', 'crm': 'conecta',\n  '2': 'redes', 'redes': 'redes',\n  '3': 'tienda', 'tienda': 'tienda', 'ropa': 'tienda',\n  '4': 'restaurante', 'restaurantes': 'restaurante', 'bar': 'restaurante', 'bares': 'restaurante',\n  '5': 'citas', 'citas': 'citas', 'agenda': 'citas', 'agendamiento': 'citas'\n};\n\nconst demoKey = demoMap[msg.trim()];\n\nlet accion, texto_respuesta;\n\nif (demoKey === 'redes') {\n  accion = 'redes';\n  texto_respuesta = '🚧 La demo de *Redes Sociales* está en construcción. Pronto estará disponible.\\n\\n¿Querés probar otra demo? Respondé con un número del 1 al 5.';\n} else if (demoKey) {\n  accion = 'activar';\n  texto_respuesta = '✅ ¡Perfecto! Tu demo está activada. En unos segundos te llegará el primer mensaje 🚀';\n} else {\n  accion = 'menu';\n  texto_respuesta = MENU;\n}\n\nreturn [{ json: { telefono, accion, demo: demoKey || '', texto_respuesta } }];"
+        "jsCode": "const data = $input.first().json;\nconst telefono = data.telefono;\nconst msg = data.mensaje; // already lowercase\n\nconst MENU = `¡Hola! 👋 Bienvenido a *System IA Demos*.\n\nEstas son las demos disponibles:\n1️⃣ *Conecta CRM* - gestión automatizada de clientes\n2️⃣ *Redes Sociales* - automatización de publicaciones _(en construcción)_\n3️⃣ *Tienda de Ropa* - chatbot e-commerce para WhatsApp\n4️⃣ *Restaurantes y Bares* - reservas y menú por WhatsApp\n5️⃣ *Agendamiento de Citas* - sistema de citas por WhatsApp\n6️⃣ *Catálogo de Comercio / Electrónica*\n\nRespondé con el número de la demo que querés probar 🚀`;\n\nconst demoMap = {\n  '1': 'conecta', 'conecta': 'conecta', 'crm': 'conecta',\n  '2': 'redes', 'redes': 'redes',\n  '3': 'tienda', 'tienda': 'tienda', 'ropa': 'tienda',\n  '4': 'restaurante', 'restaurantes': 'restaurante', 'bar': 'restaurante', 'bares': 'restaurante',\n  '5': 'citas', 'citas': 'citas', 'agenda': 'citas', 'agendamiento': 'citas',\n  '6': 'comercio', 'comercio': 'comercio', 'electronica': 'comercio'\n};\n\nlet demoKey = demoMap[msg.trim()];\n\n// AUTO-ACTIVACIÓN AL VENIR DEL SITIO WEB (CATÁLOGO)\nif (msg.includes('me interesa el producto')) {\n  demoKey = 'comercio';\n}\n\nlet accion, texto_respuesta;\n\nif (demoKey === 'redes') {\n  accion = 'redes';\n  texto_respuesta = '🚧 La demo de *Redes Sociales* está en construcción. Pronto estará disponible.\\n\\n¿Querés probar otra demo? Respondé con un número del 1 al 6.';\n} else if (demoKey) {\n  accion = 'activar';\n  texto_respuesta = '✅ ¡Perfecto! Tu demo está activada. En unos segundos te llegará el primer mensaje 🚀';\n} else {\n  accion = 'menu';\n  texto_respuesta = MENU;\n}\n\nreturn [{ json: { telefono, accion, demo: demoKey || '', texto_respuesta } }];"
       },
       "id": "co-det",
       "name": "Detectar Intención",
@@ -365,7 +365,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const demo = $('Detectar Intención').first().json.demo;\nconst body_original = $('Extraer Datos').first().json.body_original;\n\nconst demos = {\n  'conecta':     'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/4973a60b-fbc7-4499-9fce-b76c25785570',\n  'tienda':      'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/tienda-ropa',\n  'restaurante': 'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/webhook/automatizacion-restaurantes',\n  'citas':       'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/agendamiento-citas'\n};\n\nconst url = demos[demo];\nif (!url) return [];\n\nreturn [{ json: { demo_url: url, body_original } }];"
+        "jsCode": "const demo = $('Detectar Intención').first().json.demo;\nconst body_original = $('Extraer Datos').first().json.body_original;\n\nconst demos = {\n  'conecta':     'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/4973a60b-fbc7-4499-9fce-b76c25785570',\n  'tienda':      'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/tienda-ropa',\n  'restaurante': 'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/webhook/automatizacion-restaurantes',\n  'citas':       'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/agendamiento-citas',\n  'comercio':    'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/comercio-whatsapp-in'\n};\n\nconst url = demos[demo];\nif (!url) return [];\n\nreturn [{ json: { demo_url: url, body_original } }];"
       },
       "id": "co-url",
       "name": "Obtener URL Demo",
@@ -557,8 +557,8 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "173e9dc7-1a61-432c-805e-26626a3a4204",
-  "activeVersionId": "2d4a9083-5f7f-4c3e-b6e1-5ad66b9b4632",
+  "versionId": "e972e341-02c6-4fb3-b118-99e640c63a1a",
+  "activeVersionId": "e972e341-02c6-4fb3-b118-99e640c63a1a",
   "triggerCount": 1,
   "shared": [
     {
@@ -570,9 +570,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-03T22:29:12.665Z",
-    "createdAt": "2026-03-03T22:29:12.665Z",
-    "versionId": "2d4a9083-5f7f-4c3e-b6e1-5ad66b9b4632",
+    "updatedAt": "2026-03-11T15:00:57.214Z",
+    "createdAt": "2026-03-11T15:00:57.214Z",
+    "versionId": "e972e341-02c6-4fb3-b118-99e640c63a1a",
     "workflowId": "bdjxbKMBKIoLD7NH",
     "nodes": [
       {
@@ -705,13 +705,13 @@
           1120,
           304
         ],
+        "alwaysOutputData": true,
         "credentials": {
           "googleSheetsOAuth2Api": {
             "id": "ySGy5iHCXbMxirsk",
             "name": "Google Sheets account"
           }
-        },
-        "alwaysOutputData": true
+        }
       },
       {
         "parameters": {
@@ -761,7 +761,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const demo = $input.first().json.demo_activa;\nconst body_original = $input.first().json.body_original;\n\nconst demos = {\n  'conecta':     'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/4973a60b-fbc7-4499-9fce-b76c25785570',\n  'tienda':      'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/tienda-ropa',\n  'restaurante': 'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/webhook/automatizacion-restaurantes',\n  'citas':       'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/agendamiento-citas',\n  'redes':       null\n};\n\nconst url = demos[demo];\nif (url === undefined) return [];  // demo key desconocida\nif (url === null) return [];       // en construcción, no rutear\n\nreturn [{ json: { demo_url: url, body_original } }];"
+          "jsCode": "const demo = $input.first().json.demo_activa;\nconst body_original = $input.first().json.body_original;\n\nconst demos = {\n  'conecta':     'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/4973a60b-fbc7-4499-9fce-b76c25785570',\n  'tienda':      'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/tienda-ropa',\n  'restaurante': 'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/webhook/automatizacion-restaurantes',\n  'citas':       'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/agendamiento-citas',\n  'redes':       null,\n  'comercio':    'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/comercio-whatsapp-in'\n};\n\nconst url = demos[demo];\nif (url === undefined) return [];  // demo key desconocida\nif (url === null) return [];       // en construcción, no rutear\n\nreturn [{ json: { demo_url: url, body_original } }];"
         },
         "id": "co-02",
         "name": "Enrutar a Demo",
@@ -791,38 +791,37 @@
         ]
       },
       {
+        "parameters": {
+          "jsCode": "const data = $input.first().json;\nconst telefono = data.telefono;\nconst msg = data.mensaje; // already lowercase\n\nconst MENU = `¡Hola! 👋 Bienvenido a *System IA Demos*.\n\nEstas son las demos disponibles:\n1️⃣ *Conecta CRM* - gestión automatizada de clientes\n2️⃣ *Redes Sociales* - automatización de publicaciones _(en construcción)_\n3️⃣ *Tienda de Ropa* - chatbot e-commerce para WhatsApp\n4️⃣ *Restaurantes y Bares* - reservas y menú por WhatsApp\n5️⃣ *Agendamiento de Citas* - sistema de citas por WhatsApp\n6️⃣ *Catálogo de Comercio / Electrónica*\n\nRespondé con el número de la demo que querés probar 🚀`;\n\nconst demoMap = {\n  '1': 'conecta', 'conecta': 'conecta', 'crm': 'conecta',\n  '2': 'redes', 'redes': 'redes',\n  '3': 'tienda', 'tienda': 'tienda', 'ropa': 'tienda',\n  '4': 'restaurante', 'restaurantes': 'restaurante', 'bar': 'restaurante', 'bares': 'restaurante',\n  '5': 'citas', 'citas': 'citas', 'agenda': 'citas', 'agendamiento': 'citas',\n  '6': 'comercio', 'comercio': 'comercio', 'electronica': 'comercio'\n};\n\nlet demoKey = demoMap[msg.trim()];\n\n// AUTO-ACTIVACIÓN AL VENIR DEL SITIO WEB (CATÁLOGO)\nif (msg.includes('me interesa el producto')) {\n  demoKey = 'comercio';\n}\n\nlet accion, texto_respuesta;\n\nif (demoKey === 'redes') {\n  accion = 'redes';\n  texto_respuesta = '🚧 La demo de *Redes Sociales* está en construcción. Pronto estará disponible.\\n\\n¿Querés probar otra demo? Respondé con un número del 1 al 6.';\n} else if (demoKey) {\n  accion = 'activar';\n  texto_respuesta = '✅ ¡Perfecto! Tu demo está activada. En unos segundos te llegará el primer mensaje 🚀';\n} else {\n  accion = 'menu';\n  texto_respuesta = MENU;\n}\n\nreturn [{ json: { telefono, accion, demo: demoKey || '', texto_respuesta } }];"
+        },
         "id": "co-det",
         "name": "Detectar Intención",
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          1780,
-          420
-        ],
-        "parameters": {
-          "jsCode": "const data = $input.first().json;\nconst telefono = data.telefono;\nconst msg = data.mensaje; // already lowercase\n\nconst MENU = `¡Hola! 👋 Bienvenido a *System IA Demos*.\n\nEstas son las demos disponibles:\n1️⃣ *Conecta CRM* - gestión automatizada de clientes\n2️⃣ *Redes Sociales* - automatización de publicaciones _(en construcción)_\n3️⃣ *Tienda de Ropa* - chatbot e-commerce para WhatsApp\n4️⃣ *Restaurantes y Bares* - reservas y menú por WhatsApp\n5️⃣ *Agendamiento de Citas* - sistema de citas por WhatsApp\n\nRespondé con el número de la demo que querés probar 🚀`;\n\nconst demoMap = {\n  '1': 'conecta', 'conecta': 'conecta', 'crm': 'conecta',\n  '2': 'redes', 'redes': 'redes',\n  '3': 'tienda', 'tienda': 'tienda', 'ropa': 'tienda',\n  '4': 'restaurante', 'restaurantes': 'restaurante', 'bar': 'restaurante', 'bares': 'restaurante',\n  '5': 'citas', 'citas': 'citas', 'agenda': 'citas', 'agendamiento': 'citas'\n};\n\nconst demoKey = demoMap[msg.trim()];\n\nlet accion, texto_respuesta;\n\nif (demoKey === 'redes') {\n  accion = 'redes';\n  texto_respuesta = '🚧 La demo de *Redes Sociales* está en construcción. Pronto estará disponible.\\n\\n¿Querés probar otra demo? Respondé con un número del 1 al 5.';\n} else if (demoKey) {\n  accion = 'activar';\n  texto_respuesta = '✅ ¡Perfecto! Tu demo está activada. En unos segundos te llegará el primer mensaje 🚀';\n} else {\n  accion = 'menu';\n  texto_respuesta = MENU;\n}\n\nreturn [{ json: { telefono, accion, demo: demoKey || '', texto_respuesta } }];"
-        }
+          1792,
+          432
+        ]
       },
       {
-        "id": "hr-resp",
-        "name": "Enviar Respuesta WA",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4,
-        "position": [
-          2000,
-          420
-        ],
         "parameters": {
           "method": "POST",
           "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
-          "contentType": "json",
           "specifyBody": "json",
           "jsonBody": "={{ JSON.stringify({number: $json.telefono, text: $json.texto_respuesta}) }}",
           "options": {}
         },
+        "id": "hr-resp",
+        "name": "Enviar Respuesta WA",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4,
+        "position": [
+          2000,
+          432
+        ],
         "credentials": {
           "httpHeaderAuth": {
             "id": "ZL2CdsQqaFeTMR2w",
@@ -831,14 +830,6 @@
         }
       },
       {
-        "id": "if-act",
-        "name": "¿Activar Demo?",
-        "type": "n8n-nodes-base.if",
-        "typeVersion": 2,
-        "position": [
-          2220,
-          420
-        ],
         "parameters": {
           "conditions": {
             "combinator": "and",
@@ -861,17 +852,17 @@
             }
           },
           "options": {}
-        }
+        },
+        "id": "if-act",
+        "name": "¿Activar Demo?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          2224,
+          432
+        ]
       },
       {
-        "id": "gs-upsert",
-        "name": "Activar Sesión en GSheets",
-        "type": "n8n-nodes-base.googleSheets",
-        "typeVersion": 4,
-        "position": [
-          2440,
-          300
-        ],
         "parameters": {
           "operation": "appendOrUpdate",
           "documentId": {
@@ -926,6 +917,14 @@
           },
           "options": {}
         },
+        "id": "gs-upsert",
+        "name": "Activar Sesión en GSheets",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4,
+        "position": [
+          2448,
+          304
+        ],
         "credentials": {
           "googleSheetsOAuth2Api": {
             "id": "ySGy5iHCXbMxirsk",
@@ -934,36 +933,35 @@
         }
       },
       {
+        "parameters": {
+          "jsCode": "const demo = $('Detectar Intención').first().json.demo;\nconst body_original = $('Extraer Datos').first().json.body_original;\n\nconst demos = {\n  'conecta':     'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/4973a60b-fbc7-4499-9fce-b76c25785570',\n  'tienda':      'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/tienda-ropa',\n  'restaurante': 'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/webhook/automatizacion-restaurantes',\n  'citas':       'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/agendamiento-citas',\n  'comercio':    'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/comercio-whatsapp-in'\n};\n\nconst url = demos[demo];\nif (!url) return [];\n\nreturn [{ json: { demo_url: url, body_original } }];"
+        },
         "id": "co-url",
         "name": "Obtener URL Demo",
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          2660,
-          300
-        ],
-        "parameters": {
-          "jsCode": "const demo = $('Detectar Intención').first().json.demo;\nconst body_original = $('Extraer Datos').first().json.body_original;\n\nconst demos = {\n  'conecta':     'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/4973a60b-fbc7-4499-9fce-b76c25785570',\n  'tienda':      'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/tienda-ropa',\n  'restaurante': 'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/webhook/automatizacion-restaurantes',\n  'citas':       'https://sytem-ia-pruebas-n8n.6g0gdj.easypanel.host/webhook/agendamiento-citas'\n};\n\nconst url = demos[demo];\nif (!url) return [];\n\nreturn [{ json: { demo_url: url, body_original } }];"
-        }
+          2672,
+          304
+        ]
       },
       {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $json.demo_url }}",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.body_original }}",
+          "options": {}
+        },
         "id": "hr-arrancar",
         "name": "Arrancar Demo",
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4,
         "position": [
           2880,
-          300
-        ],
-        "parameters": {
-          "method": "POST",
-          "url": "={{ $json.demo_url }}",
-          "sendBody": true,
-          "contentType": "json",
-          "specifyBody": "json",
-          "jsonBody": "={{ $json.body_original }}",
-          "options": {}
-        }
+          304
+        ]
       }
     ],
     "connections": {
