@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-03-02T10:44:19.819Z",
+  "updatedAt": "2026-03-11T14:03:50.000Z",
   "createdAt": "2026-03-02T10:44:19.819Z",
   "id": "D3j2YnYuV9ni4aqG",
   "name": "🍷 Restaurante - Flujo Principal",
   "active": false,
-  "isArchived": false,
+  "isArchived": true,
   "nodes": [
     {
       "parameters": {
@@ -1169,7 +1169,7 @@
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "ad8a727f-ffe9-419f-bdc9-b2e66e5b1382",
+  "versionId": "c419e5d7-dd48-4eb7-8076-0aa93fa0c9c7",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
