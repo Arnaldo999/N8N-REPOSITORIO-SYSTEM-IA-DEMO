@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-03-02T10:43:36.059Z",
+  "updatedAt": "2026-03-11T14:04:27.000Z",
   "createdAt": "2026-03-02T10:43:36.059Z",
   "id": "35nbvUlvSeJmwemB",
   "name": "skills In n8n agent node",
   "active": false,
-  "isArchived": false,
+  "isArchived": true,
   "nodes": [
     {
       "parameters": {
@@ -616,7 +616,7 @@
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "d0a2023d-a879-4518-bb15-d9f2042261bb",
+  "versionId": "e40786d4-e0c5-4271-846a-e4618b792298",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
