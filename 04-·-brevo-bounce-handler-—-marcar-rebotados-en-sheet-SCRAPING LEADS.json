@@ -542,7 +542,7 @@
   },
   "pinData": {},
   "versionId": "b7c5e29c-3723-48b9-a902-4690fbc2e759",
-  "activeVersionId": "8c39e9c2-5de5-4725-b267-3e202522617d",
+  "activeVersionId": "b7c5e29c-3723-48b9-a902-4690fbc2e759",
   "triggerCount": 1,
   "shared": [
     {
@@ -554,9 +554,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-11T13:13:07.469Z",
-    "createdAt": "2026-03-11T13:13:07.469Z",
-    "versionId": "8c39e9c2-5de5-4725-b267-3e202522617d",
+    "updatedAt": "2026-03-12T10:26:47.000Z",
+    "createdAt": "2026-03-11T14:00:39.827Z",
+    "versionId": "b7c5e29c-3723-48b9-a902-4690fbc2e759",
     "workflowId": "Q86P20NkSsIouybH",
     "nodes": [
       {
@@ -610,7 +610,8 @@
                 }
               }
             ]
-          }
+          },
+          "options": {}
         },
         "id": "if-bounce-03",
         "name": "Es hard bounce?",
@@ -683,7 +684,8 @@
                 }
               }
             ]
-          }
+          },
+          "options": {}
         },
         "id": "if-found-05",
         "name": "Encontrado en Sheet?",
@@ -1079,9 +1081,9 @@
       }
     },
     "authors": "Micaela Colmenares",
-    "name": null,
-    "description": null,
-    "autosaved": false
+    "name": "Version b7c5e29c",
+    "description": "",
+    "autosaved": true
   },
   "tags": [
     {
