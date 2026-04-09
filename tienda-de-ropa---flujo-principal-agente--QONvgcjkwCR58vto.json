@@ -1,0 +1,877 @@
+{
+  "updatedAt": "2026-03-02T10:44:08.609Z",
+  "createdAt": "2026-03-02T10:44:08.609Z",
+  "id": "QONvgcjkwCR58vto",
+  "name": "Tienda de Ropa - Flujo Principal (Agente)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "node-wh1",
+      "name": "Webhook Evolution",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        300
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "webhook/tienda-ropa",
+        "responseMode": "onReceived",
+        "responseData": ""
+      }
+    },
+    {
+      "id": "node-fl1",
+      "name": "Filtro: Mensaje válido",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        200,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-event",
+              "leftValue": "={{ $json.body.event }}",
+              "rightValue": "messages.upsert",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "cond-fromMe",
+              "leftValue": "={{ $json.body.data.key.fromMe }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-ext",
+      "name": "Extraer Datos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        300
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "telefono",
+              "value": "={{ $json.body.data.key.remoteJid.replace('@s.whatsapp.net', '').replace('@g.us', '') }}",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "mensaje",
+              "value": "={{ $json.body.data.message && $json.body.data.message.conversation ? $json.body.data.message.conversation : $json.body.data.message && $json.body.data.message.imageMessage && $json.body.data.message.imageMessage.caption ? $json.body.data.message.imageMessage.caption : '' }}",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "nombre_wa",
+              "value": "={{ $json.body.data.pushName || 'Cliente' }}",
+              "type": "string"
+            },
+            {
+              "id": "a4",
+              "name": "tiene_imagen",
+              "value": "={{ $json.body.data.messageType === 'imageMessage' }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-dno",
+      "name": "¿Es dueño + pago confirmado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        600,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-dueno",
+              "leftValue": "={{ $json.telefono }}",
+              "rightValue": "NUMERO_DUENO_AQUI",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "cond-pago",
+              "leftValue": "={{ $json.mensaje.toLowerCase() }}",
+              "rightValue": "pago confirmado",
+              "operator": {
+                "type": "string",
+                "operation": "contains",
+                "name": "filter.operator.contains"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-rdp",
+      "name": "Leer Pedidos Pendientes",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        800,
+        100
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9AngrdYrRh5RyUES",
+          "name": "Formulario_Leads_System"
+        }
+      },
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "pedidos",
+          "mode": "name"
+        },
+        "range": "A:M",
+        "options": {}
+      }
+    },
+    {
+      "id": "node-obt",
+      "name": "Obtener Ultimo Pendiente",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        100
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const items = $input.all();\nconst pendientes = items.filter(item => item.json.estado === 'pendiente');\nif (pendientes.length === 0) {\n  return [{ json: { found: false, error: 'No hay pedidos pendientes' } }];\n}\nconst ultimo = pendientes[pendientes.length - 1];\nreturn [{ json: { found: true, ...ultimo.json } }];"
+      }
+    },
+    {
+      "id": "node-hpd",
+      "name": "¿Hay pedido pendiente?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1200,
+        100
+      ],
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-found",
+              "leftValue": "={{ $json.found }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-ecc",
+      "name": "Enviar Confirmacion al Cliente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1400,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
+        }
+      },
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"🎉 *¡Pago confirmado!* 🎉\\n\\nHola {{ $json.nombre }}, confirmamos que recibimos tu pago correctamente.\\n\\n📦 *Tu pedido:*\\n• Producto: {{ $json.producto }}\\n• Precio: ${{ $json.precio_producto }}\\n• Envío: ${{ $json.costo_envio }}\\n• *Total: ${{ $json.total }}*\\n\\n🚚 Tu pedido llegará en aproximadamente *7 a 15 días*.\\n\\n¡Gracias por tu compra! 😊\"\n}",
+        "options": {}
+      }
+    },
+    {
+      "id": "node-aep",
+      "name": "Actualizar Estado Pedido",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1600,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9AngrdYrRh5RyUES",
+          "name": "Formulario_Leads_System"
+        }
+      },
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1UYxSuKi1uLyOAqONNQwXJe7FgpGGcFQN0fBC-vxhxqo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "pedidos",
+          "mode": "name"
+        },
+        "range": "A:M",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $('Obtener Ultimo Pendiente').first().json.telefono }}",
+            "estado": "confirmado"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "ciudad",
+              "displayName": "ciudad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "provincia",
+              "displayName": "provincia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "producto",
+              "displayName": "producto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "categoria",
+              "displayName": "categoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "precio_producto",
+              "displayName": "precio_producto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number"
+            },
+            {
+              "id": "costo_envio",
+              "displayName": "costo_envio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number"
+            },
+            {
+              "id": "total",
+              "displayName": "total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number"
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-agt",
+      "name": "AI Agent Tienda",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        800,
+        500
+      ],
+      "parameters": {
+        "agentType": "conversationalAgent",
+        "promptType": "define",
+        "text": "={{ $json.mensaje || '[El cliente envio una imagen - posible comprobante de pago]' }}",
+        "systemMessage": "=`Sos el asistente de ventas de una tienda de ropa por WhatsApp. Guia al cliente de forma amigable y profesional.\n\nDATOS DEL CLIENTE EN ESTE CHAT:\n- Telefono: ${ $json.telefono }\n- Nombre WhatsApp: ${ $json.nombre_wa }\n- Tiene imagen adjunta: ${ $json.tiene_imagen }\n\nINFORMACION IMPORTANTE:\n- Todos los pedidos incluyen envio a todo el pais (costo variable por provincia)\n- CVU para pagos: 0000003100047830506462 (Alias: TIENDA.ROPA.DEMO)\n- El dueno del comercio verificara el pago y confirmara por este mismo chat\n\nFLUJO DE VENTA:\n1. Saluda al cliente y menciona que los pedidos incluyen envio\n2. Usa ver_categorias para mostrar las categorias disponibles\n3. Cuando el cliente elige una categoria, usa ver_productos para mostrar los productos\n4. Cuando el cliente elige un producto, usa enviar_imagen para enviarle la foto\n5. Pregunta el nombre completo y la provincia del cliente\n6. Usa calcular_envio para calcular el total con envio\n7. Muestra el desglose de precios y el CVU para pagar\n8. Cuando tiene_imagen=true, el cliente mando el comprobante - usa registrar_pedido con TODOS los datos\n9. Informa que el dueno verificara el pago y confirmara en breve\n\nREGLAS:\n- Siempre amable con emojis apropiados\n- Si tiene_imagen=true, el cliente esta enviando el comprobante de pago\n- NO inventes precios ni productos - siempre usa las herramientas\n- Si el cliente saluda sin mas, muestra las categorias disponibles`",
+        "options": {}
+      }
+    },
+    {
+      "id": "node-oai",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        600,
+        720
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "BrD15coHeXdGWac2",
+          "name": "OpenAi account"
+        }
+      },
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {}
+      }
+    },
+    {
+      "id": "node-mem",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        800,
+        720
+      ],
+      "parameters": {
+        "sessionKey": "={{ $json.telefono }}",
+        "contextWindowLength": 20
+      }
+    },
+    {
+      "id": "node-t01",
+      "name": "ver_categorias",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1000,
+        720
+      ],
+      "parameters": {
+        "description": "Muestra las categorias de productos disponibles en la tienda. No requiere parametros.",
+        "workflowId": {
+          "__rl": true,
+          "value": "xWb27wiSzpj9d4sx",
+          "mode": "id"
+        },
+        "fields": {
+          "values": []
+        }
+      }
+    },
+    {
+      "id": "node-t02",
+      "name": "ver_productos",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1200,
+        720
+      ],
+      "parameters": {
+        "description": "Muestra los productos de una categoria. Requiere: categoria (string, nombre de la categoria elegida).",
+        "workflowId": {
+          "__rl": true,
+          "value": "EOdJH8nzrVsRfHLz",
+          "mode": "id"
+        },
+        "fields": {
+          "values": [
+            {
+              "name": "categoria",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('categoria', 'Nombre de la categoria', 'string') }}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-t03",
+      "name": "enviar_imagen",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1400,
+        720
+      ],
+      "parameters": {
+        "description": "Envia la imagen de un producto al cliente por WhatsApp. Requiere: imagen_url (URL de la imagen), caption (descripcion del producto con precio).",
+        "workflowId": {
+          "__rl": true,
+          "value": "3IBfRGsHm51g1rGk",
+          "mode": "id"
+        },
+        "fields": {
+          "values": [
+            {
+              "name": "imagen_url",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('imagen_url', 'URL de la imagen del producto', 'string') }}"
+            },
+            {
+              "name": "caption",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('caption', 'Descripcion del producto con precio', 'string') }}"
+            },
+            {
+              "name": "telefono",
+              "value": "={{ $('Extraer Datos').item.json.telefono }}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-t04",
+      "name": "calcular_envio",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1600,
+        720
+      ],
+      "parameters": {
+        "description": "Calcula el costo de envio. Requiere: precio_producto (numero en pesos), provincia (string, provincia argentina del cliente).",
+        "workflowId": {
+          "__rl": true,
+          "value": "B5EmFwWaue0IiNuS",
+          "mode": "id"
+        },
+        "fields": {
+          "values": [
+            {
+              "name": "precio_producto",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('precio_producto', 'Precio del producto en pesos', 'number') }}"
+            },
+            {
+              "name": "provincia",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('provincia', 'Provincia del cliente', 'string') }}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-t05",
+      "name": "registrar_pedido",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1800,
+        720
+      ],
+      "parameters": {
+        "description": "Registra el pedido cuando el cliente envia el comprobante de pago (tiene_imagen=true). Requiere: nombre, ciudad, provincia, producto, categoria, precio_producto (numero), costo_envio (numero), total (numero).",
+        "workflowId": {
+          "__rl": true,
+          "value": "VBlLIxvJizzgnK9q",
+          "mode": "id"
+        },
+        "fields": {
+          "values": [
+            {
+              "name": "nombre",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nombre', 'Nombre completo del cliente', 'string') }}"
+            },
+            {
+              "name": "telefono",
+              "value": "={{ $('Extraer Datos').item.json.telefono }}"
+            },
+            {
+              "name": "ciudad",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ciudad', 'Ciudad del cliente', 'string') }}"
+            },
+            {
+              "name": "provincia",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('provincia', 'Provincia del cliente', 'string') }}"
+            },
+            {
+              "name": "producto",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('producto', 'Nombre del producto pedido', 'string') }}"
+            },
+            {
+              "name": "categoria",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('categoria', 'Categoria del producto', 'string') }}"
+            },
+            {
+              "name": "precio_producto",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('precio_producto', 'Precio del producto', 'number') }}"
+            },
+            {
+              "name": "costo_envio",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('costo_envio', 'Costo del envio', 'number') }}"
+            },
+            {
+              "name": "total",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('total', 'Total producto + envio', 'number') }}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-dvd",
+      "name": "Dividir Respuesta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        500
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const items = $input.all();\nconst output = (items[0] && items[0].json && items[0].json.output) ? items[0].json.output : (items[0] && items[0].json && items[0].json.text) ? items[0].json.text : '';\nconst telefono = $('Extraer Datos').first().json.telefono;\nif (!output) return [{ json: { mensaje: '...', telefono } }];\n\nconst maxLen = 1500;\nconst chunks = [];\nif (output.length <= maxLen) {\n  chunks.push(output);\n} else {\n  const parts = output.split('\\n\\n');\n  let current = '';\n  for (const part of parts) {\n    if ((current + '\\n\\n' + part).length > maxLen && current) {\n      chunks.push(current.trim());\n      current = part;\n    } else {\n      current = current ? current + '\\n\\n' + part : part;\n    }\n  }\n  if (current) chunks.push(current.trim());\n}\n\nreturn chunks.map(chunk => ({ json: { mensaje: chunk, telefono } }));"
+      }
+    },
+    {
+      "id": "node-ewp",
+      "name": "Enviar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        500
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "S4QSQlXLKNyAfGtu",
+          "name": "Header Auth Evolution Api"
+        }
+      },
+      "parameters": {
+        "method": "POST",
+        "url": "https://sytem-ia-pruebas-evolution-api.6g0gdj.easypanel.host/message/sendText/System%20IA%20Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.telefono }}\",\n  \"text\": \"{{ $json.mensaje }}\"\n}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Evolution": {
+      "main": [
+        [
+          {
+            "node": "Filtro: Mensaje válido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtro: Mensaje válido": {
+      "main": [
+        [
+          {
+            "node": "Extraer Datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Datos": {
+      "main": [
+        [
+          {
+            "node": "¿Es dueño + pago confirmado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es dueño + pago confirmado?": {
+      "main": [
+        [
+          {
+            "node": "Leer Pedidos Pendientes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent Tienda",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Pedidos Pendientes": {
+      "main": [
+        [
+          {
+            "node": "Obtener Ultimo Pendiente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Ultimo Pendiente": {
+      "main": [
+        [
+          {
+            "node": "¿Hay pedido pendiente?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Hay pedido pendiente?": {
+      "main": [
+        [
+          {
+            "node": "Enviar Confirmacion al Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Confirmacion al Cliente": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Estado Pedido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent Tienda": {
+      "main": [
+        [
+          {
+            "node": "Dividir Respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dividir Respuesta": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent Tienda",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent Tienda",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ver_categorias": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Tienda",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ver_productos": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Tienda",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enviar_imagen": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Tienda",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "calcular_envio": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Tienda",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "registrar_pedido": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Tienda",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "ab0afdb2-9ea7-4bc3-a5c1-ff06938a6895",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-02T10:44:08.611Z",
+      "createdAt": "2026-03-02T10:44:08.611Z",
+      "role": "workflow:owner",
+      "workflowId": "QONvgcjkwCR58vto",
+      "projectId": "YfmAb61LMhjH6jFL"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "id": "sin-tag",
+      "name": "sin-tag"
+    }
+  ]
+}
