@@ -1,0 +1,355 @@
+{
+  "updatedAt": "2026-04-09T12:58:23.042Z",
+  "createdAt": "2026-04-07T12:28:41.481Z",
+  "id": "aOiZFbmvMoPSE0vB",
+  "name": "📱 System IA (Mica) — Publicación Diaria Redes Sociales (IG + FB)",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "node-schedule-mica",
+      "name": "⏰ Schedule 9am ARG",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        304
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 12 * * 1-6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-airtable-mica",
+      "name": "📋 Obtener Brandbook Mica",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        464,
+        304
+      ],
+      "parameters": {
+        "url": "https://api.airtable.com/v0/appejn9ep8JMLJmPG/tblgFvYebZcJaYM07?maxRecords=1",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer patL8VOuELCGbJGlSAnXhDDXwaMBevH8RMLTLfMcbDkXXoK2hAjf3aFIq7d8XY1n"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-publicar-mica",
+      "name": "🚀 Publicar en Redes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        688,
+        304
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://agentes.arnaldoayalaestratega.cloud/social/publicar-completo",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"cliente_id\": \"{{ $json.records[0].fields['ID Cliente'] }}\",\n  \"datos_marca\": {{ JSON.stringify($json.records[0].fields) }}\n}",
+        "options": {
+          "timeout": 120000
+        }
+      }
+    },
+    {
+      "id": "node-if-mica",
+      "name": "¿Falló la publicación?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        912,
+        304
+      ],
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "operation": "equal",
+              "value2": "error"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-telegram-mica",
+      "name": "🚨 Alerta Telegram Mica",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1136,
+        200
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot8798196715:AAGKgd-FZxEQoAiclETNt3_b_6cdX6ufPLU/sendMessage",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"chat_id\": \"863363759\", \"text\": \"🚨 *Falla en publicación Mica*\\n\\n📅 {{ $now.toFormat('dd/MM/yyyy HH:mm') }} ARG\\n❌ Error: {{ $json.error || $json.message || 'Sin detalle' }}\\n\\n🔍 Revisar: sytem-ia-pruebas-n8n.6g0gdj.easypanel.host\", \"parse_mode\": \"Markdown\" }",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "⏰ Schedule 9am ARG": {
+      "main": [
+        [
+          {
+            "node": "📋 Obtener Brandbook Mica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Obtener Brandbook Mica": {
+      "main": [
+        [
+          {
+            "node": "🚀 Publicar en Redes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🚀 Publicar en Redes": {
+      "main": [
+        [
+          {
+            "node": "¿Falló la publicación?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Falló la publicación?": {
+      "main": [
+        [
+          {
+            "node": "🚨 Alerta Telegram Mica",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Argentina/Buenos_Aires",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:⏰ Schedule 9am ARG": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": null,
+  "versionId": "c2e76fbe-cb1a-4c10-a4e4-fb7e2e795aa8",
+  "activeVersionId": "c2e76fbe-cb1a-4c10-a4e4-fb7e2e795aa8",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-04-07T12:28:41.488Z",
+      "createdAt": "2026-04-07T12:28:41.488Z",
+      "role": "workflow:owner",
+      "workflowId": "aOiZFbmvMoPSE0vB",
+      "projectId": "YfmAb61LMhjH6jFL"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-04-09T12:58:23.043Z",
+    "createdAt": "2026-04-09T12:58:23.043Z",
+    "versionId": "c2e76fbe-cb1a-4c10-a4e4-fb7e2e795aa8",
+    "workflowId": "aOiZFbmvMoPSE0vB",
+    "nodes": [
+      {
+        "id": "node-schedule-mica",
+        "name": "⏰ Schedule 9am ARG",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          240,
+          304
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "0 12 * * 1-6"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "node-airtable-mica",
+        "name": "📋 Obtener Brandbook Mica",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          464,
+          304
+        ],
+        "parameters": {
+          "url": "https://api.airtable.com/v0/appejn9ep8JMLJmPG/tblgFvYebZcJaYM07?maxRecords=1",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer patL8VOuELCGbJGlSAnXhDDXwaMBevH8RMLTLfMcbDkXXoK2hAjf3aFIq7d8XY1n"
+              }
+            ]
+          },
+          "options": {}
+        }
+      },
+      {
+        "id": "node-publicar-mica",
+        "name": "🚀 Publicar en Redes",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          688,
+          304
+        ],
+        "parameters": {
+          "method": "POST",
+          "url": "https://agentes.arnaldoayalaestratega.cloud/social/publicar-completo",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"cliente_id\": \"{{ $json.records[0].fields['ID Cliente'] }}\",\n  \"datos_marca\": {{ JSON.stringify($json.records[0].fields) }}\n}",
+          "options": {
+            "timeout": 120000
+          }
+        }
+      },
+      {
+        "id": "node-if-mica",
+        "name": "¿Falló la publicación?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          912,
+          304
+        ],
+        "parameters": {
+          "conditions": {
+            "string": [
+              {
+                "value1": "={{ $json.status }}",
+                "operation": "equal",
+                "value2": "error"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "node-telegram-mica",
+        "name": "🚨 Alerta Telegram Mica",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          1136,
+          200
+        ],
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.telegram.org/bot8798196715:AAGKgd-FZxEQoAiclETNt3_b_6cdX6ufPLU/sendMessage",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={ \"chat_id\": \"863363759\", \"text\": \"🚨 *Falla en publicación Mica*\\n\\n📅 {{ $now.toFormat('dd/MM/yyyy HH:mm') }} ARG\\n❌ Error: {{ $json.error || $json.message || 'Sin detalle' }}\\n\\n🔍 Revisar: sytem-ia-pruebas-n8n.6g0gdj.easypanel.host\", \"parse_mode\": \"Markdown\" }",
+          "options": {}
+        }
+      }
+    ],
+    "connections": {
+      "⏰ Schedule 9am ARG": {
+        "main": [
+          [
+            {
+              "node": "📋 Obtener Brandbook Mica",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "📋 Obtener Brandbook Mica": {
+        "main": [
+          [
+            {
+              "node": "🚀 Publicar en Redes",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🚀 Publicar en Redes": {
+        "main": [
+          [
+            {
+              "node": "¿Falló la publicación?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "¿Falló la publicación?": {
+        "main": [
+          [
+            {
+              "node": "🚨 Alerta Telegram Mica",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "id": "sin-tag",
+      "name": "sin-tag"
+    }
+  ]
+}
