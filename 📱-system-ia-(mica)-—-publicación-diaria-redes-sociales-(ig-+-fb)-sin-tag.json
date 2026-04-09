@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-07T12:28:41.481Z",
+  "updatedAt": "2026-04-09T02:05:31.951Z",
   "createdAt": "2026-04-07T12:28:41.481Z",
   "id": "aOiZFbmvMoPSE0vB",
   "name": "📱 System IA (Mica) — Publicación Diaria Redes Sociales (IG + FB)",
@@ -70,6 +70,68 @@
           "timeout": 120000
         }
       }
+    },
+    {
+      "id": "node-if-mica",
+      "name": "¿Falló la publicación?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        912,
+        304
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-mica-1",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "error",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "node-telegram-mica",
+      "name": "🚨 Alerta Telegram Mica",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        200
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot8798196715:AAGKgd-FZxEQoAiclETNt3_b_6cdX6ufPLU/sendMessage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "863363759"
+            },
+            {
+              "name": "text",
+              "value": "=🚨 *Falla en publicación Mica*\n\n📅 {{ $now.toFormat('dd/MM/yyyy HH:mm') }} ARG\n❌ Error: {{ $json.error || $json.message || 'Sin detalle' }}\n\n🔍 Revisar: sytem-ia-pruebas-n8n.6g0gdj.easypanel.host"
+            },
+            {
+              "name": "parse_mode",
+              "value": "Markdown"
+            }
+          ]
+        }
+      }
     }
   ],
   "connections": {
@@ -94,6 +156,28 @@
           }
         ]
       ]
+    },
+    "🚀 Publicar en Redes": {
+      "main": [
+        [
+          {
+            "node": "¿Falló la publicación?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Falló la publicación?": {
+      "main": [
+        [
+          {
+            "node": "🚨 Alerta Telegram Mica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -109,8 +193,8 @@
   },
   "meta": null,
   "pinData": null,
-  "versionId": "db94cfbb-5ecf-4b52-bb29-b888aa7ffe1c",
-  "activeVersionId": "db94cfbb-5ecf-4b52-bb29-b888aa7ffe1c",
+  "versionId": "26cd3ddc-7b95-4e21-b606-f18fc6413598",
+  "activeVersionId": "26cd3ddc-7b95-4e21-b606-f18fc6413598",
   "triggerCount": 1,
   "shared": [
     {
@@ -122,9 +206,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-04-07T12:28:41.493Z",
-    "createdAt": "2026-04-07T12:28:41.493Z",
-    "versionId": "db94cfbb-5ecf-4b52-bb29-b888aa7ffe1c",
+    "updatedAt": "2026-04-09T02:05:31.976Z",
+    "createdAt": "2026-04-09T02:05:31.976Z",
+    "versionId": "26cd3ddc-7b95-4e21-b606-f18fc6413598",
     "workflowId": "aOiZFbmvMoPSE0vB",
     "nodes": [
       {
@@ -191,6 +275,68 @@
             "timeout": 120000
           }
         }
+      },
+      {
+        "id": "node-if-mica",
+        "name": "¿Falló la publicación?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          912,
+          304
+        ],
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict"
+            },
+            "conditions": [
+              {
+                "id": "cond-mica-1",
+                "leftValue": "={{ $json.status }}",
+                "rightValue": "error",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          }
+        }
+      },
+      {
+        "id": "node-telegram-mica",
+        "name": "🚨 Alerta Telegram Mica",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 1,
+        "position": [
+          1136,
+          200
+        ],
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.telegram.org/bot8798196715:AAGKgd-FZxEQoAiclETNt3_b_6cdX6ufPLU/sendMessage",
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "chat_id",
+                "value": "863363759"
+              },
+              {
+                "name": "text",
+                "value": "=🚨 *Falla en publicación Mica*\n\n📅 {{ $now.toFormat('dd/MM/yyyy HH:mm') }} ARG\n❌ Error: {{ $json.error || $json.message || 'Sin detalle' }}\n\n🔍 Revisar: sytem-ia-pruebas-n8n.6g0gdj.easypanel.host"
+              },
+              {
+                "name": "parse_mode",
+                "value": "Markdown"
+              }
+            ]
+          }
+        }
       }
     ],
     "connections": {
@@ -210,6 +356,28 @@
           [
             {
               "node": "🚀 Publicar en Redes",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🚀 Publicar en Redes": {
+        "main": [
+          [
+            {
+              "node": "¿Falló la publicación?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "¿Falló la publicación?": {
+        "main": [
+          [
+            {
+              "node": "🚨 Alerta Telegram Mica",
               "type": "main",
               "index": 0
             }
