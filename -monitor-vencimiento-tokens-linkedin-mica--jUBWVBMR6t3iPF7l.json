@@ -1,0 +1,325 @@
+{
+  "updatedAt": "2026-04-10T17:53:32.474Z",
+  "createdAt": "2026-04-10T17:53:32.474Z",
+  "id": "jUBWVBMR6t3iPF7l",
+  "name": "🔐 Monitor Vencimiento Tokens — LinkedIn Mica",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "node-schedule",
+      "name": "📅 Schedule Semanal",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 1,
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 9,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-calc",
+      "name": "🧮 Calcular días restantes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        480,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Fecha estimada de vencimiento token LinkedIn de Mica\n// Token generado: 2026-04-09 — vence en ~60 días\nconst FECHA_VENCIMIENTO = '2026-06-09';\nconst TOKEN_NOMBRE = 'LinkedIn Access Token — System IA (Mica)';\nconst CLIENTE_ID = 'SystemIA';\n\nconst hoy = new Date();\nconst vence = new Date(FECHA_VENCIMIENTO);\nconst diffMs = vence.getTime() - hoy.getTime();\nconst diasRestantes = Math.ceil(diffMs / (1000 * 60 * 60 * 24));\n\nlet severidad = null;\nlet emoji = '';\nlet nivel = '';\n\nif (diasRestantes <= 3) {\n  severidad = 'CRITICO';\n  emoji = '🔴';\n  nivel = 'CRÍTICO';\n} else if (diasRestantes <= 7) {\n  severidad = 'URGENTE';\n  emoji = '🟠';\n  nivel = 'URGENTE';\n} else if (diasRestantes <= 14) {\n  severidad = 'IMPORTANTE';\n  emoji = '🟡';\n  nivel = 'IMPORTANTE';\n} else if (diasRestantes <= 30) {\n  severidad = 'AVISO';\n  emoji = '🔵';\n  nivel = 'AVISO';\n}\n\nreturn [{\n  json: {\n    alerta: severidad !== null,\n    severidad,\n    emoji,\n    nivel,\n    diasRestantes,\n    fechaVencimiento: FECHA_VENCIMIENTO,\n    tokenNombre: TOKEN_NOMBRE,\n    clienteId: CLIENTE_ID,\n    mensaje: severidad\n      ? `${emoji} *Token LinkedIn vence en ${diasRestantes} días* — ${nivel}\\n\\n🔑 *Token:* ${TOKEN_NOMBRE}\\n📅 *Vence:* ${FECHA_VENCIMIENTO}\\n\\n👉 Renovar en linkedin.com/developers → OAuth Tools → Create Token`\n      : `Token OK — ${diasRestantes} días restantes`\n  }\n}];\n"
+      }
+    },
+    {
+      "id": "node-if",
+      "name": "¿Hay alerta?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        720,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.alerta.toString() }}",
+              "operation": "equal",
+              "value2": "true"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-telegram",
+      "name": "🚨 Alerta Telegram — Token LinkedIn",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        960,
+        200
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot8798196715:AAGKgd-FZxEQoAiclETNt3_b_6cdX6ufPLU/sendMessage",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "body": {
+          "chat_id": 863363759,
+          "text": "={{ $json.mensaje + '\\n\\n🕐 ' + $now.toFormat('dd/MM/yyyy HH:mm') + ' — Monitor System IA' }}",
+          "parse_mode": "Markdown"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "node-ok",
+      "name": "✅ Token vigente — sin alerta",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        960,
+        420
+      ],
+      "parameters": {}
+    }
+  ],
+  "connections": {
+    "📅 Schedule Semanal": {
+      "main": [
+        [
+          {
+            "node": "🧮 Calcular días restantes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧮 Calcular días restantes": {
+      "main": [
+        [
+          {
+            "node": "¿Hay alerta?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Hay alerta?": {
+      "main": [
+        [
+          {
+            "node": "🚨 Alerta Telegram — Token LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "✅ Token vigente — sin alerta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Argentina/Buenos_Aires",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "none",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:📅 Schedule Semanal": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": null,
+  "versionId": "9ce81202-fa78-40b7-af63-bd16e113f889",
+  "activeVersionId": "9ce81202-fa78-40b7-af63-bd16e113f889",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-04-10T17:53:32.502Z",
+      "createdAt": "2026-04-10T17:53:32.502Z",
+      "role": "workflow:owner",
+      "workflowId": "jUBWVBMR6t3iPF7l",
+      "projectId": "YfmAb61LMhjH6jFL"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-04-10T18:13:59.000Z",
+    "createdAt": "2026-04-10T17:53:32.513Z",
+    "versionId": "9ce81202-fa78-40b7-af63-bd16e113f889",
+    "workflowId": "jUBWVBMR6t3iPF7l",
+    "nodes": [
+      {
+        "id": "node-schedule",
+        "name": "📅 Schedule Semanal",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          240,
+          300
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "weeks",
+                "weeksInterval": 1,
+                "triggerAtDay": [
+                  1
+                ],
+                "triggerAtHour": 9,
+                "triggerAtMinute": 0
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "node-calc",
+        "name": "🧮 Calcular días restantes",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 1,
+        "position": [
+          480,
+          300
+        ],
+        "parameters": {
+          "jsCode": "// Fecha estimada de vencimiento token LinkedIn de Mica\n// Token generado: 2026-04-09 — vence en ~60 días\nconst FECHA_VENCIMIENTO = '2026-06-09';\nconst TOKEN_NOMBRE = 'LinkedIn Access Token — System IA (Mica)';\nconst CLIENTE_ID = 'SystemIA';\n\nconst hoy = new Date();\nconst vence = new Date(FECHA_VENCIMIENTO);\nconst diffMs = vence.getTime() - hoy.getTime();\nconst diasRestantes = Math.ceil(diffMs / (1000 * 60 * 60 * 24));\n\nlet severidad = null;\nlet emoji = '';\nlet nivel = '';\n\nif (diasRestantes <= 3) {\n  severidad = 'CRITICO';\n  emoji = '🔴';\n  nivel = 'CRÍTICO';\n} else if (diasRestantes <= 7) {\n  severidad = 'URGENTE';\n  emoji = '🟠';\n  nivel = 'URGENTE';\n} else if (diasRestantes <= 14) {\n  severidad = 'IMPORTANTE';\n  emoji = '🟡';\n  nivel = 'IMPORTANTE';\n} else if (diasRestantes <= 30) {\n  severidad = 'AVISO';\n  emoji = '🔵';\n  nivel = 'AVISO';\n}\n\nreturn [{\n  json: {\n    alerta: severidad !== null,\n    severidad,\n    emoji,\n    nivel,\n    diasRestantes,\n    fechaVencimiento: FECHA_VENCIMIENTO,\n    tokenNombre: TOKEN_NOMBRE,\n    clienteId: CLIENTE_ID,\n    mensaje: severidad\n      ? `${emoji} *Token LinkedIn vence en ${diasRestantes} días* — ${nivel}\\n\\n🔑 *Token:* ${TOKEN_NOMBRE}\\n📅 *Vence:* ${FECHA_VENCIMIENTO}\\n\\n👉 Renovar en linkedin.com/developers → OAuth Tools → Create Token`\n      : `Token OK — ${diasRestantes} días restantes`\n  }\n}];\n"
+        }
+      },
+      {
+        "id": "node-if",
+        "name": "¿Hay alerta?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          720,
+          300
+        ],
+        "parameters": {
+          "conditions": {
+            "string": [
+              {
+                "value1": "={{ $json.alerta.toString() }}",
+                "operation": "equal",
+                "value2": "true"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "node-telegram",
+        "name": "🚨 Alerta Telegram — Token LinkedIn",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          960,
+          200
+        ],
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.telegram.org/bot8798196715:AAGKgd-FZxEQoAiclETNt3_b_6cdX6ufPLU/sendMessage",
+          "sendBody": true,
+          "contentType": "json",
+          "specifyBody": "json",
+          "body": {
+            "chat_id": 863363759,
+            "text": "={{ $json.mensaje + '\\n\\n🕐 ' + $now.toFormat('dd/MM/yyyy HH:mm') + ' — Monitor System IA' }}",
+            "parse_mode": "Markdown"
+          },
+          "options": {}
+        }
+      },
+      {
+        "id": "node-ok",
+        "name": "✅ Token vigente — sin alerta",
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          960,
+          420
+        ],
+        "parameters": {}
+      }
+    ],
+    "connections": {
+      "📅 Schedule Semanal": {
+        "main": [
+          [
+            {
+              "node": "🧮 Calcular días restantes",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🧮 Calcular días restantes": {
+        "main": [
+          [
+            {
+              "node": "¿Hay alerta?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "¿Hay alerta?": {
+        "main": [
+          [
+            {
+              "node": "🚨 Alerta Telegram — Token LinkedIn",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "✅ Token vigente — sin alerta",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Micaela Colmenares",
+    "name": "Version 9ce81202",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "id": "sin-tag",
+      "name": "sin-tag"
+    }
+  ]
+}
