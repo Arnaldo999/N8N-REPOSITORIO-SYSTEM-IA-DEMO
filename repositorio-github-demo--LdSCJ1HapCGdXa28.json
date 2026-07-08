@@ -537,10 +537,16 @@
   },
   "staticData": {
     "node:Schedule Trigger": {
-      "recurrenceRules": []
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
     }
   },
   "meta": null,
+  "nodeGroups": [],
   "pinData": {},
   "versionId": "cb0c5e65-ec49-475c-9e36-fc249e097e6a",
   "activeVersionId": "cb0c5e65-ec49-475c-9e36-fc249e097e6a",
@@ -1085,6 +1091,7 @@
         ]
       }
     },
+    "nodeGroups": [],
     "authors": "Micaela Colmenares",
     "name": "Version cb0c5e65",
     "description": "",
