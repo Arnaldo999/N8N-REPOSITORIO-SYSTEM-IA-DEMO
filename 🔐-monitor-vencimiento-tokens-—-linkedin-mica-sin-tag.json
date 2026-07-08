@@ -152,10 +152,16 @@
   },
   "staticData": {
     "node:📅 Schedule Semanal": {
-      "recurrenceRules": []
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
     }
   },
   "meta": null,
+  "nodeGroups": [],
   "pinData": null,
   "versionId": "9ce81202-fa78-40b7-af63-bd16e113f889",
   "activeVersionId": "9ce81202-fa78-40b7-af63-bd16e113f889",
@@ -311,6 +317,7 @@
         ]
       }
     },
+    "nodeGroups": [],
     "authors": "Micaela Colmenares",
     "name": "Version 9ce81202",
     "description": "",
