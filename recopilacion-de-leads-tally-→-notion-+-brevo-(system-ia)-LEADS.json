@@ -320,6 +320,7 @@
   },
   "staticData": null,
   "meta": null,
+  "nodeGroups": [],
   "pinData": {},
   "versionId": "03a30a52-4c0a-4fa7-b475-6d0bfac2e5f4",
   "activeVersionId": "03a30a52-4c0a-4fa7-b475-6d0bfac2e5f4",
@@ -643,6 +644,7 @@
         ]
       }
     },
+    "nodeGroups": [],
     "authors": "Micaela Colmenares",
     "name": "Version 03a30a52",
     "description": "",
