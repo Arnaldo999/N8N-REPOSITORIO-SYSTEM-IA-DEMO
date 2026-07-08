@@ -540,6 +540,7 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
+  "nodeGroups": [],
   "pinData": {},
   "versionId": "b7c5e29c-3723-48b9-a902-4690fbc2e759",
   "activeVersionId": "b7c5e29c-3723-48b9-a902-4690fbc2e759",
@@ -1080,6 +1081,7 @@
         ]
       }
     },
+    "nodeGroups": [],
     "authors": "Micaela Colmenares",
     "name": "Version b7c5e29c",
     "description": "",
