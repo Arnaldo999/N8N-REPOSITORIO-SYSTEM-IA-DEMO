@@ -780,10 +780,16 @@
   },
   "staticData": {
     "node:Schedule — 9am Argentina": {
-      "recurrenceRules": []
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
     }
   },
   "meta": null,
+  "nodeGroups": [],
   "pinData": {},
   "versionId": "17a42bda-5b45-4451-814f-a1e5ba44b611",
   "activeVersionId": "17a42bda-5b45-4451-814f-a1e5ba44b611",
@@ -1569,6 +1575,7 @@
         ]
       }
     },
+    "nodeGroups": [],
     "authors": "Micaela Colmenares",
     "name": null,
     "description": null,
