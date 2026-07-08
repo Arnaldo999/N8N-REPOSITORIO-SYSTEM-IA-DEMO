@@ -152,12 +152,18 @@
   },
   "staticData": {
     "node:Trigger Programado": {
-      "recurrenceRules": []
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
+  "nodeGroups": [],
   "pinData": {},
   "versionId": "66df4668-0697-4a59-80f1-54d7b8fec8f4",
   "activeVersionId": "66df4668-0697-4a59-80f1-54d7b8fec8f4",
@@ -317,6 +323,7 @@
         ]
       }
     },
+    "nodeGroups": [],
     "authors": "Micaela Colmenares",
     "name": "Version 66df4668",
     "description": "",
