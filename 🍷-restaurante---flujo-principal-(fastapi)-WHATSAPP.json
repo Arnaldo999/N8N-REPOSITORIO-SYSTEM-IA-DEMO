@@ -879,6 +879,7 @@
   },
   "staticData": null,
   "meta": null,
+  "nodeGroups": [],
   "pinData": {},
   "versionId": "10804079-d688-42c1-909f-de2b74a6f00b",
   "activeVersionId": "10804079-d688-42c1-909f-de2b74a6f00b",
@@ -1764,6 +1765,7 @@
         ]
       }
     },
+    "nodeGroups": [],
     "authors": "Micaela Colmenares",
     "name": "Version 10804079",
     "description": "",
