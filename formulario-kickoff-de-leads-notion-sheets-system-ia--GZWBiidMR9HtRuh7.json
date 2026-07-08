@@ -560,6 +560,7 @@
   },
   "staticData": null,
   "meta": null,
+  "nodeGroups": [],
   "pinData": {},
   "versionId": "7ee34415-0461-4e63-aac1-8cbdf1998bda",
   "activeVersionId": "7ee34415-0461-4e63-aac1-8cbdf1998bda",
@@ -1122,6 +1123,7 @@
         ]
       }
     },
+    "nodeGroups": [],
     "authors": "Micaela Colmenares",
     "name": null,
     "description": null,
